@@ -60,3 +60,16 @@ test("keeps production links, copy flow, and media assets configured", async () 
     access(new URL("../public/icons/telegram.svg", import.meta.url)),
   ]);
 });
+
+test("keeps the mobile hero CTA on one controlled scroll path", async () => {
+  const page = await readFile(new URL("../app/page.tsx", import.meta.url), "utf8");
+  const handler = page.match(/const scrollToExchanges[\s\S]*?\n  };/)?.[0] ?? "";
+
+  assert.equal((page.match(/onClick=\{scrollToExchanges\}/g) ?? []).length, 2);
+  assert.equal((handler.match(/window\.scrollTo\(/g) ?? []).length, 1);
+  assert.equal((handler.match(/scrollIntoView\(/g) ?? []).length, 0);
+  assert.equal((handler.match(/fetch\(|XMLHttpRequest|axios/g) ?? []).length, 0);
+  assert.match(handler, /event\.preventDefault\(\)/);
+  assert.match(handler, /behavior: "smooth"/);
+  assert.match(handler, /previewVideo\?\.pause\(\)/);
+});

@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState, type MouseEvent } from "react";
+import { useEffect, useRef, useState, type MouseEvent } from "react";
 import SplitText from "./components/SplitText";
 import {
   accessRules,
@@ -725,21 +725,53 @@ function SupportWidget() {
 export default function Home() {
   const [menuOpen, setMenuOpen] = useState(false);
   const [selectedExchange, setSelectedExchange] = useState("Bybit");
+  const anchorScrollActiveRef = useRef(false);
+  const anchorScrollTimerRef = useRef<number | null>(null);
 
   const scrollToExchanges = (event: MouseEvent<HTMLAnchorElement>) => {
     if (window.innerWidth > 700) return;
 
     event.preventDefault();
+    if (anchorScrollActiveRef.current) return;
+
     const exchangeSection = document.querySelector<HTMLElement>("#exchanges");
     if (!exchangeSection) return;
 
+    anchorScrollActiveRef.current = true;
+    document.documentElement.classList.add("anchor-scroll-active");
+
+    const previewVideo = document.querySelector<HTMLVideoElement>(".hero-preview-video");
+    const shouldResumeVideo = Boolean(previewVideo && !previewVideo.paused);
+    previewVideo?.pause();
+
+    const finishScroll = () => {
+      window.removeEventListener("scrollend", finishScroll);
+      if (!anchorScrollActiveRef.current) return;
+      anchorScrollActiveRef.current = false;
+      document.documentElement.classList.remove("anchor-scroll-active");
+      if (anchorScrollTimerRef.current !== null) {
+        window.clearTimeout(anchorScrollTimerRef.current);
+        anchorScrollTimerRef.current = null;
+      }
+      if (shouldResumeVideo) void previewVideo?.play().catch(() => undefined);
+    };
+
     const headerOffset = 66;
     const targetTop = exchangeSection.getBoundingClientRect().top + window.scrollY - headerOffset;
-    window.scrollTo({ top: targetTop, behavior: "auto" });
     window.history.replaceState(null, "", "#exchanges");
+    window.addEventListener("scrollend", finishScroll, { once: true });
+    anchorScrollTimerRef.current = window.setTimeout(finishScroll, 900);
+    window.scrollTo({ top: targetTop, behavior: "smooth" });
   };
 
+  useEffect(() => () => {
+    if (anchorScrollTimerRef.current !== null) window.clearTimeout(anchorScrollTimerRef.current);
+    document.documentElement.classList.remove("anchor-scroll-active");
+  }, []);
+
   useEffect(() => {
+    if (window.innerWidth <= 700) return;
+
     const reveal = new IntersectionObserver(
       (entries) => entries.forEach((entry) => {
         if (entry.isIntersecting) {
