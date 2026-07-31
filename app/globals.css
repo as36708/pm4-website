@@ -3622,6 +3622,72 @@ footer {
   .exchange-table-row { padding: 18px; }
 }
 
+@media (max-width: 430px) {
+  .hero h1 {
+    max-width: calc(100% - 6px);
+    font-size: clamp(35px, 9.4vw, 41px);
+    line-height: 1;
+  }
+
+  .hero-lead {
+    margin-top: 18px;
+    font-size: 14px;
+    line-height: 1.6;
+  }
+
+  .hero-actions {
+    gap: 8px;
+    margin-top: 24px;
+  }
+
+  .hero-visual {
+    display: block;
+    width: calc(100% + 12px);
+    margin-top: 28px;
+    margin-left: -6px;
+  }
+
+  .hero-video-frame {
+    width: 100%;
+    aspect-ratio: 16 / 9;
+  }
+
+  .hero-preview-video {
+    object-fit: contain;
+    image-rendering: auto;
+  }
+
+  .stat {
+    min-height: 104px;
+    padding-block: 19px;
+  }
+
+  .stat span {
+    color: #8f8784;
+  }
+
+  .support-widget {
+    right: 10px;
+    bottom: 10px;
+  }
+
+  .support-button {
+    width: 54px;
+    height: 58px;
+    gap: 5px;
+    border-radius: 15px;
+  }
+
+  .support-button em {
+    font-size: 9px;
+  }
+
+  .support-chat-icon {
+    width: 16px;
+    height: 14px;
+  }
+}
+
 @media (min-width: 1101px) and (prefers-reduced-motion: no-preference) {
   .exchange-section .desktop-exchange-row.reveal {
     opacity: 0;
