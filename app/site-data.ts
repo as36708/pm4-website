@@ -24,30 +24,6 @@ export const heroStats = [
   { value: "每 7 天", label: "权限审核周期", tone: "default" },
 ] as const;
 
-export const benefits = [
-  {
-    index: "01",
-    icon: "fee",
-    title: "手续费优惠",
-    description:
-      "通过 PM4 专属链接注册合作交易所，根据对应平台规则获得手续费优惠或返佣。",
-  },
-  {
-    index: "02",
-    icon: "indicator",
-    title: "专属指标",
-    description:
-      "完成资料审核后，免费获得 PM4 专属 TradingView 支撑阻力位指标权限。",
-  },
-  {
-    index: "03",
-    icon: "update",
-    title: "持续更新",
-    description:
-      "指标会根据实际交易场景持续优化，已开通用户可获得后续版本更新。",
-  },
-] as const;
-
 export type Exchange = {
   name: string;
   logoPath: string;
