@@ -6,7 +6,7 @@ const description =
   "通过PM4专属链接注册合作交易所，享受手续费优惠，并根据活动规则免费开通PM4 TradingView支撑阻力位指标。";
 
 export const metadata: Metadata = {
-  metadataBase: new URL("https://pm4.global"),
+  metadataBase: new URL("https://pm4-trading-tools.chexin1103.chatgpt.site"),
   title,
   description,
   keywords: ["PM4", "交易所返佣", "TradingView指标", "支撑阻力位"],
