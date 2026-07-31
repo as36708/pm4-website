@@ -438,7 +438,31 @@ export default function Home() {
               {benefits.map((benefit) => (
                 <article className="benefit-card" key={benefit.index}>
                   <span className="card-index">{benefit.index}</span>
-                  <div className="line-icon"><i /><i /><i /></div>
+                  <div
+                    className={`line-icon line-icon-${benefit.icon}`}
+                    aria-hidden="true"
+                  >
+                    {benefit.icon === "fee" && (
+                      <>
+                        <i className="fee-dot fee-dot-top" />
+                        <i className="fee-slash" />
+                        <i className="fee-dot fee-dot-bottom" />
+                      </>
+                    )}
+                    {benefit.icon === "indicator" && (
+                      <>
+                        <i className="indicator-bar indicator-bar-short" />
+                        <i className="indicator-bar indicator-bar-tall" />
+                        <i className="indicator-bar indicator-bar-medium" />
+                      </>
+                    )}
+                    {benefit.icon === "update" && (
+                      <>
+                        <i className="update-ring" />
+                        <i className="update-arrow" />
+                      </>
+                    )}
+                  </div>
                   <h3>{benefit.title}</h3>
                   <p>{benefit.description}</p>
                 </article>
