@@ -493,8 +493,8 @@ export default function Home() {
           <div className="container">
             <SectionHeading
               eyebrow="开通流程"
-              title="三步免费开通"
-              description="从注册到获得指标权限，每一步都清楚可追踪。"
+              title="四步免费开通"
+              description="完成注册、KYC、入金与资料审核后，即可申请开通指标权限。"
             />
             <div className="process-grid">
               {processSteps.map((item, index) => (
@@ -509,7 +509,7 @@ export default function Home() {
             <p className="section-note">
               <span className="section-note-icon" aria-hidden="true">i</span>
               <span>
-                新注册用户可根据当前活动规则获得体验权限，具体开通条件与审核标准以对应交易所页面的最新说明为准。
+                指标开通需要完成注册、KYC、入金及资料审核。不同交易所的最低入金要求和活动规则可能不同，请以对应交易所页面的最新说明为准。
               </span>
             </p>
           </div>

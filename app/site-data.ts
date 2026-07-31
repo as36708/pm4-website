@@ -100,19 +100,25 @@ export const processSteps = [
     step: "01",
     title: "选择交易所",
     description:
-      "通过 PM4 专属邀请链接注册合作交易所，或确认现有账户是否支持绑定。",
+      "通过 PM4 专属邀请链接注册合作交易所，或确认现有账户是否支持身份转移。",
   },
   {
     step: "02",
+    title: "完成 KYC 与入金",
+    description:
+      "完成交易所身份认证，并按照当前活动规则完成首次入金。",
+  },
+  {
+    step: "03",
     title: "提交审核资料",
     description:
       "提交交易所 UID、TradingView 用户名及当前活动要求的审核信息。",
   },
   {
-    step: "03",
+    step: "04",
     title: "审核并开通指标",
     description:
-      "资料审核通过后，为你的 TradingView 账户添加 PM4 专属指标权限。",
+      "确认注册关系、KYC、入金和活动资格后，为 TradingView 账户添加 PM4 专属指标权限。",
   },
 ] as const;
 
