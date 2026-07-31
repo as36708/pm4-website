@@ -19,8 +19,8 @@ export const siteConfig = {
 } as const;
 
 export const heroStats = [
-  { value: "按平台规则", label: "手续费优惠", tone: "accent" },
-  { value: "PM4", label: "TradingView 专属指标", tone: "default" },
+  { value: "手续费优惠", label: "按交易所规则执行", tone: "default" },
+  { value: "PM4 指标", label: "TradingView 专属工具", tone: "default" },
   { value: "UID + TV", label: "双重资料审核", tone: "default" },
   { value: "每 7 天", label: "权限审核周期", tone: "default" },
 ] as const;
@@ -248,4 +248,3 @@ export const faqs = [
       "资料仅用于验证注册关系与指标开通审核。正式提交前请阅读隐私说明，并确认页面已连接安全的提交服务。",
   },
 ] as const;
-
