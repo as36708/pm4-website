@@ -1,8 +1,11 @@
 "use client";
 
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useState } from "react";
+import SplitText from "./components/SplitText";
 import {
   accessRules,
+  desktopAccessRules,
+  desktopFaqs,
   exchanges,
   faqs,
   heroStats,
@@ -12,107 +15,65 @@ import {
 
 type FormErrors = Record<string, string>;
 
-const candles = [
-  [67, 6, 1, -10, 27],
-  [62, 7, 1, -8, 24],
-  [65, 4, 0, -9, 23],
-  [59, 6, 1, -12, 29],
-  [55, 5, 1, -8, 22],
-  [50, 7, 1, -11, 27],
-  [53, 4, 0, -8, 20],
-  [47, 6, 1, -13, 30],
-  [43, 5, 1, -9, 23],
-  [38, 7, 1, -11, 29],
-  [41, 4, 0, -8, 21],
-  [35, 6, 1, -10, 26],
-  [32, 5, 1, -12, 28],
-  [28, 7, 1, -9, 25],
-  [31, 4, 0, -8, 21],
-  [26, 6, 1, -11, 28],
-  [29, 5, 0, -9, 24],
-  [34, 7, 0, -12, 30],
-  [39, 5, 0, -8, 22],
-  [37, 4, 1, -7, 19],
-  [43, 8, 0, -13, 32],
-  [47, 6, 0, -10, 26],
-  [51, 5, 0, -9, 23],
-  [48, 4, 1, -8, 20],
-  [56, 7, 0, -11, 28],
-] as const;
-
 function SectionHeading({
   eyebrow,
   title,
   description,
   align = "left",
+  animateText = false,
 }: {
   eyebrow: string;
   title: string;
   description?: string;
   align?: "left" | "center";
+  animateText?: boolean;
 }) {
   return (
     <div className={`section-heading ${align === "center" ? "center" : ""}`}>
       <p className="eyebrow"><span />{eyebrow}</p>
-      <h2>{title}</h2>
-      {description && <p className="section-copy">{description}</p>}
+      {animateText ? (
+        <SplitText
+          tag="h2"
+          text={title}
+          delay={34}
+          duration={0.68}
+          ease="power3.out"
+          splitType="chars"
+          from={{ opacity: 0, y: 32 }}
+          to={{ opacity: 1, y: 0 }}
+          threshold={0.12}
+          rootMargin="-70px"
+          textAlign={align}
+        />
+      ) : (
+        <h2>{title}</h2>
+      )}
+      {description && (
+        animateText ? (
+          <SplitText
+            tag="p"
+            text={description}
+            className="section-copy"
+            delay={10}
+            duration={0.5}
+            ease="power3.out"
+            splitType="words"
+            from={{ opacity: 0, y: 14 }}
+            to={{ opacity: 1, y: 0 }}
+            threshold={0.12}
+            rootMargin="-60px"
+            textAlign={align}
+          />
+        ) : (
+          <p className="section-copy">{description}</p>
+        )
+      )}
     </div>
   );
 }
 
 function ArrowIcon() {
   return <span className="arrow-icon" aria-hidden="true">↗</span>;
-}
-
-function TradingChart({ mode = "support" }: { mode?: string }) {
-  return (
-    <div className={`trading-chart chart-${mode}`} aria-label="PM4 指标图表预览">
-      <div className="chart-head">
-        <div className="symbol">
-          <span className="coin-mark">₿</span>
-          <div><strong>BTC / USDT</strong><small>PERPETUAL · 4H</small></div>
-        </div>
-        <div className="live-price"><small>当前参考</small><strong>67,428.3</strong></div>
-      </div>
-      <div className="chart-stage">
-        <div className="chart-grid" />
-        <div className="zone zone-resistance"><span>阻力区域</span></div>
-        <div className="zone zone-support"><span>支撑区域</span></div>
-        <div className="current-price-line"><span>67,428.3</span></div>
-        {mode === "breakout" && <div className="breakout-mark">突破确认</div>}
-        {mode === "multi" && <div className="multi-badge">1H · 4H · 1D</div>}
-        <div className="candles" aria-hidden="true">
-          {candles.map((candle, index) => {
-            const [top, height, up, wickOffset, wickHeight] = candle;
-            return (
-              <span
-                className={`candle ${up ? "up" : "down"}`}
-                key={index}
-                style={{
-                  "--x": `${2.5 + index * 3.65}%`,
-                  "--top": `${top}%`,
-                  "--height": `${height}%`,
-                  "--wick-offset": `${wickOffset}px`,
-                  "--wick-height": `${wickHeight}px`,
-                } as React.CSSProperties}
-              />
-            );
-          })}
-        </div>
-        <div className="price-axis">
-          <span>69,800</span><span>69,200</span><span>68,600</span><span>68,000</span><span>67,400</span><span>66,800</span>
-        </div>
-        <div className="time-axis">
-          <span>09:00</span><span>12:00</span><span>15:00</span><span>18:00</span><span>21:00</span>
-        </div>
-      </div>
-      <div className="chart-foot">
-        <span><i className="legend-dot red" /> PM4 阻力</span>
-        <span><i className="legend-dot green" /> PM4 支撑</span>
-        <span className="chart-status">MARKET OPEN</span>
-      </div>
-    </div>
-  );
 }
 
 function Header({
@@ -169,7 +130,7 @@ function ExchangeRow({
 
   return (
     <article
-      className={`exchange-table-row ${exchange.featured ? "featured" : ""}`}
+      className={`exchange-table-row mobile-exchange-only ${exchange.featured ? "featured" : ""}`}
       role="row"
     >
       <div className="exchange-cell exchange-main" role="cell">
@@ -218,7 +179,7 @@ function ExchangeRow({
             className="button exchange-register"
             href={exchange.registerUrl}
             target="_blank"
-            rel="noreferrer"
+            rel="noopener noreferrer"
           >
             立即注册
           </a>
@@ -227,11 +188,26 @@ function ExchangeRow({
               暂未开放
             </button>
         )}
-          {exchange.transferUrl ? (
+          {exchange.transferUrl?.startsWith("http") ? (
+            <a
+              className="button exchange-transfer"
+              href={exchange.transferUrl}
+              target="_blank"
+              rel="noopener noreferrer"
+            >
+              身份转移
+            </a>
+          ) : exchange.transferUrl ? (
             <button
               className="button exchange-transfer"
               type="button"
-              onClick={() => onTransfer(exchange.name)}
+              onClick={() => {
+                if (exchange.transferUrl === "#support") {
+                  window.dispatchEvent(new Event("pm4:open-support"));
+                  return;
+                }
+                onTransfer(exchange.name);
+              }}
             >
               身份转移
             </button>
@@ -241,6 +217,88 @@ function ExchangeRow({
             </button>
           )}
         </div>
+      </div>
+    </article>
+  );
+}
+
+function DesktopExchangeRow({
+  exchange,
+  onTransfer,
+}: {
+  exchange: (typeof exchanges)[number];
+  onTransfer: (name: string) => void;
+}) {
+  return (
+    <article
+      className={`exchange-table-row desktop-exchange-row desktop-exchange-only reveal ${exchange.desktopFeatured ? "featured" : ""}`}
+      role="row"
+    >
+      <div className="exchange-cell desktop-exchange-main" role="cell">
+        <div className="exchange-logo">
+          <img src={exchange.logo} alt={`${exchange.name} Logo`} />
+        </div>
+        <h3>{exchange.name}</h3>
+      </div>
+
+      <div className="exchange-cell desktop-exchange-rebate" role="cell">
+        <strong>
+          <span>{exchange.rebate.replace("%", "")}</span>
+          <small>%</small>
+        </strong>
+      </div>
+
+      <div className="exchange-cell desktop-exchange-fee" role="cell">
+        <strong>{exchange.makerFee}</strong>
+      </div>
+
+      <div className="exchange-cell desktop-exchange-fee" role="cell">
+        <strong>{exchange.takerFee}</strong>
+      </div>
+
+      <div className="exchange-cell desktop-exchange-action" role="cell">
+        {exchange.registerUrl ? (
+          <a
+            className="button exchange-register"
+            href={exchange.registerUrl}
+            target="_blank"
+            rel="noopener noreferrer"
+          >
+            立即注册
+          </a>
+        ) : (
+          <button className="button exchange-register" type="button" disabled>
+            立即注册
+          </button>
+        )}
+      </div>
+
+      <div className="exchange-cell desktop-exchange-action" role="cell">
+        {exchange.transferUrl?.startsWith("http") ? (
+          <a
+            className="button exchange-transfer"
+            href={exchange.transferUrl}
+            target="_blank"
+            rel="noopener noreferrer"
+          >
+            身份转移
+          </a>
+        ) : (
+          <button
+            className="button exchange-transfer"
+            type="button"
+            disabled={!exchange.transferUrl}
+            onClick={() => {
+              if (exchange.transferUrl === "#support") {
+                window.dispatchEvent(new Event("pm4:open-support"));
+                return;
+              }
+              if (exchange.transferUrl) onTransfer(exchange.name);
+            }}
+          >
+            身份转移
+          </button>
+        )}
       </div>
     </article>
   );
@@ -303,7 +361,11 @@ TradingView 用户名：${tradingViewUser.trim()}
     }
   };
 
-  const discordConfigured = /^https?:\/\//.test(siteConfig.discordReviewUrl);
+  const reviewPreview = `${siteConfig.copyTemplateTitle}
+
+交易所：${exchange || "—"}
+交易所 UID：${uid.trim() || "—"}
+TradingView 用户名：${tradingViewUser.trim() || "—"}`;
 
   return (
     <form className="application-form" onSubmit={(event) => event.preventDefault()} noValidate>
@@ -362,33 +424,32 @@ TradingView 用户名：${tradingViewUser.trim()}
         </label>
       </div>
 
+      <div className="review-preview" aria-live="polite">
+        <strong>审核信息预览</strong>
+        <pre>{reviewPreview}</pre>
+      </div>
+
       <div className="review-actions">
         <button className="button copy-review-button" type="button" onClick={copyReviewInfo}>
           <span className="copy-icon" aria-hidden="true"><i /><i /></span>
           {copyButtonCopied ? "已复制" : "复制审核信息"}
         </button>
-        {discordConfigured ? (
-          <a
-            className="button discord-review-button"
-            href={siteConfig.discordReviewUrl}
-            target="_blank"
-            rel="noopener noreferrer"
-            onClick={(event) => {
-              if (!hasCopied && !discordPrompted) {
-                event.preventDefault();
-                setDiscordPrompted(true);
-                setMessageTone("warning");
-                setMessage("请先填写资料并复制审核信息，再前往 Discord 提交。");
-              }
-            }}
-          >
-            前往 Discord 审核 <span aria-hidden="true">↗</span>
-          </a>
-        ) : (
-          <button className="button discord-review-button" type="button" disabled>
-            Discord 链接待配置
-          </button>
-        )}
+        <a
+          className="button discord-review-button"
+          href={siteConfig.discordReviewUrl}
+          target="_blank"
+          rel="noopener noreferrer"
+          onClick={(event) => {
+            if (!hasCopied && !discordPrompted) {
+              event.preventDefault();
+              setDiscordPrompted(true);
+              setMessageTone("warning");
+              setMessage("请先填写资料并复制审核信息，再前往 Discord 提交。");
+            }
+          }}
+        >
+          前往 Discord 审核 <span aria-hidden="true">↗</span>
+        </a>
       </div>
       {message && <p className={`review-message ${messageTone}`} role="status">{message}</p>}
     </form>
@@ -397,41 +458,160 @@ TradingView 用户名：${tradingViewUser.trim()}
 
 function SupportWidget() {
   const [open, setOpen] = useState(false);
-  const configured = useMemo(
-    () => Object.entries(siteConfig.contacts).filter(([, value]) => Boolean(value)),
-    [],
-  );
+  const [discordHelpOpen, setDiscordHelpOpen] = useState(false);
+  const supportLinks = [
+    {
+      key: "discord",
+      label: "Discord 联系",
+      icon: "",
+      iconSrc: "/icons/discord.svg?v=2",
+      href: siteConfig.contacts.discord as string | null,
+    },
+    {
+      key: "telegram",
+      label: "Telegram 联系",
+      icon: "",
+      iconSrc: "/icons/telegram.svg",
+      href: siteConfig.contacts.telegram as string | null,
+    },
+    {
+      key: "email",
+      label: "邮箱咨询",
+      icon: "@",
+      iconSrc: null,
+      href: siteConfig.contacts.email as string | null,
+    },
+  ];
+
+  useEffect(() => {
+    const showSupportPanel = () => setOpen(true);
+    window.addEventListener("pm4:open-support", showSupportPanel);
+    return () => window.removeEventListener("pm4:open-support", showSupportPanel);
+  }, []);
+
+  useEffect(() => {
+    if (!discordHelpOpen) return;
+    const closeOnEscape = (event: KeyboardEvent) => {
+      if (event.key === "Escape") setDiscordHelpOpen(false);
+    };
+    document.addEventListener("keydown", closeOnEscape);
+    return () => document.removeEventListener("keydown", closeOnEscape);
+  }, [discordHelpOpen]);
+
   return (
-    <div className={`support-widget ${open ? "open" : ""}`}>
-      <div className="support-panel">
-        <strong>联系 PM4</strong>
-        {configured.length ? (
-          configured.map(([key, value]) => <a key={key} href={String(value)}>{key}</a>)
-        ) : (
-          <p>客服渠道正在配置中，请稍后查看。</p>
-        )}
+    <>
+      <div className={`support-widget ${open ? "open" : ""}`}>
+        <div className="support-panel desktop-support-panel">
+          <strong>联系 PM4 助理</strong>
+          <p>提交问题后，PM4 助理会尽快回复。</p>
+          <div className="support-links">
+            {supportLinks.filter((item) => Boolean(item.href)).map((item) => (
+              item.key === "discord" ? (
+                <button
+                  key={item.key}
+                  type="button"
+                  onClick={() => {
+                    setOpen(false);
+                    setDiscordHelpOpen(true);
+                  }}
+                >
+                  <span aria-hidden="true">
+                    {item.iconSrc ? <img src={item.iconSrc} alt="" /> : item.icon}
+                  </span>
+                  <em>{item.label}</em>
+                </button>
+              ) : item.href ? (
+                <a href={item.href} key={item.key} target="_blank" rel="noopener noreferrer">
+                  <span aria-hidden="true">
+                    {item.iconSrc ? <img src={item.iconSrc} alt="" /> : item.icon}
+                  </span>
+                  <em>{item.label}</em>
+                </a>
+              ) : null
+            ))}
+          </div>
+        </div>
+        <div className="support-panel mobile-support-panel">
+          <strong>联系 PM4 助理</strong>
+          {supportLinks.filter((item) => Boolean(item.href)).map((item) => (
+            <a
+              key={item.key}
+              href={item.href as string}
+              target="_blank"
+              rel="noopener noreferrer"
+            >
+              {item.label}
+            </a>
+          ))}
+        </div>
+        <button
+          className="support-button"
+          type="button"
+          aria-label={open ? "关闭客服入口" : "打开客服入口"}
+          aria-expanded={open}
+          onClick={() => setOpen(!open)}
+        >
+          <span className="support-chat-icon desktop-support-icon" aria-hidden="true" />
+          <span className="support-question mobile-support-icon" aria-hidden="true">?</span>
+          <em className="desktop-support-label">联系助理</em>
+          <em className="mobile-support-label">客服</em>
+        </button>
       </div>
-      <button
-        className="support-button"
-        type="button"
-        aria-label="打开客服入口"
-        aria-expanded={open}
-        onClick={() => setOpen(!open)}
-      >
-        <span>?</span><em>客服</em>
-      </button>
-    </div>
+
+      {discordHelpOpen && (
+        <div
+          className="discord-help-modal"
+          role="presentation"
+          onMouseDown={(event) => {
+            if (event.target === event.currentTarget) setDiscordHelpOpen(false);
+          }}
+        >
+          <div
+            className="discord-help-dialog"
+            role="dialog"
+            aria-modal="true"
+            aria-labelledby="discord-help-title"
+          >
+            <button
+              className="discord-help-close"
+              type="button"
+              aria-label="关闭 Discord 联系说明"
+              onClick={() => setDiscordHelpOpen(false)}
+            >
+              ×
+            </button>
+            <span className="discord-help-icon" aria-hidden="true">
+              <img src="/icons/discord.svg?v=2" alt="" />
+            </span>
+            <h3 id="discord-help-title">Discord 联系</h3>
+            <p>请在「联系助理」频道留言，或点击 PM4 助理头像发送私信。</p>
+            <a
+              className="discord-help-action"
+              href={siteConfig.discordReviewUrl}
+              target="_blank"
+              rel="noopener noreferrer"
+            >
+              前往 Discord <span aria-hidden="true">→</span>
+            </a>
+          </div>
+        </div>
+      )}
+    </>
   );
 }
 
 export default function Home() {
   const [menuOpen, setMenuOpen] = useState(false);
-  const [selectedExchange, setSelectedExchange] = useState("WEEX");
+  const [selectedExchange, setSelectedExchange] = useState("Bybit");
 
   useEffect(() => {
     const reveal = new IntersectionObserver(
       (entries) => entries.forEach((entry) => {
-        if (entry.isIntersecting) entry.target.classList.add("visible");
+        if (entry.isIntersecting) {
+          entry.target.classList.add("visible");
+        } else if (entry.target.classList.contains("desktop-exchange-row")) {
+          entry.target.classList.remove("visible");
+        }
       }),
       { threshold: 0.12 },
     );
@@ -441,7 +621,7 @@ export default function Home() {
 
   const chooseExchange = (name: string) => {
     setSelectedExchange(name);
-    requestAnimationFrame(() => document.querySelector("#submit")?.scrollIntoView({ behavior: "smooth" }));
+    requestAnimationFrame(() => document.querySelector("#indicator-review")?.scrollIntoView({ behavior: "smooth" }));
   };
 
   return (
@@ -454,22 +634,74 @@ export default function Home() {
             <div className="hero-copy">
               <p className="eyebrow"><span /> PM4 专属交易工具</p>
               <h1>
-                <span className="hero-title-line">降低交易成本</span>
+                <span className="hero-title-line">
+                  <SplitText
+                    tag="span"
+                    text="降低交易成本"
+                    className="hero-split-segment"
+                    delay={34}
+                    duration={0.7}
+                    ease="power3.out"
+                    splitType="chars"
+                    from={{ opacity: 0, y: 36 }}
+                    to={{ opacity: 1, y: 0 }}
+                    threshold={0.12}
+                    rootMargin="-70px"
+                    textAlign="left"
+                  />
+                </span>
                 <span className="hero-title-line hero-title-second">
-                  <em>免费获得</em><span>专属指标</span>
+                  <SplitText
+                    tag="span"
+                    text="免费获得"
+                    className="hero-split-segment hero-title-accent"
+                    delay={34}
+                    duration={0.7}
+                    ease="power3.out"
+                    splitType="chars"
+                    from={{ opacity: 0, y: 36 }}
+                    to={{ opacity: 1, y: 0 }}
+                    threshold={0.12}
+                    rootMargin="-70px"
+                    textAlign="left"
+                  />
+                  <SplitText
+                    tag="span"
+                    text="专属指标"
+                    className="hero-split-segment"
+                    delay={34}
+                    duration={0.7}
+                    ease="power3.out"
+                    splitType="chars"
+                    from={{ opacity: 0, y: 36 }}
+                    to={{ opacity: 1, y: 0 }}
+                    threshold={0.12}
+                    rootMargin="-70px"
+                    textAlign="left"
+                  />
                 </span>
               </h1>
-              <p className="hero-lead">
-                通过 PM4 专属链接注册合作交易所，在享受手续费优惠的同时，
-                满足审核条件即可免费开通 TradingView 支撑阻力位指标。
-              </p>
+              <SplitText
+                tag="p"
+                text="通过 PM4 专属链接注册合作交易所，最高可享 33% 手续费返佣；满足当前活动审核条件后，还可免费开通 TradingView 支撑阻力位指标。"
+                className="hero-lead"
+                delay={9}
+                duration={0.5}
+                ease="power3.out"
+                splitType="words"
+                from={{ opacity: 0, y: 14 }}
+                to={{ opacity: 1, y: 0 }}
+                threshold={0.12}
+                rootMargin="-60px"
+                textAlign="left"
+              />
               <div className="hero-actions">
                 <a className="button premium-cta" href="#exchanges">
-                  <span>选择交易所</span>
+                  <span>领取专属指标</span>
                   <span className="premium-cta__arrow" aria-hidden="true">→</span>
                   <ArrowIcon />
                 </a>
-                <a className="button secondary" href="#process">查看开通流程 <span>↓</span></a>
+                <a className="button secondary" href="#exchanges">查看手续费返佣 <span>↓</span></a>
               </div>
               <p className="trust-line">
                 <span>无需购买指标</span><i /> <span>提交 UID 审核</span><i /> <span>权限定期更新</span>
@@ -477,17 +709,37 @@ export default function Home() {
             </div>
             <div className="hero-visual">
               <div className="terminal-label"><i /> PM4 INDICATOR · LIVE PREVIEW</div>
-              <TradingChart />
-              <div className="signal-card signal-two">
-                <span>关键区域</span><strong>67,120 — 67,480</strong>
+              <div className="hero-video-frame">
+                <video
+                  className="hero-preview-video"
+                  autoPlay
+                  muted
+                  loop
+                  playsInline
+                  preload="metadata"
+                  aria-label="PM4 专属指标演示视频"
+                >
+                  <source src="/videos/pm4-indicator-preview.mp4" type="video/mp4" />
+                </video>
               </div>
             </div>
           </div>
           <div className="container stats-grid">
-            {heroStats.map((stat) => (
+            {heroStats.map((stat, index) => (
               <div className="stat" key={stat.label}>
-                <strong className={stat.tone === "accent" ? "accent-text" : ""}>{stat.value}</strong>
-                <span>{stat.label}</span>
+                {index === 0 ? (
+                  <>
+                    <strong className="desktop-stat-copy">交易返佣</strong>
+                    <span className="desktop-stat-copy">降低每笔交易成本</span>
+                    <strong className="mobile-stat-copy">{stat.value}</strong>
+                    <span className="mobile-stat-copy">{stat.label}</span>
+                  </>
+                ) : (
+                  <>
+                    <strong className={stat.tone === "accent" ? "accent-text" : ""}>{stat.value}</strong>
+                    <span>{stat.label}</span>
+                  </>
+                )}
               </div>
             ))}
           </div>
@@ -526,11 +778,71 @@ export default function Home() {
                 eyebrow="支持交易所"
                 title="选择你使用的交易所"
                 description="不同平台的返佣比例、身份转移规则和指标审核条件可能不同，请根据你的账户情况选择。"
+                animateText
               />
-              <div className="availability"><i /> 当前开放 4 个申请通道</div>
+              <div className="exchange-heading-side">
+                <div className="exchange-heading-actions">
+                  <a className="exchange-review-cta" href="#indicator-review">
+                    <span>已经注册？提交指标审核</span>
+                    <span className="exchange-review-arrow" aria-hidden="true">→</span>
+                  </a>
+                  <a
+                    className="exchange-discord-cta"
+                    href={siteConfig.discordCommunityUrl}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                  >
+                    <img src="/icons/discord.svg" alt="" aria-hidden="true" />
+                    <span>加入 Discord</span>
+                    <span className="exchange-discord-arrow" aria-hidden="true">↗</span>
+                  </a>
+                </div>
+                <p className="exchange-review-help">
+                  完成注册或身份转移后，在此提交 UID 与 TradingView 用户名。
+                </p>
+              </div>
+            </div>
+            <div
+              className="exchange-marquee desktop-exchange-only"
+              role="note"
+              aria-label="Bybit 返佣 33%，其他平台返佣 30%，支持身份转移，完成审核可领取 PM4 指标，每 7 天审核续期"
+            >
+              <div className="exchange-marquee-track" aria-hidden="true">
+                {[0, 1].map((copy) => (
+                  <div className="exchange-marquee-group" key={copy}>
+                    <span>Bybit 返佣 <strong>33%</strong></span>
+                    <i>·</i>
+                    <span>其他平台返佣 <strong>30%</strong></span>
+                    <i>·</i>
+                    <span>支持身份转移</span>
+                    <i>·</i>
+                    <span>完成审核可领取 PM4 指标</span>
+                    <i>·</i>
+                    <span>每 7 天审核续期</span>
+                    <i>·</i>
+                  </div>
+                ))}
+              </div>
             </div>
             <div className="exchange-table" role="table" aria-label="交易所返佣与指标资格">
-              <div className="exchange-table-head" role="row">
+              <div className="exchange-table-head desktop-exchange-head desktop-exchange-only" role="row">
+                <span role="columnheader">交易所</span>
+                <span role="columnheader">手续费返佣</span>
+                <span role="columnheader">挂单费率</span>
+                <span role="columnheader">吃单费率</span>
+                <span role="columnheader">立即注册</span>
+                <span role="columnheader">身份转移</span>
+              </div>
+              {[...exchanges]
+                .sort((a, b) => a.desktopOrder - b.desktopOrder)
+                .map((exchange) => (
+                  <DesktopExchangeRow
+                    key={`desktop-${exchange.name}`}
+                    exchange={exchange}
+                    onTransfer={chooseExchange}
+                  />
+                ))}
+              <div className="exchange-table-head mobile-exchange-only" role="row">
                 <span role="columnheader">交易所</span>
                 <span role="columnheader">返佣比例</span>
                 <span role="columnheader">新用户</span>
@@ -561,7 +873,12 @@ export default function Home() {
                 不同交易所的活动规则、交易量要求和体验期限可能不同，请以对应交易所页面显示的最新规则为准。
               </div>
             </div>
-            <ol className="rules-list">
+            <ol className="rules-list desktop-rules-list desktop-rules-only">
+              {desktopAccessRules.map((rule, index) => (
+                <li key={rule}><span>{String(index + 1).padStart(2, "0")}</span><p>{rule}</p></li>
+              ))}
+            </ol>
+            <ol className="rules-list mobile-rules-only">
               {accessRules.map((rule, index) => (
                 <li key={rule}><span>{String(index + 1).padStart(2, "0")}</span><p>{rule}</p></li>
               ))}
@@ -570,7 +887,7 @@ export default function Home() {
         </section>
 
         <section className="section submit-section reveal" id="submit">
-          <div className="container submit-layout">
+          <div className="container submit-layout" id="indicator-review">
             <div className="submit-intro">
               <SectionHeading
                 eyebrow="资料审核"
@@ -583,10 +900,34 @@ export default function Home() {
                   <strong>审核步骤</strong>
                 </div>
                 <ol>
-                  <li><span>1</span><p>填写交易所、UID 和 TradingView 用户名</p></li>
-                  <li><span>2</span><p>点击复制审核信息</p></li>
-                  <li><span>3</span><p>前往 Discord 指定频道</p></li>
-                  <li><span>4</span><p>粘贴信息并等待审核结果</p></li>
+                  <li>
+                    <span>1</span>
+                    <p>
+                      <span className="desktop-submit-copy">选择交易所并填写 UID</span>
+                      <span className="mobile-submit-copy">填写交易所、UID 和 TradingView 用户名</span>
+                    </p>
+                  </li>
+                  <li>
+                    <span>2</span>
+                    <p>
+                      <span className="desktop-submit-copy">填写 TradingView 用户名</span>
+                      <span className="mobile-submit-copy">点击复制审核信息</span>
+                    </p>
+                  </li>
+                  <li>
+                    <span>3</span>
+                    <p>
+                      <span className="desktop-submit-copy">复制审核信息</span>
+                      <span className="mobile-submit-copy">前往 Discord 指定频道</span>
+                    </p>
+                  </li>
+                  <li>
+                    <span>4</span>
+                    <p>
+                      <span className="desktop-submit-copy">前往 Discord 粘贴提交</span>
+                      <span className="mobile-submit-copy">粘贴信息并等待审核结果</span>
+                    </p>
+                  </li>
                 </ol>
                 <p className="sensitive-warning">
                   <span aria-hidden="true">!</span>
@@ -605,7 +946,15 @@ export default function Home() {
               title="开始之前，你可能想知道"
               description="简明说明注册、审核、权限与风险问题。"
             />
-            <div className="faq-list">
+            <div className="faq-list desktop-faq-list desktop-faq-only">
+              {desktopFaqs.map((faq, index) => (
+                <details key={faq.question} open={index === 0}>
+                  <summary>{faq.question}<span>+</span></summary>
+                  <p>{faq.answer}</p>
+                </details>
+              ))}
+            </div>
+            <div className="faq-list mobile-faq-only">
               {faqs.map((faq, index) => (
                 <details key={faq.question} open={index === 0}>
                   <summary>{faq.question}<span>+</span></summary>
@@ -632,7 +981,6 @@ export default function Home() {
         <div className="container footer-bottom">
           <span>© {new Date().getFullYear()} PM4. All rights reserved.</span>
           <nav aria-label="页脚导航">
-            <a href="#risk">隐私政策</a><a href="#risk">服务条款</a>
             <a href="#risk">风险披露</a><button type="button" onClick={() => document.querySelector(".support-button")?.dispatchEvent(new MouseEvent("click", { bubbles: true }))}>联系我们</button>
           </nav>
         </div>
