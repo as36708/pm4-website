@@ -114,6 +114,96 @@ function Header({
   );
 }
 
+function PhoneExchangeRow({
+  exchange,
+  onTransfer,
+}: {
+  exchange: (typeof exchanges)[number];
+  onTransfer: (name: string) => void;
+}) {
+  return (
+    <article
+      className={`exchange-table-row phone-exchange-only ${exchange.desktopFeatured ? "featured" : ""}`}
+      role="row"
+    >
+      <div className="exchange-cell exchange-main" role="cell">
+        <div className="exchange-logo">
+          <img src={exchange.logo} alt={`${exchange.name} Logo`} />
+        </div>
+        <div className="exchange-identity">
+          <div className="exchange-name-line">
+            <h3>{exchange.name}</h3>
+            {exchange.desktopFeatured && <span className="recommended">首推</span>}
+          </div>
+        </div>
+      </div>
+
+      <div className="exchange-cell exchange-rebate" role="cell">
+        <span className="exchange-mobile-label">手续费返佣</span>
+        <strong>{exchange.rebate}</strong>
+      </div>
+
+      <div className="exchange-cell exchange-fee-cell" role="cell">
+        <span className="exchange-mobile-label">挂单费率</span>
+        <strong>{exchange.makerFee}</strong>
+      </div>
+
+      <div className="exchange-cell exchange-fee-cell" role="cell">
+        <span className="exchange-mobile-label">吃单费率</span>
+        <strong>{exchange.takerFee}</strong>
+      </div>
+
+      <div className="exchange-cell exchange-actions-cell" role="cell">
+        <span className="exchange-mobile-label">操作</span>
+        <div className="exchange-actions">
+          {exchange.registerUrl ? (
+          <a
+            className="button exchange-register"
+            href={exchange.registerUrl}
+            target="_blank"
+            rel="noopener noreferrer"
+          >
+            立即注册
+          </a>
+        ) : (
+            <button className="button exchange-register" type="button" disabled>
+              暂未开放
+            </button>
+        )}
+          {exchange.transferUrl?.startsWith("http") ? (
+            <a
+              className="button exchange-transfer"
+              href={exchange.transferUrl}
+              target="_blank"
+              rel="noopener noreferrer"
+            >
+              身份转移
+            </a>
+          ) : exchange.transferUrl ? (
+            <button
+              className="button exchange-transfer"
+              type="button"
+              onClick={() => {
+                if (exchange.transferUrl === "#support") {
+                  window.dispatchEvent(new Event("pm4:open-support"));
+                  return;
+                }
+                onTransfer(exchange.name);
+              }}
+            >
+              身份转移
+            </button>
+          ) : (
+            <button className="button exchange-transfer" type="button" disabled>
+              身份转移
+            </button>
+          )}
+        </div>
+      </div>
+    </article>
+  );
+}
+
 function ExchangeRow({
   exchange,
   onTransfer,
@@ -130,7 +220,7 @@ function ExchangeRow({
 
   return (
     <article
-      className={`exchange-table-row mobile-exchange-only ${exchange.featured ? "featured" : ""}`}
+      className={`exchange-table-row mobile-exchange-only tablet-exchange-only ${exchange.featured ? "featured" : ""}`}
       role="row"
     >
       <div className="exchange-cell exchange-main" role="cell">
@@ -175,19 +265,19 @@ function ExchangeRow({
         <span className="exchange-mobile-label">操作</span>
         <div className="exchange-actions">
           {exchange.registerUrl ? (
-          <a
-            className="button exchange-register"
-            href={exchange.registerUrl}
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            立即注册
-          </a>
-        ) : (
+            <a
+              className="button exchange-register"
+              href={exchange.registerUrl}
+              target="_blank"
+              rel="noopener noreferrer"
+            >
+              立即注册
+            </a>
+          ) : (
             <button className="button exchange-register" type="button" disabled>
               暂未开放
             </button>
-        )}
+          )}
           {exchange.transferUrl?.startsWith("http") ? (
             <a
               className="button exchange-transfer"
@@ -531,7 +621,7 @@ function SupportWidget() {
             ))}
           </div>
         </div>
-        <div className="support-panel mobile-support-panel">
+        <div className="support-panel mobile-support-panel tablet-support-panel">
           <strong>联系 PM4 助理</strong>
           {supportLinks.filter((item) => Boolean(item.href)).map((item) => (
             <a
@@ -544,6 +634,36 @@ function SupportWidget() {
             </a>
           ))}
         </div>
+        <div className="support-panel phone-support-panel">
+          <strong>联系 PM4 助理</strong>
+          <p>提交问题后，PM4 助理会尽快回复。</p>
+          <div className="support-links">
+            {supportLinks.filter((item) => Boolean(item.href)).map((item) => (
+              item.key === "discord" ? (
+                <button
+                  key={item.key}
+                  type="button"
+                  onClick={() => {
+                    setOpen(false);
+                    setDiscordHelpOpen(true);
+                  }}
+                >
+                  <span aria-hidden="true">
+                    {item.iconSrc ? <img src={item.iconSrc} alt="" /> : item.icon}
+                  </span>
+                  <em>{item.label}</em>
+                </button>
+              ) : item.href ? (
+                <a href={item.href} key={item.key} target="_blank" rel="noopener noreferrer">
+                  <span aria-hidden="true">
+                    {item.iconSrc ? <img src={item.iconSrc} alt="" /> : item.icon}
+                  </span>
+                  <em>{item.label}</em>
+                </a>
+              ) : null
+            ))}
+          </div>
+        </div>
         <button
           className="support-button"
           type="button"
@@ -553,8 +673,10 @@ function SupportWidget() {
         >
           <span className="support-chat-icon desktop-support-icon" aria-hidden="true" />
           <span className="support-question mobile-support-icon" aria-hidden="true">?</span>
+          <span className="support-chat-icon phone-support-icon" aria-hidden="true" />
           <em className="desktop-support-label">联系助理</em>
           <em className="mobile-support-label">客服</em>
+          <em className="phone-support-label">联系助理</em>
         </button>
       </div>
 
@@ -617,6 +739,27 @@ export default function Home() {
     );
     document.querySelectorAll(".reveal").forEach((element) => reveal.observe(element));
     return () => reveal.disconnect();
+  }, []);
+
+  useEffect(() => {
+    const alignMobileReviewAnchor = () => {
+      if (window.innerWidth > 700 || window.location.hash !== "#indicator-review") return;
+      requestAnimationFrame(() => {
+        requestAnimationFrame(() => {
+          document.querySelector("#indicator-review")?.scrollIntoView({ block: "start" });
+        });
+      });
+    };
+
+    alignMobileReviewAnchor();
+    const settleTimer = window.setTimeout(alignMobileReviewAnchor, 700);
+    const finalTimer = window.setTimeout(alignMobileReviewAnchor, 1400);
+    window.addEventListener("hashchange", alignMobileReviewAnchor);
+    return () => {
+      window.clearTimeout(settleTimer);
+      window.clearTimeout(finalTimer);
+      window.removeEventListener("hashchange", alignMobileReviewAnchor);
+    };
   }, []);
 
   const chooseExchange = (name: string) => {
@@ -733,6 +876,8 @@ export default function Home() {
                     <span className="desktop-stat-copy">降低每笔交易成本</span>
                     <strong className="mobile-stat-copy">{stat.value}</strong>
                     <span className="mobile-stat-copy">{stat.label}</span>
+                    <strong className="phone-stat-copy">交易返佣</strong>
+                    <span className="phone-stat-copy">降低每笔交易成本</span>
                   </>
                 ) : (
                   <>
@@ -851,8 +996,13 @@ export default function Home() {
                 <span role="columnheader">操作</span>
               </div>
               {exchanges.map((exchange) => (
-                <ExchangeRow key={exchange.name} exchange={exchange} onTransfer={chooseExchange} />
+                <ExchangeRow key={`tablet-${exchange.name}`} exchange={exchange} onTransfer={chooseExchange} />
               ))}
+              {[...exchanges]
+                .sort((a, b) => a.desktopOrder - b.desktopOrder)
+                .map((exchange) => (
+                  <PhoneExchangeRow key={`phone-${exchange.name}`} exchange={exchange} onTransfer={chooseExchange} />
+                ))}
             </div>
             <p className="exchange-disclaimer">
               <span aria-hidden="true">i</span>
@@ -883,6 +1033,11 @@ export default function Home() {
                 <li key={rule}><span>{String(index + 1).padStart(2, "0")}</span><p>{rule}</p></li>
               ))}
             </ol>
+            <ol className="rules-list phone-rules-only">
+              {desktopAccessRules.map((rule, index) => (
+                <li key={rule}><span>{String(index + 1).padStart(2, "0")}</span><p>{rule}</p></li>
+              ))}
+            </ol>
           </div>
         </section>
 
@@ -905,6 +1060,7 @@ export default function Home() {
                     <p>
                       <span className="desktop-submit-copy">选择交易所并填写 UID</span>
                       <span className="mobile-submit-copy">填写交易所、UID 和 TradingView 用户名</span>
+                      <span className="phone-submit-copy">选择交易所并填写 UID</span>
                     </p>
                   </li>
                   <li>
@@ -912,6 +1068,7 @@ export default function Home() {
                     <p>
                       <span className="desktop-submit-copy">填写 TradingView 用户名</span>
                       <span className="mobile-submit-copy">点击复制审核信息</span>
+                      <span className="phone-submit-copy">填写 TradingView 用户名</span>
                     </p>
                   </li>
                   <li>
@@ -919,6 +1076,7 @@ export default function Home() {
                     <p>
                       <span className="desktop-submit-copy">复制审核信息</span>
                       <span className="mobile-submit-copy">前往 Discord 指定频道</span>
+                      <span className="phone-submit-copy">复制审核信息</span>
                     </p>
                   </li>
                   <li>
@@ -926,6 +1084,7 @@ export default function Home() {
                     <p>
                       <span className="desktop-submit-copy">前往 Discord 粘贴提交</span>
                       <span className="mobile-submit-copy">粘贴信息并等待审核结果</span>
+                      <span className="phone-submit-copy">前往 Discord 粘贴提交</span>
                     </p>
                   </li>
                 </ol>
