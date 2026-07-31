@@ -464,7 +464,10 @@ export default function Home() {
                 满足审核条件即可免费开通 TradingView 支撑阻力位指标。
               </p>
               <div className="hero-actions">
-                <a className="button" href="#exchanges">选择交易所 <ArrowIcon /></a>
+                <a className="premium-cta" href="#exchanges">
+                  <span>选择交易所</span>
+                  <span className="premium-cta__arrow" aria-hidden="true">→</span>
+                </a>
                 <a className="button secondary" href="#process">查看开通流程 <span>↓</span></a>
               </div>
               <p className="trust-line">
