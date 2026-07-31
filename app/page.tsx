@@ -17,23 +17,31 @@ import {
 type FormErrors = Record<string, string>;
 
 const candles = [
-  [62, 15, 24, 39, 54, 56],
-  [58, 25, 19, 43, 49, 52],
-  [53, 31, 22, 38, 45, 48],
-  [49, 38, 27, 36, 40, 44],
-  [45, 46, 32, 28, 37, 33],
-  [34, 55, 25, 31, 29, 42],
-  [41, 48, 37, 22, 35, 27],
-  [28, 57, 19, 39, 24, 51],
-  [49, 41, 34, 25, 45, 29],
-  [31, 63, 23, 36, 28, 58],
-  [56, 38, 47, 22, 53, 27],
-  [29, 55, 18, 42, 26, 47],
-  [45, 35, 39, 17, 42, 21],
-  [23, 51, 14, 35, 19, 45],
-  [43, 31, 36, 14, 40, 18],
-  [20, 44, 12, 29, 16, 38],
-  [36, 28, 30, 11, 34, 15],
+  [67, 6, 1, -10, 27],
+  [62, 7, 1, -8, 24],
+  [65, 4, 0, -9, 23],
+  [59, 6, 1, -12, 29],
+  [55, 5, 1, -8, 22],
+  [50, 7, 1, -11, 27],
+  [53, 4, 0, -8, 20],
+  [47, 6, 1, -13, 30],
+  [43, 5, 1, -9, 23],
+  [38, 7, 1, -11, 29],
+  [41, 4, 0, -8, 21],
+  [35, 6, 1, -10, 26],
+  [32, 5, 1, -12, 28],
+  [28, 7, 1, -9, 25],
+  [31, 4, 0, -8, 21],
+  [26, 6, 1, -11, 28],
+  [29, 5, 0, -9, 24],
+  [34, 7, 0, -12, 30],
+  [39, 5, 0, -8, 22],
+  [37, 4, 1, -7, 19],
+  [43, 8, 0, -13, 32],
+  [47, 6, 0, -10, 26],
+  [51, 5, 0, -9, 23],
+  [48, 4, 1, -8, 20],
+  [56, 7, 0, -11, 28],
 ] as const;
 
 function SectionHeading({
@@ -74,29 +82,32 @@ function TradingChart({ mode = "support" }: { mode?: string }) {
         <div className="chart-grid" />
         <div className="zone zone-resistance"><span>阻力区域</span></div>
         <div className="zone zone-support"><span>支撑区域</span></div>
+        <div className="current-price-line"><span>67,428.3</span></div>
         {mode === "breakout" && <div className="breakout-mark">突破确认</div>}
         {mode === "multi" && <div className="multi-badge">1H · 4H · 1D</div>}
         <div className="candles" aria-hidden="true">
           {candles.map((candle, index) => {
-            const [top, height, wickTop, wickHeight, open, close] = candle;
-            const up = close < open;
+            const [top, height, up, wickOffset, wickHeight] = candle;
             return (
               <span
                 className={`candle ${up ? "up" : "down"}`}
                 key={index}
                 style={{
-                  "--x": `${4 + index * 5.6}%`,
+                  "--x": `${2.5 + index * 3.65}%`,
                   "--top": `${top}%`,
                   "--height": `${height}%`,
-                  "--wick-top": `${wickTop}%`,
-                  "--wick-height": `${wickHeight}%`,
+                  "--wick-offset": `${wickOffset}px`,
+                  "--wick-height": `${wickHeight}px`,
                 } as React.CSSProperties}
               />
             );
           })}
         </div>
         <div className="price-axis">
-          <span>69,800</span><span>68,600</span><span>67,400</span><span>66,200</span>
+          <span>69,800</span><span>69,200</span><span>68,600</span><span>68,000</span><span>67,400</span><span>66,800</span>
+        </div>
+        <div className="time-axis">
+          <span>09:00</span><span>12:00</span><span>15:00</span><span>18:00</span><span>21:00</span>
         </div>
       </div>
       <div className="chart-foot">
@@ -380,7 +391,12 @@ export default function Home() {
           <div className="container hero-grid">
             <div className="hero-copy">
               <p className="eyebrow"><span /> PM4 专属交易工具</p>
-              <h1>降低交易成本<br /><em>免费获得专属指标</em></h1>
+              <h1>
+                <span className="hero-title-line">降低交易成本</span>
+                <span className="hero-title-line hero-title-second">
+                  <em>免费获得</em><span>专属指标</span>
+                </span>
+              </h1>
               <p className="hero-lead">
                 通过 PM4 专属链接注册合作交易所，在享受手续费优惠的同时，
                 满足审核条件即可免费开通 TradingView 支撑阻力位指标。
@@ -396,9 +412,6 @@ export default function Home() {
             <div className="hero-visual">
               <div className="terminal-label"><i /> PM4 INDICATOR · LIVE PREVIEW</div>
               <TradingChart />
-              <div className="signal-card signal-one">
-                <span>支撑强度</span><strong>ACTIVE</strong>
-              </div>
               <div className="signal-card signal-two">
                 <span>关键区域</span><strong>67,120 — 67,480</strong>
               </div>
