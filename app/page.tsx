@@ -612,16 +612,6 @@ export default function Home() {
           </div>
         </section>
 
-        <section className="final-cta">
-          <div className="container final-cta-inner">
-            <p className="eyebrow"><span /> READY TO START</p>
-            <h2>选择合适的交易所<br />开始你的 <em>PM4</em> 开通流程</h2>
-            <div className="hero-actions">
-              <a className="button" href="#exchanges">选择交易所 <ArrowIcon /></a>
-              <a className="button secondary" href="#submit">已有账户，提交 UID</a>
-            </div>
-          </div>
-        </section>
       </main>
 
       <footer id="risk">
