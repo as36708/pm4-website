@@ -489,7 +489,10 @@ export default function Home() {
               ))}
             </div>
             <p className="section-note">
-              新注册用户可根据当前活动规则获得体验权限，具体规则以页面最新说明为准。
+              <span className="section-note-icon" aria-hidden="true">i</span>
+              <span>
+                新注册用户可根据当前活动规则获得体验权限，具体开通条件与审核标准以对应交易所页面的最新说明为准。
+              </span>
             </p>
           </div>
         </section>

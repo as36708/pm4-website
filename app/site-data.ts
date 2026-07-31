@@ -123,11 +123,11 @@ export const processSteps = [
     step: "01",
     title: "选择交易所",
     description:
-      "通过 PM4 专属邀请链接注册，或先确认现有账户是否支持绑定。",
+      "通过 PM4 专属邀请链接注册合作交易所，或确认现有账户是否支持绑定。",
   },
   {
     step: "02",
-    title: "完成交易并提交资料",
+    title: "提交审核资料",
     description:
       "提交交易所 UID、TradingView 用户名及当前活动要求的审核信息。",
   },
@@ -135,7 +135,7 @@ export const processSteps = [
     step: "03",
     title: "审核并开通指标",
     description:
-      "资料审核通过后，为你的 TradingView 账户添加专属指标权限。",
+      "资料审核通过后，为你的 TradingView 账户添加 PM4 专属指标权限。",
   },
 ] as const;
 
