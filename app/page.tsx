@@ -7,8 +7,6 @@ import {
   exchanges,
   faqs,
   heroStats,
-  indicatorFeatures,
-  indicatorTabs,
   processSteps,
   siteConfig,
   whyPm4,
@@ -390,7 +388,6 @@ function SupportWidget() {
 
 export default function Home() {
   const [menuOpen, setMenuOpen] = useState(false);
-  const [activeTab, setActiveTab] = useState(indicatorTabs[0]);
   const [selectedExchange, setSelectedExchange] = useState("WEEX");
 
   useEffect(() => {
@@ -538,47 +535,6 @@ export default function Home() {
               {exchanges.map((exchange) => (
                 <ExchangeCard key={exchange.name} exchange={exchange} onSubmit={chooseExchange} />
               ))}
-            </div>
-          </div>
-        </section>
-
-        <section className="section indicator-section reveal" id="indicator">
-          <div className="container">
-            <SectionHeading
-              eyebrow="指标介绍"
-              title="PM4 专属支撑阻力位指标"
-              description="帮助用户更直观地识别关键价格区域，不替代个人交易判断。"
-            />
-            <div className="indicator-tabs" role="tablist" aria-label="指标功能切换">
-              {indicatorTabs.map((tabItem) => (
-                <button
-                  type="button"
-                  key={tabItem.id}
-                  role="tab"
-                  aria-selected={activeTab.id === tabItem.id}
-                  className={activeTab.id === tabItem.id ? "active" : ""}
-                  onClick={() => setActiveTab(tabItem)}
-                >
-                  {tabItem.label}
-                </button>
-              ))}
-            </div>
-            <div className="indicator-showcase">
-              <div className="indicator-chart-wrap">
-                <TradingChart mode={activeTab.zone} />
-              </div>
-              <div className="indicator-copy">
-                <p className="panel-kicker">当前视图 / {activeTab.label}</p>
-                <h3>{activeTab.title}</h3>
-                <p>{activeTab.note}</p>
-                <ul className="feature-list">
-                  {indicatorFeatures.map((feature) => <li key={feature}><span>+</span>{feature}</li>)}
-                </ul>
-                <div className="replace-note">
-                  <span>图表替换位置</span>
-                  <code>/public/images/pm4-indicator.webp</code>
-                </div>
-              </div>
             </div>
           </div>
         </section>

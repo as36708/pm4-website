@@ -4,7 +4,6 @@ export const siteConfig = {
   enableLiveSubmission: false,
   nav: [
     { label: "首页", href: "#home" },
-    { label: "指标介绍", href: "#indicator" },
     { label: "支持交易所", href: "#exchanges" },
     { label: "开通流程", href: "#process" },
     { label: "提交审核", href: "#submit" },
@@ -137,46 +136,6 @@ export const processSteps = [
     description:
       "资料审核通过后，为你的 TradingView 账户添加 PM4 专属指标权限。",
   },
-] as const;
-
-export const indicatorTabs = [
-  {
-    id: "support",
-    label: "支撑区域",
-    title: "识别潜在承接区",
-    note: "结合价格反应观察支撑强度，不替代个人判断。",
-    zone: "support",
-  },
-  {
-    id: "resistance",
-    label: "阻力区域",
-    title: "标记关键压力带",
-    note: "辅助观察价格在重要区域附近的反应。",
-    zone: "resistance",
-  },
-  {
-    id: "breakout",
-    label: "突破回踩",
-    title: "追踪突破后的确认",
-    note: "将关键水平与回踩结构放在同一张图表中。",
-    zone: "breakout",
-  },
-  {
-    id: "multi",
-    label: "多周期分析",
-    title: "保持跨周期的一致视角",
-    note: "从高周期结构到执行周期，辅助定位关键价格区域。",
-    zone: "multi",
-  },
-] as const;
-
-export const indicatorFeatures = [
-  "自动识别关键支撑区域",
-  "自动识别关键阻力区域",
-  "标记重要价格水平",
-  "辅助观察突破与回踩",
-  "支持多时间周期分析",
-  "持续更新优化",
 ] as const;
 
 export const accessRules = [
