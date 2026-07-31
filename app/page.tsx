@@ -164,39 +164,66 @@ function ExchangeCard({
   exchange: (typeof exchanges)[number];
   onSubmit: (name: string) => void;
 }) {
+  const [logoUnavailable, setLogoUnavailable] = useState(false);
+
   return (
     <article className={`exchange-card ${exchange.featured ? "featured" : ""}`}>
       <div className="exchange-top">
-        <div className="exchange-logo">{exchange.logo}</div>
-        <div>
-          <div className="exchange-name-line">
-            <h3>{exchange.name}</h3>
-            {exchange.featured && <span className="recommended">推荐</span>}
-          </div>
-          <p>{exchange.description}</p>
+        <div className="exchange-logo">
+          {!logoUnavailable ? (
+            <img
+              src={exchange.logoPath}
+              alt={`${exchange.name} Logo`}
+              onError={() => setLogoUnavailable(true)}
+            />
+          ) : (
+            <span className="exchange-logo-placeholder" aria-label={`${exchange.name} Logo 占位`}>
+              <i /><i /><b>{exchange.logoFallback}</b>
+            </span>
+          )}
+        </div>
+        <div className="exchange-name-line">
+          <h3>{exchange.name}</h3>
+          {exchange.featured && <span className="recommended">推荐</span>}
         </div>
         <span className={`status ${exchange.status === "开放中" ? "active" : ""}`}>
           {exchange.status}
         </span>
       </div>
+      <p className="exchange-summary">{exchange.description}</p>
       <div className="rebate-line">
         <small>手续费优惠</small>
         <strong>{exchange.rebateText}</strong>
       </div>
       <dl className="exchange-details">
-        <div><dt>新用户</dt><dd>{exchange.newUserSupported ? "支持" : "暂不支持"}</dd></div>
-        <div><dt>老用户绑定</dt><dd>{exchange.existingUserSupported ? "支持申请" : "需确认"}</dd></div>
-        <div><dt>指标要求</dt><dd>{exchange.indicatorRequirement}</dd></div>
+        <div><dt>新用户支持</dt><dd>{exchange.newUserStatus}</dd></div>
+        <div><dt>老用户绑定</dt><dd>{exchange.existingUserStatus}</dd></div>
+        <div><dt>指标开通要求</dt><dd>{exchange.indicatorRequirement}</dd></div>
       </dl>
       <div className="exchange-actions">
         {exchange.inviteUrl ? (
-          <a className="button" href={exchange.inviteUrl} target="_blank" rel="noreferrer">
+          <a
+            className={`button exchange-primary ${exchange.featured ? "" : "secondary"}`}
+            href={exchange.inviteUrl}
+            target="_blank"
+            rel="noreferrer"
+          >
             立即注册 <ArrowIcon />
           </a>
         ) : (
-          <button className="button disabled" type="button" disabled>链接待配置</button>
+          <button
+            className={`button exchange-primary ${exchange.featured ? "featured-disabled" : "secondary"}`}
+            type="button"
+            disabled
+          >
+            注册链接待开放
+          </button>
         )}
-        <button className="text-button" type="button" onClick={() => onSubmit(exchange.name)}>
+        <button
+          className="button secondary exchange-submit"
+          type="button"
+          onClick={() => onSubmit(exchange.name)}
+        >
           提交 UID <span>→</span>
         </button>
       </div>
@@ -505,7 +532,7 @@ export default function Home() {
                 title="选择你使用的交易所"
                 description="各平台规则独立配置。未确认的数据不会显示虚构比例或承诺。"
               />
-              <div className="availability"><i /> 当前开放 3 个申请通道</div>
+              <div className="availability"><i /> 当前开放 3 个交易所通道</div>
             </div>
             <div className="exchange-grid">
               {exchanges.map((exchange) => (

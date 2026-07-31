@@ -1023,59 +1023,120 @@ h2 em {
   display: flex;
   align-items: center;
   gap: 10px;
-  padding: 9px 13px;
-  border: 1px solid var(--border-primary);
+  padding: 10px 14px;
+  border: 1px solid #34363a;
   border-radius: 50px;
-  color: var(--text-secondary);
-  font-size: 11px;
+  color: #c4c5c6;
+  background: var(--bg-card);
+  font-size: 12px;
+  font-weight: 700;
   white-space: nowrap;
+}
+
+.availability i {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: var(--success);
+  box-shadow: 0 0 0 3px rgb(68 168 120 / 9%);
 }
 
 .exchange-grid {
   display: grid;
   grid-template-columns: repeat(2, 1fr);
   gap: 18px;
-  margin-top: 58px;
+  grid-auto-rows: 1fr;
+  margin-top: 49px;
 }
 
 .exchange-card {
-  min-height: 445px;
-  padding: 30px;
+  min-height: 400px;
+  display: flex;
+  flex-direction: column;
+  padding: 22px 24px;
+}
+
+.exchange-card:hover {
+  transform: translateY(-3px);
+  border-color: #3a3c40;
 }
 
 .exchange-card.featured {
-  border-color: var(--border-red);
+  border-color: #5b2924;
+}
+
+.exchange-card.featured:hover {
+  border-color: #71352f;
 }
 
 .exchange-top {
   display: grid;
   grid-template-columns: auto 1fr auto;
-  gap: 15px;
-  align-items: start;
+  gap: 14px;
+  align-items: center;
 }
 
 .exchange-logo {
-  width: 48px;
-  height: 48px;
+  width: 46px;
+  height: 46px;
   display: grid;
+  overflow: hidden;
   place-items: center;
   border: 1px solid #36383c;
   border-radius: 10px;
-  color: var(--text-primary);
   background: #101112;
-  font-size: 13px;
-  font-weight: 900;
+}
+
+.exchange-logo img {
+  width: 32px;
+  height: 32px;
+  display: block;
+  object-fit: contain;
+}
+
+.exchange-logo-placeholder {
+  position: relative;
+  width: 30px;
+  height: 30px;
+  display: block;
+}
+
+.exchange-logo-placeholder i {
+  position: absolute;
+  top: 8px;
+  width: 5px;
+  height: 17px;
+  border-radius: 3px;
+  background: var(--text-muted);
+  transform: skew(-18deg);
+}
+
+.exchange-logo-placeholder i:first-child { left: 7px; }
+.exchange-logo-placeholder i:nth-child(2) {
+  right: 7px;
+  background: var(--accent-primary);
+}
+
+.exchange-logo-placeholder b {
+  position: absolute;
+  right: -6px;
+  bottom: -5px;
+  color: #77797d;
+  font-family: Consolas, monospace;
+  font-size: 7px;
+  letter-spacing: -.08em;
 }
 
 .exchange-card h3 {
   margin: 0;
-  font-size: 20px;
+  font-size: 21px;
 }
 
-.exchange-card p {
-  margin-top: 2px;
-  color: var(--text-muted);
-  font-size: 12px;
+.exchange-summary {
+  margin: 10px 0 0 !important;
+  color: var(--text-secondary) !important;
+  font-size: 14px !important;
+  line-height: 1.6;
 }
 
 .exchange-name-line {
@@ -1115,8 +1176,8 @@ h2 em {
 .status.active::before { background: var(--success); }
 
 .rebate-line {
-  margin-top: 30px;
-  padding: 20px;
+  margin-top: 14px;
+  padding: 12px 14px;
   border: 1px solid var(--border-primary);
   border-radius: 9px;
   background: #101112;
@@ -1130,21 +1191,22 @@ h2 em {
 
 .rebate-line strong {
   display: block;
-  margin-top: 5px;
-  font-size: 15px;
+  margin-top: 4px;
+  font-size: 14px;
+  line-height: 1.5;
 }
 
 .exchange-details {
-  margin: 22px 0 28px;
+  margin: 12px 0 14px;
 }
 
 .exchange-details > div {
-  display: flex;
-  justify-content: space-between;
-  gap: 20px;
-  padding: 10px 0;
+  display: grid;
+  grid-template-columns: 116px minmax(0, 1fr);
+  gap: 16px;
+  padding: 7px 0;
   border-bottom: 1px solid #232528;
-  font-size: 12px;
+  font-size: 13px;
 }
 
 .exchange-details dt { color: var(--text-muted); }
@@ -1152,28 +1214,26 @@ h2 em {
 
 .exchange-actions {
   display: flex;
-  align-items: center;
-  gap: 24px;
+  align-items: stretch;
+  gap: 10px;
+  margin-top: auto;
 }
 
 .exchange-actions .button {
-  min-width: 146px;
-  min-height: 44px;
-  padding-inline: 18px;
-  font-size: 12px;
+  min-width: 0;
+  min-height: 47px;
+  flex: 1;
+  padding-inline: 16px;
+  font-size: 13px;
 }
 
-.text-button {
-  padding: 0;
-  border: 0;
-  color: var(--text-secondary);
-  background: transparent;
-  font-size: 12px;
-  cursor: pointer;
+.exchange-card.featured .featured-disabled:disabled {
+  border-color: #4e2925;
+  color: #9b6a65;
+  background: #211311;
 }
 
-.text-button:hover { color: var(--text-primary); }
-.text-button span { margin-left: 7px; color: var(--accent-primary); }
+.exchange-submit span { color: var(--accent-primary); }
 
 .indicator-section {
   background: var(--bg-primary);
@@ -1945,11 +2005,12 @@ footer {
   .split-heading { display: block; }
   .availability { width: fit-content; margin-top: 24px; }
   .exchange-grid { grid-template-columns: 1fr; margin-top: 40px; }
-  .exchange-card { min-height: auto; padding: 24px; }
-  .exchange-top { grid-template-columns: auto 1fr; }
-  .exchange-top .status { grid-column: 2; }
-  .exchange-actions { align-items: stretch; flex-direction: column; gap: 15px; }
-  .exchange-actions .button { width: 100%; }
+  .exchange-card { min-height: auto; padding: 22px; }
+  .exchange-top { grid-template-columns: auto minmax(0, 1fr) auto; }
+  .exchange-top .status { grid-column: auto; }
+  .exchange-details > div { grid-template-columns: 105px minmax(0, 1fr); gap: 12px; }
+  .exchange-actions { align-items: stretch; flex-direction: row; gap: 8px; }
+  .exchange-actions .button { width: auto; padding-inline: 10px; }
   .indicator-tabs {
     max-width: 100%;
     margin-right: 0;

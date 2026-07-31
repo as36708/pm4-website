@@ -51,13 +51,13 @@ export const benefits = [
 
 export type Exchange = {
   name: string;
-  logo: string;
+  logoPath: string;
+  logoFallback: string;
   description: string;
   rebateText: string;
   inviteUrl: string | null;
-  uidSubmitUrl: string;
-  newUserSupported: boolean;
-  existingUserSupported: boolean;
+  newUserStatus: string;
+  existingUserStatus: string;
   indicatorRequirement: string;
   status: "开放中" | "即将开放";
   featured: boolean;
@@ -66,52 +66,52 @@ export type Exchange = {
 export const exchanges: Exchange[] = [
   {
     name: "WEEX",
-    logo: "WX",
-    description: "专属注册与资格审核通道",
-    rebateText: "优惠比例以当前活动规则为准",
+    logoPath: "/exchanges/weex.svg",
+    logoFallback: "WX",
+    description: "专属注册与资料审核通道",
+    rebateText: "具体优惠比例以当前活动规则为准",
     inviteUrl: null,
-    uidSubmitUrl: "#submit",
-    newUserSupported: true,
-    existingUserSupported: false,
+    newUserStatus: "支持申请",
+    existingUserStatus: "需确认",
     indicatorRequirement: "完成注册关系与交易量审核",
     status: "开放中",
     featured: true,
   },
   {
     name: "Bybit",
-    logo: "BY",
-    description: "专属注册与资格审核通道",
-    rebateText: "优惠比例以当前活动规则为准",
+    logoPath: "/exchanges/bybit.svg",
+    logoFallback: "BY",
+    description: "专属注册与老用户申请通道",
+    rebateText: "具体优惠比例以当前活动规则为准",
     inviteUrl: null,
-    uidSubmitUrl: "#submit",
-    newUserSupported: true,
-    existingUserSupported: true,
+    newUserStatus: "支持申请",
+    existingUserStatus: "支持申请",
     indicatorRequirement: "按页面最新活动规则执行",
     status: "开放中",
     featured: false,
   },
   {
     name: "Bitget",
-    logo: "BG",
-    description: "专属注册与资格审核通道",
-    rebateText: "优惠比例以当前活动规则为准",
+    logoPath: "/exchanges/bitget.svg",
+    logoFallback: "BG",
+    description: "专属注册与资料审核通道",
+    rebateText: "具体优惠比例以当前活动规则为准",
     inviteUrl: null,
-    uidSubmitUrl: "#submit",
-    newUserSupported: true,
-    existingUserSupported: false,
+    newUserStatus: "支持申请",
+    existingUserStatus: "需确认",
     indicatorRequirement: "完成 UID 与交易量审核",
     status: "开放中",
     featured: false,
   },
   {
     name: "BingX",
-    logo: "BX",
-    description: "合作入口正在准备中",
-    rebateText: "具体活动规则待公布",
+    logoPath: "/exchanges/bingx.svg",
+    logoFallback: "BX",
+    description: "合作规则正在更新",
+    rebateText: "具体优惠比例以当前活动规则为准",
     inviteUrl: null,
-    uidSubmitUrl: "#submit",
-    newUserSupported: false,
-    existingUserSupported: false,
+    newUserStatus: "暂未开放",
+    existingUserStatus: "暂未开放",
     indicatorRequirement: "规则待更新",
     status: "即将开放",
     featured: false,
