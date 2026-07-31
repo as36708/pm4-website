@@ -324,7 +324,12 @@ h2 em {
   box-shadow: none;
 }
 
-.premium-cta {
+.premium-cta__arrow {
+  display: none;
+}
+
+@media (min-width: 1101px) {
+.button.premium-cta {
   position: relative;
   isolation: isolate;
   min-width: 190px;
@@ -391,7 +396,7 @@ h2 em {
   transform: rotate(18deg);
 }
 
-.premium-cta:hover {
+.button.premium-cta:hover {
   border-color: rgb(255 151 135 / 85%);
   filter: brightness(1.05);
   animation: none;
@@ -408,7 +413,7 @@ h2 em {
   animation: premium-cta-shine 850ms ease forwards;
 }
 
-.premium-cta:active {
+.button.premium-cta:active {
   animation: none;
   transform: translateY(0) scale(.99);
   box-shadow:
@@ -417,7 +422,7 @@ h2 em {
     0 5px 14px rgb(239 63 48 / 28%);
 }
 
-.premium-cta:focus-visible {
+.button.premium-cta:focus-visible {
   outline: 2px solid #fff;
   outline-offset: 5px;
 }
@@ -431,6 +436,10 @@ h2 em {
 
 .premium-cta:hover .premium-cta__arrow {
   transform: translateX(4px);
+}
+
+.premium-cta .arrow-icon {
+  display: none;
 }
 
 @keyframes premium-cta-shine {
@@ -455,6 +464,7 @@ h2 em {
       0 0 0 10px rgb(239 63 48 / 15%),
       0 10px 30px rgb(239 63 48 / 42%);
   }
+}
 }
 
 .trust-line {
@@ -2129,7 +2139,6 @@ footer {
   .hero-lead { font-size: 15px; }
   .hero-actions { flex-direction: column; }
   .hero-actions .button { width: 100%; min-height: 50px; }
-  .hero-actions .premium-cta { width: 100%; min-width: 0; height: 54px; }
   .trust-line { align-items: flex-start; font-size: 12px; }
   .terminal-label { margin-left: 0; }
   .trading-chart { min-height: 340px; }
