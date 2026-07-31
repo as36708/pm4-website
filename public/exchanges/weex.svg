@@ -1,5 +1,8 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 40 40" role="img" aria-labelledby="title">
-  <title id="title">WEEX Logo 占位</title>
-  <path d="M5 11l7 18 8-18 8 18 7-18" fill="none" stroke="#F4F4F2" stroke-width="4.4" stroke-linecap="round" stroke-linejoin="round"/>
-  <path d="M20 11l4 9-4 9-4-9z" fill="#EE3F2D"/>
+  <title id="title">WEEX Logo</title>
+  <g fill="none" stroke="#F5C400" stroke-width="4" stroke-linecap="square" stroke-linejoin="miter">
+    <path d="M4 20 13 11l8 9-8 9z"/>
+    <path d="M19 20 27 11l9 9-9 9z"/>
+    <path d="m13 11 7-7 7 7M13 29l7 7 7-7"/>
+  </g>
 </svg>

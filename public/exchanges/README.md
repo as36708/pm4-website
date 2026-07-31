@@ -1,6 +1,6 @@
 # Exchange logo assets
 
-Replace these files with approved official SVG assets when supplied:
+Local brand-mark assets used by the exchange comparison table:
 
 - `weex.svg`
 - `bybit.svg`

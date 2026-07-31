@@ -1,6 +1,6 @@
 "use client";
 
-import { FormEvent, useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import {
   accessRules,
   exchanges,
@@ -154,204 +154,244 @@ function Header({
   );
 }
 
-function ExchangeCard({
+function ExchangeRow({
   exchange,
-  onSubmit,
+  onTransfer,
 }: {
   exchange: (typeof exchanges)[number];
-  onSubmit: (name: string) => void;
+  onTransfer: (name: string) => void;
 }) {
-  const [logoUnavailable, setLogoUnavailable] = useState(false);
+  const statusTone = (status: string) => {
+    if (status === "支持") return "success";
+    if (status === "需确认" || status === "可申请") return "warning";
+    if (status === "暂未开放") return "muted";
+    return "info";
+  };
 
   return (
-    <article className={`exchange-card ${exchange.featured ? "featured" : ""}`}>
-      <div className="exchange-top">
+    <article
+      className={`exchange-table-row ${exchange.featured ? "featured" : ""}`}
+      role="row"
+    >
+      <div className="exchange-cell exchange-main" role="cell">
         <div className="exchange-logo">
-          {!logoUnavailable ? (
-            <img
-              src={exchange.logoPath}
-              alt={`${exchange.name} Logo`}
-              onError={() => setLogoUnavailable(true)}
-            />
-          ) : (
-            <span className="exchange-logo-placeholder" aria-label={`${exchange.name} Logo 占位`}>
-              <i /><i /><b>{exchange.logoFallback}</b>
-            </span>
-          )}
+          <img src={exchange.logo} alt={`${exchange.name} Logo`} />
         </div>
-        <div className="exchange-name-line">
-          <h3>{exchange.name}</h3>
-          {exchange.featured && <span className="recommended">推荐</span>}
+        <div className="exchange-identity">
+          <div className="exchange-name-line">
+            <h3>{exchange.name}</h3>
+            {exchange.featured && <span className="recommended">推荐</span>}
+          </div>
+          <p>{exchange.description}</p>
         </div>
-        <span className={`status ${exchange.status === "开放中" ? "active" : ""}`}>
-          {exchange.status}
+      </div>
+
+      <div className="exchange-cell exchange-rebate" role="cell">
+        <span className="exchange-mobile-label">返佣比例</span>
+        <strong>{exchange.rebate}</strong>
+        <small>具体以平台结算规则为准</small>
+      </div>
+
+      <div className="exchange-cell exchange-status-cell" role="cell">
+        <span className="exchange-mobile-label">新用户</span>
+        <span className={`exchange-badge ${statusTone(exchange.newUserStatus)}`}>
+          {exchange.newUserStatus}
         </span>
       </div>
-      <p className="exchange-summary">{exchange.description}</p>
-      <div className="rebate-line">
-        <small>手续费优惠</small>
-        <strong>{exchange.rebateText}</strong>
+
+      <div className="exchange-cell exchange-status-cell" role="cell">
+        <span className="exchange-mobile-label">老用户</span>
+        <span className={`exchange-badge ${statusTone(exchange.existingUserStatus)}`}>
+          {exchange.existingUserStatus}
+        </span>
       </div>
-      <dl className="exchange-details">
-        <div><dt>新用户支持</dt><dd>{exchange.newUserStatus}</dd></div>
-        <div><dt>老用户绑定</dt><dd>{exchange.existingUserStatus}</dd></div>
-        <div><dt>指标开通要求</dt><dd>{exchange.indicatorRequirement}</dd></div>
-      </dl>
-      <div className="exchange-actions">
-        {exchange.inviteUrl ? (
+
+      <div className="exchange-cell exchange-status-cell" role="cell">
+        <span className="exchange-mobile-label">指标资格</span>
+        <span className="exchange-badge info">{exchange.indicatorStatus}</span>
+      </div>
+
+      <div className="exchange-cell exchange-actions-cell" role="cell">
+        <span className="exchange-mobile-label">操作</span>
+        <div className="exchange-actions">
+          {exchange.registerUrl ? (
           <a
-            className={`button exchange-primary ${exchange.featured ? "" : "secondary"}`}
-            href={exchange.inviteUrl}
+            className="button exchange-register"
+            href={exchange.registerUrl}
             target="_blank"
             rel="noreferrer"
           >
-            立即注册 <ArrowIcon />
+            立即注册
           </a>
         ) : (
-          <button
-            className={`button exchange-primary ${exchange.featured ? "featured-disabled" : "secondary"}`}
-            type="button"
-            disabled
-          >
-            注册链接待开放
-          </button>
+            <button className="button exchange-register" type="button" disabled>
+              暂未开放
+            </button>
         )}
-        <button
-          className="button secondary exchange-submit"
-          type="button"
-          onClick={() => onSubmit(exchange.name)}
-        >
-          提交 UID <span>→</span>
-        </button>
+          {exchange.transferUrl ? (
+            <button
+              className="button exchange-transfer"
+              type="button"
+              onClick={() => onTransfer(exchange.name)}
+            >
+              身份转移
+            </button>
+          ) : (
+            <button className="button exchange-transfer" type="button" disabled>
+              身份转移
+            </button>
+          )}
+        </div>
       </div>
     </article>
   );
 }
 
 function ApplicationForm({ selectedExchange }: { selectedExchange: string }) {
-  const [formState, setFormState] = useState("idle");
+  const [exchange, setExchange] = useState(selectedExchange || "");
+  const [uid, setUid] = useState("");
+  const [tradingViewUser, setTradingViewUser] = useState("");
   const [errors, setErrors] = useState<FormErrors>({});
+  const [copyButtonCopied, setCopyButtonCopied] = useState(false);
+  const [hasCopied, setHasCopied] = useState(false);
+  const [discordPrompted, setDiscordPrompted] = useState(false);
+  const [message, setMessage] = useState("");
+  const [messageTone, setMessageTone] = useState<"success" | "warning" | "error">("success");
 
-  const validate = (form: HTMLFormElement) => {
-    const data = new FormData(form);
+  const validate = () => {
     const nextErrors: FormErrors = {};
-    const uid = String(data.get("uid") || "").trim();
-    const tvUser = String(data.get("tradingViewUser") || "").trim();
-    const contact = String(data.get("contact") || "").trim();
+    if (!exchange) nextErrors.exchange = "请选择交易所。";
     if (!/^[A-Za-z0-9_-]{4,32}$/.test(uid)) {
       nextErrors.uid = "请输入 4–32 位数字、字母、下划线或短横线。";
     }
-    if (!tvUser) nextErrors.tradingViewUser = "请填写 TradingView 用户名。";
-    if (!contact) nextErrors.contact = "请填写可联系到你的方式。";
-    if (!data.get("agreement")) nextErrors.agreement = "提交前请同意隐私与风险声明。";
+    if (!tradingViewUser.trim()) nextErrors.tradingViewUser = "请填写 TradingView 用户名。";
+    setErrors(nextErrors);
     return nextErrors;
   };
 
-  const submit = async (event: FormEvent<HTMLFormElement>) => {
-    event.preventDefault();
-    if (formState === "loading") return;
-    const form = event.currentTarget;
-    const nextErrors = validate(form);
-    setErrors(nextErrors);
-    if (Object.keys(nextErrors).length) return;
-    setFormState("loading");
+  const clearError = (field: string) => {
+    setErrors((current) => {
+      if (!current[field]) return current;
+      const next = { ...current };
+      delete next[field];
+      return next;
+    });
+  };
 
-    if (!siteConfig.enableLiveSubmission) {
-      await new Promise((resolve) => setTimeout(resolve, 800));
-      setFormState("demo-success");
-      return;
-    }
+  const copyReviewInfo = async () => {
+    const nextErrors = validate();
+    if (Object.keys(nextErrors).length) return;
+
+    const reviewText = `${siteConfig.copyTemplateTitle}
+
+交易所：${exchange}
+交易所 UID：${uid.trim()}
+TradingView 用户名：${tradingViewUser.trim()}
+
+申请内容：交易所身份确认及 PM4 专属指标权限开通`;
 
     try {
-      const response = await fetch(siteConfig.formEndpoint, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(Object.fromEntries(new FormData(form))),
-      });
-      if (!response.ok) throw new Error("提交服务暂时不可用，请稍后重试。");
-      setFormState("success");
-    } catch (error) {
-      setErrors({ form: error instanceof Error ? error.message : "提交失败，请稍后重试。" });
-      setFormState("idle");
+      await navigator.clipboard.writeText(reviewText);
+      setHasCopied(true);
+      setCopyButtonCopied(true);
+      setDiscordPrompted(false);
+      setMessageTone("success");
+      setMessage(siteConfig.copySuccessMessage);
+      window.setTimeout(() => setCopyButtonCopied(false), 2000);
+    } catch {
+      setMessageTone("error");
+      setMessage("复制失败，请检查浏览器剪贴板权限后重试。");
     }
   };
 
-  if (formState === "success" || formState === "demo-success") {
-    const demo = formState === "demo-success";
-    return (
-      <div className="success-panel" role="status">
-        <span className="success-icon">✓</span>
-        <p className="eyebrow"><span />{demo ? "演示提交完成" : "资料已提交"}</p>
-        <h3>{demo ? "表单验证已通过" : "资料已成功提交"}</h3>
-        <p>
-          {demo
-            ? "当前版本尚未连接后台，资料没有发送或保存。接入审核 API 后即可启用真实提交。"
-            : "我们会根据 UID、注册关系及当前活动规则进行审核，结果将通过你填写的联系方式通知。"}
-        </p>
-        <button className="button secondary" type="button" onClick={() => setFormState("idle")}>
-          返回表单
-        </button>
-      </div>
-    );
-  }
+  const discordConfigured = /^https?:\/\//.test(siteConfig.discordReviewUrl);
 
   return (
-    <form className="application-form" onSubmit={submit} noValidate>
+    <form className="application-form" onSubmit={(event) => event.preventDefault()} noValidate>
       <div className="form-grid">
         <label>
           <span>交易所选择</span>
-          <select name="exchange" defaultValue={selectedExchange || "WEEX"}>
-            {exchanges.map((exchange) => <option key={exchange.name}>{exchange.name}</option>)}
+          <select
+            name="exchange"
+            value={exchange}
+            onChange={(event) => {
+              setExchange(event.target.value);
+              setHasCopied(false);
+              clearError("exchange");
+            }}
+            aria-invalid={Boolean(errors.exchange)}
+            aria-describedby="exchange-error"
+          >
+            <option value="" disabled>请选择交易所</option>
+            {exchanges.map((item) => <option key={item.name}>{item.name}</option>)}
           </select>
+          {errors.exchange && <small className="field-error" id="exchange-error">{errors.exchange}</small>}
         </label>
         <label>
-          <span>交易所 UID</span>
-          <input name="uid" placeholder="例如：12345678" aria-describedby="uid-error" />
+          <span>交易所 UID <b>*</b></span>
+          <input
+            name="uid"
+            value={uid}
+            placeholder="例如：12345678"
+            onChange={(event) => {
+              setUid(event.target.value);
+              setHasCopied(false);
+              clearError("uid");
+            }}
+            aria-invalid={Boolean(errors.uid)}
+            aria-describedby="uid-error"
+          />
           {errors.uid && <small className="field-error" id="uid-error">{errors.uid}</small>}
         </label>
-        <label>
-          <span>TradingView 用户名</span>
-          <input name="tradingViewUser" placeholder="你的 TradingView 用户名" />
-          {errors.tradingViewUser && <small className="field-error">{errors.tradingViewUser}</small>}
-        </label>
-        <label>
-          <span>Discord 用户名或联系方式</span>
-          <input name="contact" placeholder="Discord / Telegram / 邮箱" />
-          {errors.contact && <small className="field-error">{errors.contact}</small>}
-        </label>
-        <label>
-          <span>注册时间</span>
-          <input name="registeredAt" type="date" />
-        </label>
-        <label>
-          <span>是否通过 PM4 链接注册</span>
-          <select name="registeredViaPm4" defaultValue="">
-            <option value="" disabled>请选择</option>
-            <option value="yes">是</option>
-            <option value="no">否 / 不确定</option>
-          </select>
-        </label>
         <label className="full">
-          <span>备注</span>
-          <textarea name="notes" rows={4} placeholder="可补充注册关系、账户情况或其他说明" />
+          <span>TradingView 用户名 <b>*</b></span>
+          <input
+            name="tradingViewUser"
+            value={tradingViewUser}
+            placeholder="例如：PM4example"
+            onChange={(event) => {
+              setTradingViewUser(event.target.value);
+              setHasCopied(false);
+              clearError("tradingViewUser");
+            }}
+            aria-invalid={Boolean(errors.tradingViewUser)}
+            aria-describedby="tradingview-error"
+          />
+          {errors.tradingViewUser && (
+            <small className="field-error" id="tradingview-error">{errors.tradingViewUser}</small>
+          )}
         </label>
       </div>
-      <label className="check-field">
-        <input name="agreement" type="checkbox" />
-        <span>我已阅读并同意隐私说明与风险披露，确认资料仅用于注册关系及指标权限审核。</span>
-      </label>
-      {errors.agreement && <small className="field-error agreement-error">{errors.agreement}</small>}
-      {errors.form && <div className="form-error">{errors.form}</div>}
-      <div className="form-submit">
-        <button className="button" type="submit" disabled={formState === "loading"}>
-          {formState === "loading" ? "正在验证…" : "提交审核"} <ArrowIcon />
+
+      <div className="review-actions">
+        <button className="button copy-review-button" type="button" onClick={copyReviewInfo}>
+          <span className="copy-icon" aria-hidden="true"><i /><i /></span>
+          {copyButtonCopied ? "已复制" : "复制审核信息"}
         </button>
-        <p>
-          {siteConfig.enableLiveSubmission
-            ? "提交后将进入资料审核队列。"
-            : "演示环境 · 当前不会发送或保存你的资料"}
-        </p>
+        {discordConfigured ? (
+          <a
+            className="button discord-review-button"
+            href={siteConfig.discordReviewUrl}
+            target="_blank"
+            rel="noopener noreferrer"
+            onClick={(event) => {
+              if (!hasCopied && !discordPrompted) {
+                event.preventDefault();
+                setDiscordPrompted(true);
+                setMessageTone("warning");
+                setMessage("请先填写资料并复制审核信息，再前往 Discord 提交。");
+              }
+            }}
+          >
+            前往 Discord 审核 <span aria-hidden="true">↗</span>
+          </a>
+        ) : (
+          <button className="button discord-review-button" type="button" disabled>
+            Discord 链接待配置
+          </button>
+        )}
       </div>
+      {message && <p className={`review-message ${messageTone}`} role="status">{message}</p>}
     </form>
   );
 }
@@ -482,15 +522,27 @@ export default function Home() {
               <SectionHeading
                 eyebrow="支持交易所"
                 title="选择你使用的交易所"
-                description="各平台规则独立配置。未确认的数据不会显示虚构比例或承诺。"
+                description="不同平台的返佣比例、身份转移规则和指标审核条件可能不同，请根据你的账户情况选择。"
               />
-              <div className="availability"><i /> 当前开放 3 个交易所通道</div>
+              <div className="availability"><i /> 当前开放 4 个申请通道</div>
             </div>
-            <div className="exchange-grid">
+            <div className="exchange-table" role="table" aria-label="交易所返佣与指标资格">
+              <div className="exchange-table-head" role="row">
+                <span role="columnheader">交易所</span>
+                <span role="columnheader">返佣比例</span>
+                <span role="columnheader">新用户</span>
+                <span role="columnheader">老用户</span>
+                <span role="columnheader">指标资格</span>
+                <span role="columnheader">操作</span>
+              </div>
               {exchanges.map((exchange) => (
-                <ExchangeCard key={exchange.name} exchange={exchange} onSubmit={chooseExchange} />
+                <ExchangeRow key={exchange.name} exchange={exchange} onTransfer={chooseExchange} />
               ))}
             </div>
+            <p className="exchange-disclaimer">
+              <span aria-hidden="true">i</span>
+              点击「立即注册」将离开本网站，前往对应交易所完成注册。PM4 不保管你的账户及资金信息。
+            </p>
           </div>
         </section>
 
@@ -519,14 +571,25 @@ export default function Home() {
             <div className="submit-intro">
               <SectionHeading
                 eyebrow="资料审核"
-                title="提交开通资料"
-                description="请确保 UID、注册关系与联系方式准确。资料只用于资格审核。"
+                title="提交指标审核资料"
+                description="填写交易所 UID 和 TradingView 用户名，复制审核信息后前往 Discord 留言申请。"
               />
-              <div className="security-card">
-                <span className="lock-mark">⌁</span>
-                <div><strong>信息用途明确</strong><p>仅用于注册关系核验、活动审核与指标权限开通。</p></div>
+              <div className="review-steps-card">
+                <div className="review-steps-title">
+                  <span aria-hidden="true">≡</span>
+                  <strong>审核步骤</strong>
+                </div>
+                <ol>
+                  <li><span>1</span><p>填写交易所、UID 和 TradingView 用户名</p></li>
+                  <li><span>2</span><p>点击复制审核信息</p></li>
+                  <li><span>3</span><p>前往 Discord 指定频道</p></li>
+                  <li><span>4</span><p>粘贴信息并等待审核结果</p></li>
+                </ol>
+                <p className="sensitive-warning">
+                  <span aria-hidden="true">!</span>
+                  请勿在 Discord 提交交易所密码、验证码、API 密钥或其他敏感信息。
+                </p>
               </div>
-              <p className="api-note">正式上线前请将审核接口连接至安全数据库或受控 Webhook。</p>
             </div>
             <ApplicationForm key={selectedExchange} selectedExchange={selectedExchange} />
           </div>

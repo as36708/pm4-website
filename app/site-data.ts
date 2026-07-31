@@ -1,7 +1,9 @@
 export const siteConfig = {
   brand: "PM4",
-  formEndpoint: "/api/applications",
-  enableLiveSubmission: false,
+  discordReviewUrl: "",
+  discordServerName: "PM4 Discord",
+  copyTemplateTitle: "【PM4 指标开通审核】",
+  copySuccessMessage: "审核信息已复制，请前往 Discord 粘贴提交。",
   nav: [
     { label: "首页", href: "#home" },
     { label: "支持交易所", href: "#exchanges" },
@@ -26,69 +28,69 @@ export const heroStats = [
 
 export type Exchange = {
   name: string;
-  logoPath: string;
-  logoFallback: string;
+  logo: string;
+  rebate: string;
   description: string;
-  rebateText: string;
-  inviteUrl: string | null;
   newUserStatus: string;
   existingUserStatus: string;
-  indicatorRequirement: string;
-  status: "开放中" | "即将开放";
+  indicatorStatus: string;
+  registerUrl: string | null;
+  transferUrl: string | null;
+  status: "open" | "pending";
   featured: boolean;
 };
 
 export const exchanges: Exchange[] = [
   {
     name: "WEEX",
-    logoPath: "/exchanges/weex.svg",
-    logoFallback: "WX",
+    logo: "/exchanges/weex.svg",
+    rebate: "30%",
     description: "专属注册与资料审核通道",
-    rebateText: "具体优惠比例以当前活动规则为准",
-    inviteUrl: null,
-    newUserStatus: "支持申请",
+    newUserStatus: "支持",
     existingUserStatus: "需确认",
-    indicatorRequirement: "完成注册关系与交易量审核",
-    status: "开放中",
+    indicatorStatus: "完成审核",
+    registerUrl: "https://www.weex.com/register",
+    transferUrl: "#submit",
+    status: "open",
     featured: true,
   },
   {
     name: "Bybit",
-    logoPath: "/exchanges/bybit.svg",
-    logoFallback: "BY",
-    description: "专属注册与老用户申请通道",
-    rebateText: "具体优惠比例以当前活动规则为准",
-    inviteUrl: null,
-    newUserStatus: "支持申请",
-    existingUserStatus: "支持申请",
-    indicatorRequirement: "按页面最新活动规则执行",
-    status: "开放中",
+    logo: "/exchanges/bybit.svg",
+    rebate: "33%",
+    description: "支持新用户注册，老用户可申请确认",
+    newUserStatus: "支持",
+    existingUserStatus: "可申请",
+    indicatorStatus: "按活动规则审核",
+    registerUrl: "https://www.bybit.com/register",
+    transferUrl: "#submit",
+    status: "open",
     featured: false,
   },
   {
     name: "Bitget",
-    logoPath: "/exchanges/bitget.svg",
-    logoFallback: "BG",
+    logo: "/exchanges/bitget.svg",
+    rebate: "30%",
     description: "专属注册与资料审核通道",
-    rebateText: "具体优惠比例以当前活动规则为准",
-    inviteUrl: null,
-    newUserStatus: "支持申请",
+    newUserStatus: "支持",
     existingUserStatus: "需确认",
-    indicatorRequirement: "完成 UID 与交易量审核",
-    status: "开放中",
+    indicatorStatus: "UID 审核",
+    registerUrl: "https://www.bitget.com/register",
+    transferUrl: "#submit",
+    status: "open",
     featured: false,
   },
   {
     name: "BingX",
-    logoPath: "/exchanges/bingx.svg",
-    logoFallback: "BX",
-    description: "合作规则正在更新",
-    rebateText: "具体优惠比例以当前活动规则为准",
-    inviteUrl: null,
+    logo: "/exchanges/bingx.svg",
+    rebate: "30%",
+    description: "合作规则更新中",
     newUserStatus: "暂未开放",
-    existingUserStatus: "暂未开放",
-    indicatorRequirement: "规则待更新",
-    status: "即将开放",
+    existingUserStatus: "需确认",
+    indicatorStatus: "规则更新中",
+    registerUrl: null,
+    transferUrl: "#submit",
+    status: "pending",
     featured: false,
   },
 ];
