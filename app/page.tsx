@@ -541,14 +541,14 @@ export default function Home() {
 
         <section className="section rules-section reveal">
           <div className="container rules-layout">
-            <div>
+            <div className="rules-intro">
               <SectionHeading
                 eyebrow="审核规则"
-                title="指标权限规则"
-                description="资格按固定周期审核，并根据当前活动要求延续或暂停。"
+                title="指标开通与续期规则"
+                description="权限按固定周期审核，达到当前活动要求后自动延续。"
               />
               <div className="rule-alert">
-                不同交易所的活动规则和交易量要求可能不同，请以对应交易所页面显示的最新规则为准。
+                不同交易所的活动规则、交易量要求和体验期限可能不同，请以对应交易所页面显示的最新规则为准。
               </div>
             </div>
             <ol className="rules-list">

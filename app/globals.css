@@ -1342,24 +1342,34 @@ h2 em {
 
 .rules-section {
   background: var(--bg-secondary);
+  padding-block: 100px;
 }
 
 .rules-layout {
   display: grid;
-  grid-template-columns: minmax(320px, .75fr) minmax(0, 1.25fr);
-  gap: 100px;
-  align-items: start;
+  grid-template-columns: minmax(0, 38fr) minmax(0, 62fr);
+  gap: 64px;
+  align-items: stretch;
+}
+
+.rules-intro {
+  align-self: center;
+}
+
+.rules-intro .section-heading h2 {
+  font-size: 46px;
 }
 
 .rule-alert {
-  margin-top: 44px;
-  padding: 20px;
-  border: 1px solid var(--border-red);
-  border-left: 3px solid var(--accent-primary);
+  margin-top: 32px;
+  padding: 17px 18px;
+  border: 1px solid #3f2926;
+  border-left: 2px solid var(--accent-primary);
   border-radius: 8px;
-  color: #c0a09c;
-  background: var(--accent-bg);
-  font-size: 12px;
+  color: var(--text-secondary);
+  background: var(--bg-card);
+  font-size: 14px;
+  line-height: 1.7;
 }
 
 .rules-list {
@@ -1371,22 +1381,29 @@ h2 em {
 
 .rules-list li {
   display: grid;
-  grid-template-columns: 54px 1fr;
+  grid-template-columns: 58px 1fr;
   align-items: center;
-  min-height: 72px;
+  min-height: 61px;
+  padding-inline: 8px;
   border-bottom: 1px solid var(--border-primary);
+  transition: background .2s ease;
+}
+
+.rules-list li:hover {
+  background: rgb(244 244 242 / 1.5%);
 }
 
 .rules-list li span {
-  color: var(--text-muted);
+  color: #898b8f;
   font-family: Consolas, monospace;
-  font-size: 11px;
+  font-size: 12px;
 }
 
 .rules-list li p {
   margin: 0;
-  color: var(--text-secondary);
-  font-size: 14px;
+  color: #c2c3c4;
+  font-size: 15px;
+  line-height: 1.6;
 }
 
 .submit-section {
@@ -2011,6 +2028,16 @@ footer {
   .exchange-details > div { grid-template-columns: 105px minmax(0, 1fr); gap: 12px; }
   .exchange-actions { align-items: stretch; flex-direction: row; gap: 8px; }
   .exchange-actions .button { width: auto; padding-inline: 10px; }
+  .rules-section { padding-block: 70px; }
+  .rules-layout { gap: 42px; }
+  .rules-intro .section-heading h2 { font-size: 40px; }
+  .rule-alert { margin-top: 24px; padding: 15px 16px; }
+  .rules-list li {
+    min-height: auto;
+    align-items: start;
+    padding: 14px 4px;
+  }
+  .rules-list li p { font-size: 14px; line-height: 1.65; }
   .indicator-tabs {
     max-width: 100%;
     margin-right: 0;
@@ -2024,7 +2051,7 @@ footer {
   .indicator-chart-wrap .trading-chart { min-height: 380px; }
   .indicator-chart-wrap .chart-stage { height: 260px; }
   .indicator-copy { padding: 28px; }
-  .rules-layout { gap: 48px; }
+  .rules-layout { gap: 42px; }
   .rules-list li { grid-template-columns: 44px 1fr; }
   .application-form,
   .success-panel { padding: 24px; }
