@@ -3244,6 +3244,16 @@ footer {
   }
 
   body { background: var(--bg-primary); }
+  main {
+    display: flex;
+    flex-direction: column;
+  }
+  main > .hero { order: 0; }
+  main > .exchange-section { order: 1; }
+  main > .process-section { order: 2; }
+  main > .rules-section { order: 3; }
+  main > .submit-section { order: 4; }
+  main > .faq-section { order: 5; }
   .site-header {
     border-bottom-color: var(--border-primary);
     background: rgb(13 10 10 / 94%);
@@ -3259,6 +3269,7 @@ footer {
   .container { width: min(calc(100% - 28px), var(--container)); }
   .header-cta { display: none; }
   .hero { min-height: auto; padding-top: 100px; background-size: 48px 48px; }
+  .hero-visual { display: none; }
   .hero h1 {
     font-size: clamp(38px, 10.5vw, 46px);
     line-height: 1;
