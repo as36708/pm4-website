@@ -1591,96 +1591,6 @@ select {
 .review-message.warning { color: #d3a554; }
 .review-message.error { color: var(--danger); }
 
-.about-section {
-  background: var(--bg-secondary);
-}
-
-.about-layout {
-  display: grid;
-  grid-template-columns: minmax(0, .88fr) minmax(0, 1.12fr);
-  gap: 90px;
-  align-items: center;
-}
-
-.about-visual {
-  position: relative;
-  aspect-ratio: 1.06;
-  display: grid;
-  place-items: center;
-  border: 1px solid var(--border-primary);
-  border-radius: var(--radius-lg);
-  background:
-    linear-gradient(rgb(255 255 255 / 2%) 1px, transparent 1px),
-    linear-gradient(90deg, rgb(255 255 255 / 2%) 1px, transparent 1px),
-    #0c0d0e;
-  background-size: 60px 60px;
-  overflow: hidden;
-}
-
-.about-visual::before {
-  content: "";
-  position: absolute;
-  width: 240px;
-  height: 240px;
-  border: 1px solid var(--border-red);
-  border-radius: 50%;
-  box-shadow: 0 0 80px rgb(238 63 45 / 8%);
-}
-
-.pm-monogram {
-  position: relative;
-  font-size: clamp(72px, 10vw, 132px);
-  font-weight: 950;
-  letter-spacing: -.11em;
-}
-
-.pm-monogram span { color: var(--accent-primary); }
-
-.about-caption {
-  position: absolute;
-  left: 26px;
-  bottom: 22px;
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  color: var(--text-muted);
-  font-family: Consolas, monospace;
-  font-size: 9px;
-  letter-spacing: .12em;
-}
-
-.about-caption i {
-  width: 22px;
-  height: 1px;
-  background: var(--accent-primary);
-}
-
-.about-copy > p {
-  margin: 26px 0 0;
-  color: var(--text-secondary);
-  font-size: 15px;
-}
-
-.why-grid {
-  display: grid;
-  grid-template-columns: repeat(2, 1fr);
-  gap: 12px;
-  margin-top: 34px;
-}
-
-.why-grid div {
-  display: flex;
-  gap: 10px;
-  padding: 13px;
-  border: 1px solid var(--border-primary);
-  border-radius: 8px;
-  color: var(--text-secondary);
-  background: var(--bg-card);
-  font-size: 11px;
-}
-
-.why-grid span { color: var(--accent-primary); }
-
 .faq-section {
   background: var(--bg-primary);
 }
@@ -1913,7 +1823,6 @@ footer {
   .exchange-section,
   .rules-section,
   .submit-section,
-  .about-section,
   .faq-section,
   .final-cta {
     background-color: #050506;
@@ -1930,7 +1839,6 @@ footer {
   .rule-alert,
   .indicator-chart-wrap,
   .indicator-copy,
-  .about-visual,
   .faq-list details,
   .support-panel,
   .support-button {
@@ -1972,7 +1880,6 @@ footer {
   .panel-kicker,
   .indicator-tabs button.active,
   .breakout-mark,
-  .why-grid span,
   .review-steps-title > span,
   .sensitive-warning > span {
     color: #f04432;
@@ -2112,10 +2019,8 @@ footer {
   .indicator-showcase,
   .rules-layout,
   .submit-layout,
-  .about-layout,
   .faq-layout { grid-template-columns: 1fr; }
   .submit-intro { position: static; }
-  .about-visual { max-height: 540px; }
   .footer-top { grid-template-columns: 1fr; gap: 30px; }
 }
 
@@ -2266,8 +2171,6 @@ footer {
   select { min-height: 52px; }
   .review-actions { grid-template-columns: 1fr; gap: 10px; }
   .review-actions .button { width: 100%; }
-  .why-grid { grid-template-columns: 1fr; }
-  .about-layout { gap: 48px; }
   .faq-layout { gap: 45px; }
   .faq-list summary { min-height: 72px; font-size: 13px; }
   .final-cta { padding: 88px 0; }

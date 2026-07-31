@@ -124,15 +124,6 @@ export const accessRules = [
   "未达到要求时权限暂停，后续重新达标即可恢复",
 ] as const;
 
-export const whyPm4 = [
-  "长期公开直播与交易复盘",
-  "指标围绕实际交易场景设计",
-  "注册、审核与权限规则透明",
-  "提供清晰的中文使用说明",
-  "不单独出售指标",
-  "是否使用合作交易所由用户自行决定",
-] as const;
-
 export const faqs = [
   {
     question: "指标需要单独购买吗？",

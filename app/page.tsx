@@ -8,7 +8,6 @@ import {
   heroStats,
   processSteps,
   siteConfig,
-  whyPm4,
 } from "./site-data";
 
 type FormErrors = Record<string, string>;
@@ -592,25 +591,6 @@ export default function Home() {
               </div>
             </div>
             <ApplicationForm key={selectedExchange} selectedExchange={selectedExchange} />
-          </div>
-        </section>
-
-        <section className="section about-section reveal">
-          <div className="container about-layout">
-            <div className="about-visual">
-              <div className="pm-monogram">P<span>M</span>4</div>
-              <div className="about-caption"><i /> PROCESS OVER PROMISES</div>
-            </div>
-            <div className="about-copy">
-              <SectionHeading eyebrow="关于 PM4" title="为什么通过 PM4 开通" />
-              <p>
-                PM4 长期专注于比特币和加密市场交易，通过直播、复盘和实盘挑战记录真实交易过程。
-                指标主要用于辅助识别关键支撑和阻力区域，不构成任何投资建议。
-              </p>
-              <div className="why-grid">
-                {whyPm4.map((item) => <div key={item}><span>✓</span>{item}</div>)}
-              </div>
-            </div>
           </div>
         </section>
 
