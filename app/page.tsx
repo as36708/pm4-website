@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useState, type MouseEvent } from "react";
 import SplitText from "./components/SplitText";
 import {
   accessRules,
@@ -726,6 +726,19 @@ export default function Home() {
   const [menuOpen, setMenuOpen] = useState(false);
   const [selectedExchange, setSelectedExchange] = useState("Bybit");
 
+  const scrollToExchanges = (event: MouseEvent<HTMLAnchorElement>) => {
+    if (window.innerWidth > 700) return;
+
+    event.preventDefault();
+    const exchangeSection = document.querySelector<HTMLElement>("#exchanges");
+    if (!exchangeSection) return;
+
+    const headerOffset = 66;
+    const targetTop = exchangeSection.getBoundingClientRect().top + window.scrollY - headerOffset;
+    window.scrollTo({ top: targetTop, behavior: "auto" });
+    window.history.replaceState(null, "", "#exchanges");
+  };
+
   useEffect(() => {
     const reveal = new IntersectionObserver(
       (entries) => entries.forEach((entry) => {
@@ -839,12 +852,12 @@ export default function Home() {
                 textAlign="left"
               />
               <div className="hero-actions">
-                <a className="button premium-cta" href="#exchanges">
+                <a className="button premium-cta" href="#exchanges" onClick={scrollToExchanges}>
                   <span>领取专属指标</span>
                   <span className="premium-cta__arrow" aria-hidden="true">→</span>
                   <ArrowIcon />
                 </a>
-                <a className="button secondary" href="#exchanges">查看手续费返佣 <span>↓</span></a>
+                <a className="button secondary" href="#exchanges" onClick={scrollToExchanges}>查看手续费返佣 <span>↓</span></a>
               </div>
               <p className="trust-line">
                 <span>无需购买指标</span><i /> <span>提交 UID 审核</span><i /> <span>权限定期更新</span>
