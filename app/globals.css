@@ -357,6 +357,10 @@ h2 em {
   box-shadow: none;
 }
 
+.mobile-hero-action {
+  display: none;
+}
+
 .premium-cta__arrow {
   display: none;
 }
@@ -3189,6 +3193,16 @@ footer {
   .exchange-identity p { font-size: 11px; }
   .exchange-actions { gap: 7px; }
   .exchange-actions .button { height: 46px; padding-inline: 8px; font-size: 11px; }
+}
+
+@media (max-width: 1023px) {
+  .desktop-hero-action {
+    display: none !important;
+  }
+
+  .mobile-hero-action {
+    display: inline-flex;
+  }
 }
 
 @media (max-width: 900px) {

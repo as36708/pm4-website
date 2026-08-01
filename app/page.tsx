@@ -743,6 +743,22 @@ export default function Home() {
     return () => reveal.disconnect();
   }, []);
 
+  useEffect(() => {
+    if (menuOpen) return;
+
+    const releaseScroll = (element: HTMLElement) => {
+      element.style.removeProperty("overflow");
+      element.style.removeProperty("overflow-y");
+      element.style.removeProperty("position");
+      element.style.removeProperty("inset");
+      element.style.removeProperty("top");
+      element.style.removeProperty("width");
+    };
+
+    releaseScroll(document.body);
+    releaseScroll(document.documentElement);
+  }, [menuOpen]);
+
   const chooseExchange = (name: string) => {
     setSelectedExchange(name);
     requestAnimationFrame(() => document.querySelector("#indicator-review")?.scrollIntoView({ behavior: "smooth" }));
@@ -769,6 +785,26 @@ export default function Home() {
       top: targetTop,
       behavior: "smooth",
     });
+  };
+
+  const scrollToMobileSection = (sectionId: "exchanges" | "indicator-review") => {
+    if (window.innerWidth >= 1024) return;
+
+    const target = document.getElementById(sectionId);
+    if (!target) return;
+
+    if (menuOpen) setMenuOpen(false);
+
+    for (const element of [document.body, document.documentElement]) {
+      element.style.removeProperty("overflow");
+      element.style.removeProperty("overflow-y");
+      element.style.removeProperty("position");
+      element.style.removeProperty("inset");
+      element.style.removeProperty("top");
+      element.style.removeProperty("width");
+    }
+
+    target.scrollIntoView({ behavior: "smooth", block: "start" });
   };
 
   return (
@@ -844,7 +880,7 @@ export default function Home() {
               />
               <div className="hero-actions">
                 <a
-                  className="button premium-cta"
+                  className="button premium-cta desktop-hero-action"
                   href="#indicator-review"
                   onClick={(event) => scrollToDesktopSection(event, "indicator-review")}
                 >
@@ -852,13 +888,29 @@ export default function Home() {
                   <span className="premium-cta__arrow" aria-hidden="true">→</span>
                   <ArrowIcon />
                 </a>
+                <button
+                  className="button premium-cta mobile-hero-action"
+                  type="button"
+                  onClick={() => scrollToMobileSection("indicator-review")}
+                >
+                  <span>领取专属指标</span>
+                  <span className="premium-cta__arrow" aria-hidden="true">→</span>
+                  <ArrowIcon />
+                </button>
                 <a
-                  className="button secondary"
+                  className="button secondary desktop-hero-action"
                   href="#exchanges"
                   onClick={(event) => scrollToDesktopSection(event, "exchanges")}
                 >
                   查看手续费返佣 <span>↓</span>
                 </a>
+                <button
+                  className="button secondary mobile-hero-action"
+                  type="button"
+                  onClick={() => scrollToMobileSection("exchanges")}
+                >
+                  查看手续费返佣 <span>↓</span>
+                </button>
               </div>
               <p className="trust-line">
                 <span>无需购买指标</span><i /> <span>提交 UID 审核</span><i /> <span>权限定期更新</span>

@@ -52,6 +52,7 @@ test("keeps production links, copy flow, and media assets configured", async () 
   assert.match(data, /https:\/\/discord\.com\/channels\//);
   assert.match(data, /https:\/\/discord\.gg\/D5CPTzQafD/);
   assert.match(data, /https:\/\/t\.me\/as36701/);
+  assert.doesNotMatch(page + data, /WEEX|PM4WEEX|weex\.com/i);
   assert.doesNotMatch(page + data, /链接待配置|演示环境|开发提示|测试文字/);
 
   await Promise.all([
@@ -72,8 +73,13 @@ test("keeps the hero CTA scroll interruptible and free of repeated anchor alignm
   assert.equal((page.match(/alignMobileReviewAnchor/g) ?? []).length, 0);
   assert.match(page, /const scrollToDesktopSection/);
   assert.match(page, /if \(window\.innerWidth < 1024\) return;/);
+  assert.match(page, /const scrollToMobileSection/);
+  assert.match(page, /target\.scrollIntoView\(\{ behavior: "smooth", block: "start" \}\)/);
+  assert.equal((page.match(/scrollToMobileSection\("indicator-review"\)/g) ?? []).length, 1);
+  assert.equal((page.match(/scrollToMobileSection\("exchanges"\)/g) ?? []).length, 1);
   assert.equal((page.match(/window\.scrollTo\(/g) ?? []).length, 1);
   assert.equal((page.match(/scrollToDesktopSection\(event, "indicator-review"\)/g) ?? []).length, 1);
   assert.equal((page.match(/scrollToDesktopSection\(event, "exchanges"\)/g) ?? []).length, 1);
   assert.match(styles, /@media \(min-width: 1024px\)[\s\S]*?html\s*\{\s*scroll-behavior: auto;/);
+  assert.match(styles, /@media \(max-width: 1023px\)[\s\S]*?\.desktop-hero-action[\s\S]*?\.mobile-hero-action/);
 });
