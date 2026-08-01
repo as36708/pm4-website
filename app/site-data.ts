@@ -47,24 +47,6 @@ export type Exchange = {
 
 export const exchanges: Exchange[] = [
   {
-    name: "WEEX",
-    logo: "https://www.weex.com/trade_static/favicon.ico",
-    rebate: "30%",
-    makerFee: "0.02%",
-    takerFee: "0.08%",
-    code: "PM4WEEX",
-    desktopOrder: 4,
-    desktopFeatured: false,
-    description: "专属注册与资料审核通道",
-    newUserStatus: "支持",
-    existingUserStatus: "需确认",
-    indicatorStatus: "完成审核",
-    registerUrl: "https://www.weex.com/register",
-    transferUrl: "#support",
-    status: "open",
-    featured: true,
-  },
-  {
     name: "Bybit",
     logo: "https://www.bybit.com/favicon.ico",
     rebate: "33%",
