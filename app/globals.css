@@ -32,6 +32,25 @@ html {
   scroll-padding-top: 84px;
 }
 
+@media (min-width: 1024px) {
+  html {
+    scroll-behavior: auto;
+  }
+
+  html,
+  body,
+  main {
+    scroll-snap-type: none !important;
+  }
+
+  section,
+  .section,
+  [data-section] {
+    scroll-snap-align: none !important;
+    scroll-snap-stop: normal !important;
+  }
+}
+
 body {
   margin: 0;
   background: var(--bg-primary);

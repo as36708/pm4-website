@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { type MouseEvent, useEffect, useState } from "react";
 import SplitText from "./components/SplitText";
 import {
   accessRules,
@@ -748,6 +748,29 @@ export default function Home() {
     requestAnimationFrame(() => document.querySelector("#indicator-review")?.scrollIntoView({ behavior: "smooth" }));
   };
 
+  const scrollToDesktopSection = (
+    event: MouseEvent<HTMLAnchorElement>,
+    sectionId: "exchanges" | "indicator-review",
+  ) => {
+    if (window.innerWidth < 1024) return;
+
+    event.preventDefault();
+
+    const target = document.getElementById(sectionId);
+    if (!target) return;
+
+    const headerOffset = 84;
+    const targetTop = Math.max(
+      0,
+      target.getBoundingClientRect().top + window.scrollY - headerOffset,
+    );
+
+    window.scrollTo({
+      top: targetTop,
+      behavior: "smooth",
+    });
+  };
+
   return (
     <>
       <Header menuOpen={menuOpen} setMenuOpen={setMenuOpen} />
@@ -823,6 +846,7 @@ export default function Home() {
                 <a
                   className="button premium-cta"
                   href="#indicator-review"
+                  onClick={(event) => scrollToDesktopSection(event, "indicator-review")}
                 >
                   <span>领取专属指标</span>
                   <span className="premium-cta__arrow" aria-hidden="true">→</span>
@@ -831,6 +855,7 @@ export default function Home() {
                 <a
                   className="button secondary"
                   href="#exchanges"
+                  onClick={(event) => scrollToDesktopSection(event, "exchanges")}
                 >
                   查看手续费返佣 <span>↓</span>
                 </a>

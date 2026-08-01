@@ -62,11 +62,18 @@ test("keeps production links, copy flow, and media assets configured", async () 
 });
 
 test("keeps the hero CTA scroll interruptible and free of repeated anchor alignment", async () => {
-  const page = await readFile(new URL("../app/page.tsx", import.meta.url), "utf8");
+  const [page, styles] = await Promise.all([
+    readFile(new URL("../app/page.tsx", import.meta.url), "utf8"),
+    readFile(new URL("../app/globals.css", import.meta.url), "utf8"),
+  ]);
 
   assert.equal((page.match(/href="#indicator-review"/g) ?? []).length >= 2, true);
   assert.equal((page.match(/href="#exchanges"/g) ?? []).length >= 2, true);
   assert.equal((page.match(/alignMobileReviewAnchor/g) ?? []).length, 0);
-  assert.equal((page.match(/const scrollToSection/g) ?? []).length, 0);
-  assert.equal((page.match(/onClick=\{[^}]*scrollToSection/g) ?? []).length, 0);
+  assert.match(page, /const scrollToDesktopSection/);
+  assert.match(page, /if \(window\.innerWidth < 1024\) return;/);
+  assert.equal((page.match(/window\.scrollTo\(/g) ?? []).length, 1);
+  assert.equal((page.match(/scrollToDesktopSection\(event, "indicator-review"\)/g) ?? []).length, 1);
+  assert.equal((page.match(/scrollToDesktopSection\(event, "exchanges"\)/g) ?? []).length, 1);
+  assert.match(styles, /@media \(min-width: 1024px\)[\s\S]*?html\s*\{\s*scroll-behavior: auto;/);
 });
