@@ -358,7 +358,7 @@ h2 em {
 }
 
 .mobile-hero-action {
-  display: none;
+  display: none !important;
 }
 
 .premium-cta__arrow {
@@ -3201,7 +3201,7 @@ footer {
   }
 
   .mobile-hero-action {
-    display: inline-flex;
+    display: inline-flex !important;
   }
 }
 
