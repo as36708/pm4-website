@@ -3700,7 +3700,15 @@ footer {
   }
 
   .hero-preview-video {
+    display: block;
+    width: 100%;
+    height: 100%;
     object-fit: contain;
+    opacity: 1;
+    visibility: visible;
+    filter: none;
+    position: relative;
+    z-index: 1;
     image-rendering: auto;
   }
 

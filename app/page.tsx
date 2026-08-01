@@ -926,6 +926,12 @@ export default function Home() {
                   loop
                   playsInline
                   preload="metadata"
+                  poster="/images/indicator-preview-poster.jpg"
+                  onClick={(event) => {
+                    if (event.currentTarget.paused) {
+                      void event.currentTarget.play().catch(() => undefined);
+                    }
+                  }}
                   aria-label="PM4 专属指标演示视频"
                 >
                   <source src="/videos/pm4-indicator-preview.mp4" type="video/mp4" />

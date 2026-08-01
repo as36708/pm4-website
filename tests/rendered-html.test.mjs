@@ -35,6 +35,9 @@ test("server-renders the production PM4 page without starter content", async () 
   assert.match(html, /id="indicator-review"/);
   assert.match(html, /id="faq"/);
   assert.match(html, /pm4-indicator-preview\.mp4/);
+  assert.match(html, /indicator-preview-poster\.jpg/);
+  assert.match(html, /playsinline=""/i);
+  assert.match(html, /preload="metadata"/i);
   assert.doesNotMatch(html, /codex-preview|Your site is taking shape|Building your site/i);
   assert.doesNotMatch(html, /href=["']#["']/i);
 });
@@ -57,6 +60,7 @@ test("keeps production links, copy flow, and media assets configured", async () 
 
   await Promise.all([
     access(new URL("../public/videos/pm4-indicator-preview.mp4", import.meta.url)),
+    access(new URL("../public/images/indicator-preview-poster.jpg", import.meta.url)),
     access(new URL("../public/icons/discord.svg", import.meta.url)),
     access(new URL("../public/icons/telegram.svg", import.meta.url)),
   ]);
