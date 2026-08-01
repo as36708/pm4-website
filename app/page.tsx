@@ -743,27 +743,6 @@ export default function Home() {
     return () => reveal.disconnect();
   }, []);
 
-  useEffect(() => {
-    const alignMobileReviewAnchor = () => {
-      if (window.innerWidth > 700 || window.location.hash !== "#indicator-review") return;
-      requestAnimationFrame(() => {
-        requestAnimationFrame(() => {
-          document.querySelector("#indicator-review")?.scrollIntoView({ block: "start" });
-        });
-      });
-    };
-
-    alignMobileReviewAnchor();
-    const settleTimer = window.setTimeout(alignMobileReviewAnchor, 700);
-    const finalTimer = window.setTimeout(alignMobileReviewAnchor, 1400);
-    window.addEventListener("hashchange", alignMobileReviewAnchor);
-    return () => {
-      window.clearTimeout(settleTimer);
-      window.clearTimeout(finalTimer);
-      window.removeEventListener("hashchange", alignMobileReviewAnchor);
-    };
-  }, []);
-
   const chooseExchange = (name: string) => {
     setSelectedExchange(name);
     requestAnimationFrame(() => document.querySelector("#indicator-review")?.scrollIntoView({ behavior: "smooth" }));
@@ -841,12 +820,20 @@ export default function Home() {
                 textAlign="left"
               />
               <div className="hero-actions">
-                <a className="button premium-cta" href="#exchanges">
+                <a
+                  className="button premium-cta"
+                  href="#indicator-review"
+                >
                   <span>领取专属指标</span>
                   <span className="premium-cta__arrow" aria-hidden="true">→</span>
                   <ArrowIcon />
                 </a>
-                <a className="button secondary" href="#exchanges">查看手续费返佣 <span>↓</span></a>
+                <a
+                  className="button secondary"
+                  href="#exchanges"
+                >
+                  查看手续费返佣 <span>↓</span>
+                </a>
               </div>
               <p className="trust-line">
                 <span>无需购买指标</span><i /> <span>提交 UID 审核</span><i /> <span>权限定期更新</span>

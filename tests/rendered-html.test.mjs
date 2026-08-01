@@ -61,12 +61,12 @@ test("keeps production links, copy flow, and media assets configured", async () 
   ]);
 });
 
-test("keeps the mobile hero CTA on native non-blocking anchors", async () => {
+test("keeps the hero CTA scroll interruptible and free of repeated anchor alignment", async () => {
   const page = await readFile(new URL("../app/page.tsx", import.meta.url), "utf8");
-  const styles = await readFile(new URL("../app/globals.css", import.meta.url), "utf8");
 
+  assert.equal((page.match(/href="#indicator-review"/g) ?? []).length >= 2, true);
   assert.equal((page.match(/href="#exchanges"/g) ?? []).length >= 2, true);
-  assert.equal((page.match(/onClick=\{scrollToExchanges\}/g) ?? []).length, 0);
-  assert.equal((page.match(/const scrollToExchanges/g) ?? []).length, 0);
-  assert.match(styles, /@media \(max-width: 700px\)[\s\S]*?html \{[\s\S]*?scroll-behavior: auto;/);
+  assert.equal((page.match(/alignMobileReviewAnchor/g) ?? []).length, 0);
+  assert.equal((page.match(/const scrollToSection/g) ?? []).length, 0);
+  assert.equal((page.match(/onClick=\{[^}]*scrollToSection/g) ?? []).length, 0);
 });
