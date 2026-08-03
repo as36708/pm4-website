@@ -11,39 +11,68 @@ type FormErrors = Record<string, string>;
 
 const liveRebateRows = [
   {
-    nickname: "PM4***88",
+    nickname: "林浩然",
+    id: "alex***88",
     exchange: "Bitget",
     logo: "/exchanges/bitget.svg",
     amount: "11.38 USDT",
     time: "今日 16:02",
   },
   {
-    nickname: "Trader***27",
+    nickname: "陳子豪",
+    id: "river***27",
     exchange: "Bybit",
     logo: "/exchanges/bybit.svg",
     amount: "13.81 USDT",
     time: "今日 15:56",
   },
   {
-    nickname: "BTC***91",
+    nickname: "王若琳",
+    id: "noah***91",
     exchange: "BingX",
     logo: "/exchanges/bingx.svg",
     amount: "32.61 USDT",
     time: "今日 15:26",
   },
   {
-    nickname: "Alpha***03",
+    nickname: "林芷晴",
+    id: "luna***03",
     exchange: "Bitget",
     logo: "/exchanges/bitget.svg",
     amount: "7.87 USDT",
     time: "今日 14:56",
   },
   {
-    nickname: "Wave***16",
+    nickname: "周宇辰",
+    id: "ethan***16",
     exchange: "Bybit",
     logo: "/exchanges/bybit.svg",
     amount: "5.99 USDT",
     time: "今日 13:50",
+  },
+  {
+    nickname: "張偉倫",
+    id: "mason***42",
+    exchange: "BingX",
+    logo: "/exchanges/bingx.svg",
+    amount: "18.26 USDT",
+    time: "今日 13:18",
+  },
+  {
+    nickname: "李静怡",
+    id: "claire***75",
+    exchange: "Bitget",
+    logo: "/exchanges/bitget.svg",
+    amount: "9.64 USDT",
+    time: "今日 12:42",
+  },
+  {
+    nickname: "黃雅雯",
+    id: "owen***64",
+    exchange: "Bybit",
+    logo: "/exchanges/bybit.svg",
+    amount: "24.17 USDT",
+    time: "今日 12:08",
   },
 ];
 
@@ -1235,28 +1264,39 @@ export default function Home() {
                   <span role="columnheader">返佣时间</span>
                   <span role="columnheader">状态</span>
                 </div>
-                <div className="live-rebate-body" role="rowgroup">
-                  {liveRebateRows.map((row) => (
-                    <div className="live-rebate-row" role="row" key={`${row.nickname}-${row.time}`}>
-                      <div className="live-rebate-user" role="cell">
-                        <span className="live-rebate-logo">
-                          <img src={row.logo} alt="" aria-hidden="true" />
-                        </span>
-                        <span>
-                          <strong>{row.nickname}</strong>
-                          <small>{row.exchange}</small>
-                        </span>
+                <div className="live-rebate-viewport">
+                  <div className="live-rebate-body">
+                    {[0, 1].map((copy) => (
+                      <div
+                        className="live-rebate-group"
+                        role={copy === 0 ? "rowgroup" : "presentation"}
+                        aria-hidden={copy === 1 ? "true" : undefined}
+                        key={copy}
+                      >
+                        {liveRebateRows.map((row) => (
+                          <div className="live-rebate-row" role="row" key={`${copy}-${row.id}`}>
+                            <div className="live-rebate-user" role="cell">
+                              <span className="live-rebate-logo">
+                                <img src={row.logo} alt="" aria-hidden="true" />
+                              </span>
+                              <span>
+                                <strong>{row.nickname}</strong>
+                                <small>{row.id} · {row.exchange}</small>
+                              </span>
+                            </div>
+                            <strong className="live-rebate-amount" role="cell">{row.amount}</strong>
+                            <time role="cell">{row.time}</time>
+                            <span className="live-rebate-paid" role="cell">
+                              <i aria-hidden="true">✓</i>已到账
+                            </span>
+                          </div>
+                        ))}
                       </div>
-                      <strong className="live-rebate-amount" role="cell">{row.amount}</strong>
-                      <time role="cell">{row.time}</time>
-                      <span className="live-rebate-paid" role="cell">
-                        <i aria-hidden="true">✓</i>已到账
-                      </span>
-                    </div>
-                  ))}
+                    ))}
+                  </div>
                 </div>
               </div>
-              <p className="live-rebate-note">最近返佣记录 · 实际到账时间与金额以交易所结算为准</p>
+              <p className="live-rebate-note">记录持续滚动 · 实际到账时间与金额以交易所结算为准</p>
             </div>
             <div
               className="exchange-marquee desktop-exchange-only"
