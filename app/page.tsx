@@ -9,6 +9,15 @@ import {
 
 type FormErrors = Record<string, string>;
 
+function trackFrontEvent(eventType: "visit" | "exchange_click" | "transfer_click", exchange = "") {
+  void fetch("/api/track", {
+    method: "POST",
+    headers: { "content-type": "application/json" },
+    body: JSON.stringify({ eventType, exchange }),
+    keepalive: true,
+  }).catch(() => undefined);
+}
+
 function SectionHeading({
   eyebrow,
   title,
@@ -445,6 +454,7 @@ function ExchangePlatformCard({
             href={exchange.registerUrl}
             target="_blank"
             rel="noopener noreferrer"
+            onClick={() => trackFrontEvent("exchange_click", exchange.name)}
           >
             <span>立即注册</span>
           </a>
@@ -460,6 +470,7 @@ function ExchangePlatformCard({
             href={exchange.transferUrl}
             target="_blank"
             rel="noopener noreferrer"
+            onClick={() => trackFrontEvent("transfer_click", exchange.name)}
           >
             {transferContent}
           </a>
@@ -470,6 +481,7 @@ function ExchangePlatformCard({
             disabled={!exchange.transferUrl}
             onClick={() => {
               if (exchange.transferUrl === "#support") {
+                trackFrontEvent("transfer_click", exchange.name);
                 window.dispatchEvent(new Event("pm4:open-support"));
                 return;
               }
@@ -494,6 +506,7 @@ function ApplicationForm({ selectedExchange }: { selectedExchange: string }) {
   const [discordPrompted, setDiscordPrompted] = useState(false);
   const [message, setMessage] = useState("");
   const [messageTone, setMessageTone] = useState<"success" | "warning" | "error">("success");
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
   const validate = () => {
     const nextErrors: FormErrors = {};
@@ -519,6 +532,27 @@ function ApplicationForm({ selectedExchange }: { selectedExchange: string }) {
     const nextErrors = validate();
     if (Object.keys(nextErrors).length) return;
 
+    setIsSubmitting(true);
+
+    try {
+      const response = await fetch("/api/applications", {
+        method: "POST",
+        headers: { "content-type": "application/json" },
+        body: JSON.stringify({
+          exchange,
+          uid: uid.trim(),
+          tradingViewUser: tradingViewUser.trim(),
+        }),
+      });
+      const result = await response.json().catch(() => ({})) as { error?: string };
+      if (!response.ok) throw new Error(result.error || "提交失败，请稍后重试。");
+    } catch (error) {
+      setMessageTone("error");
+      setMessage(error instanceof Error ? error.message : "提交失败，请稍后重试。");
+      setIsSubmitting(false);
+      return;
+    }
+
     const reviewText = `${siteConfig.copyTemplateTitle}
 
 交易所：${exchange}
@@ -536,8 +570,11 @@ TradingView 用户名：${tradingViewUser.trim()}
       setMessage(siteConfig.copySuccessMessage);
       window.setTimeout(() => setCopyButtonCopied(false), 2000);
     } catch {
-      setMessageTone("error");
-      setMessage("复制失败，请检查浏览器剪贴板权限后重试。");
+      setHasCopied(true);
+      setMessageTone("warning");
+      setMessage("申请已提交到后台，但复制失败。请检查浏览器剪贴板权限后重试。");
+    } finally {
+      setIsSubmitting(false);
     }
   };
 
@@ -620,16 +657,17 @@ TradingView 用户名：${tradingViewUser.trim() || "—"}`;
           className="button copy-review-button review-zelect-action review-zelect-primary"
           type="button"
           onClick={copyReviewInfo}
+          disabled={isSubmitting}
         >
           <span className="review-button-text-wrapper">
             <span className="review-roll-text">
               <span>
                 <span className="copy-icon" aria-hidden="true"><i /><i /></span>
-                {copyButtonCopied ? "已复制" : "复制审核信息"}
+                {isSubmitting ? "正在提交" : copyButtonCopied ? "已提交并复制" : "提交并复制审核信息"}
               </span>
               <span aria-hidden="true">
                 <span className="copy-icon"><i /><i /></span>
-                {copyButtonCopied ? "已复制" : "复制审核信息"}
+                {isSubmitting ? "正在提交" : copyButtonCopied ? "已提交并复制" : "提交并复制审核信息"}
               </span>
             </span>
           </span>
@@ -844,6 +882,13 @@ export default function Home() {
   const [selectedExchange, setSelectedExchange] = useState("");
 
   useEffect(() => {
+    const key = `pm4-visit-${new Date().toISOString().slice(0, 10)}`;
+    if (window.sessionStorage.getItem(key)) return;
+    window.sessionStorage.setItem(key, "1");
+    trackFrontEvent("visit");
+  }, []);
+
+  useEffect(() => {
     const revealElements = document.querySelectorAll<HTMLElement>(".reveal");
 
     if (window.innerWidth <= 700 || !("IntersectionObserver" in window)) {
@@ -938,6 +983,7 @@ export default function Home() {
   }, [menuOpen]);
 
   const chooseExchange = (name: string) => {
+    trackFrontEvent("transfer_click", name);
     setSelectedExchange(name);
     requestAnimationFrame(() => document.querySelector("#indicator-review")?.scrollIntoView({ behavior: "smooth" }));
   };
