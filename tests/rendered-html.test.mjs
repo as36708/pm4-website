@@ -68,6 +68,17 @@ test("keeps production links, copy flow, and media assets configured", async () 
   ]);
 });
 
+test("packages secure Vercel functions for applications and analytics", async () => {
+  const applicationConfig = JSON.parse(await readFile(new URL("../.vercel/output/functions/api/applications.func/.vc-config.json", import.meta.url), "utf8"));
+  const trackConfig = JSON.parse(await readFile(new URL("../.vercel/output/functions/api/track.func/.vc-config.json", import.meta.url), "utf8"));
+  const functionSource = await readFile(new URL("../api/pm4-ingest.mjs", import.meta.url), "utf8");
+  assert.equal(applicationConfig.runtime, "nodejs22.x");
+  assert.equal(trackConfig.runtime, "nodejs22.x");
+  assert.match(functionSource, /PM4_FRONTEND_INGEST_SECRET/);
+  assert.match(functionSource, /OAI-Sites-Authorization/);
+  assert.doesNotMatch(functionSource, /BYBIT_AFFILIATE_API_SECRET/);
+});
+
 test("keeps the hero CTA scroll interruptible and free of repeated anchor alignment", async () => {
   const [page, styles] = await Promise.all([
     readFile(new URL("../app/page.tsx", import.meta.url), "utf8"),
