@@ -1,21 +1,50 @@
 @import "tailwindcss";
 
 :root {
-  --bg-primary: #080909;
-  --bg-secondary: #0e0f10;
-  --bg-card: #141516;
-  --bg-card-hover: #1a1b1d;
-  --border-primary: #25272a;
-  --border-red: #57221d;
-  --text-primary: #f4f4f2;
-  --text-secondary: #a4a5a7;
-  --text-muted: #6f7175;
-  --accent-primary: #ee3f2d;
-  --accent-hover: #ff4b37;
-  --accent-dark: #8e261d;
-  --accent-bg: #23100e;
-  --success: #44a878;
-  --danger: #d9574f;
+  --primary: #3282ff;
+  --secondary: #60a5fa;
+  --tertiary: #080b10;
+  --neutral: #8b95a5;
+  --page-background: #080b10;
+  --card-background: #151f2d;
+  --card-background-secondary: #1d2939;
+  --text-primary: #e8eef8;
+  --text-secondary: #8b95a5;
+  --border-color: #2a3748;
+  --primary-rgb: 50 130 255;
+  --secondary-rgb: 96 165 250;
+  --page-rgb: 8 11 16;
+  --card-rgb: 21 31 45;
+  --card-secondary-rgb: 29 41 57;
+  --text-primary-rgb: 232 238 248;
+  --neutral-rgb: 139 149 165;
+  --border-rgb: 42 55 72;
+  --select-arrow-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 12 8'%3E%3Cpath d='M1 1l5 5 5-5' fill='none' stroke='%2360A5FA' stroke-width='1.5' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E");
+
+  /* Backwards-compatible semantic aliases used by the existing components. */
+  --bg-primary: var(--page-background);
+  --bg-secondary: var(--card-background);
+  --bg-section: var(--page-background);
+  --bg-card: var(--card-background);
+  --bg-card-hover: var(--card-background-secondary);
+  --bg-card-soft: var(--card-background-secondary);
+  --border-primary: var(--border-color);
+  --border-accent: var(--primary);
+  --border-red: var(--border-color);
+  --text-muted: var(--neutral);
+  --accent-primary: var(--primary);
+  --accent-hover: var(--secondary);
+  --accent-dark: var(--primary);
+  --accent-soft: rgb(var(--primary-rgb) / 12%);
+  --accent-bg: rgb(var(--primary-rgb) / 12%);
+  --profit: #44a878;
+  --loss: #d9574f;
+  --profit-rgb: 68 168 120;
+  --loss-rgb: 217 87 79;
+  --success: var(--profit);
+  --danger: var(--loss);
+  --warning: #c98b43;
+  --disabled: var(--neutral);
   --radius-sm: 8px;
   --radius-md: 14px;
   --radius-lg: 22px;
@@ -2476,30 +2505,6 @@ footer {
 }
 
 @media (min-width: 1101px) {
-  :root {
-    --bg-primary: #090808;
-    --bg-secondary: #0d0a0a;
-    --bg-section: #110d0d;
-    --bg-card: #171011;
-    --bg-card-hover: #1d1415;
-    --bg-card-soft: #211516;
-    --border-primary: #2e2324;
-    --border-accent: #522521;
-    --border-red: #522521;
-    --text-primary: #f4f0ed;
-    --text-secondary: #b8aeaa;
-    --text-muted: #746c69;
-    --accent-primary: #ef4636;
-    --accent-hover: #fa5846;
-    --accent-dark: #a82d24;
-    --accent-soft: #2a1211;
-    --accent-bg: #2a1211;
-    --success: #3fa77a;
-    --warning: #c98b43;
-    --disabled: #555154;
-    --danger: #ef4636;
-  }
-
   main {
     display: flex;
     flex-direction: column;
@@ -3719,30 +3724,6 @@ footer {
 }
 
 @media (max-width: 700px) {
-  :root {
-    --bg-primary: #090808;
-    --bg-secondary: #0d0a0a;
-    --bg-section: #110d0d;
-    --bg-card: #171011;
-    --bg-card-hover: #1d1415;
-    --bg-card-soft: #211516;
-    --border-primary: #2e2324;
-    --border-accent: #522521;
-    --border-red: #522521;
-    --text-primary: #f4f0ed;
-    --text-secondary: #b8aeaa;
-    --text-muted: #746c69;
-    --accent-primary: #ef4636;
-    --accent-hover: #fa5846;
-    --accent-dark: #a82d24;
-    --accent-soft: #2a1211;
-    --accent-bg: #2a1211;
-    --success: #3fa77a;
-    --warning: #c98b43;
-    --disabled: #555154;
-    --danger: #ef4636;
-  }
-
   body { background: var(--bg-primary); }
   html {
     scroll-behavior: auto;
@@ -4272,23 +4253,6 @@ footer {
    premium financial services, without changing the mobile or tablet surface. */
 @media (min-width: 1024px) {
   :root {
-    --bg-primary: #030303;
-    --bg-secondary: #070707;
-    --bg-section: #080808;
-    --bg-card: #090909;
-    --bg-card-hover: #0d0d0d;
-    --bg-card-soft: #0b0b0b;
-    --border-primary: #232323;
-    --border-accent: #333335;
-    --border-red: #3b3b3e;
-    --text-primary: #f2f1ed;
-    --text-secondary: #aaa8a3;
-    --text-muted: #6f6e6a;
-    --accent-primary: #f05a3c;
-    --accent-hover: #ff6b4a;
-    --accent-dark: #b83f2b;
-    --accent-soft: #121212;
-    --accent-bg: #121212;
     --radius-sm: 6px;
     --radius-md: 10px;
     --radius-lg: 14px;
@@ -9556,22 +9520,6 @@ footer {
 
 /* Responsive visual sync: tablet and phone now follow the current PC language. */
 @media (max-width: 1100px) {
-  :root {
-    --bg-primary: #08080c;
-    --bg-secondary: #09090e;
-    --bg-section: #0d0d13;
-    --bg-card: #101016;
-    --bg-card-hover: #14141c;
-    --border-primary: rgb(255 255 255 / 9%);
-    --border-accent: rgb(118 88 255 / 38%);
-    --text-primary: #f7f7fa;
-    --text-secondary: #aaaab6;
-    --text-muted: #73737e;
-    --accent-primary: #9b75ff;
-    --accent-hover: #b493ff;
-    --accent-soft: rgb(118 88 255 / 10%);
-  }
-
   body { background: #08080c; }
 
   .site-header.site-header {
@@ -10346,4 +10294,795 @@ footer {
   .exchange-section .exchange-heading-line {
     text-wrap: balance;
   }
+}
+
+/* Unified PM4 blue color system.
+   This final layer intentionally changes colors only; all geometry, spacing,
+   copy, motion timing and interaction logic remain owned by the rules above. */
+html,
+body,
+main,
+footer {
+  color: var(--text-primary);
+  background-color: var(--page-background);
+}
+
+::selection {
+  color: var(--page-background);
+  background-color: var(--primary);
+}
+
+:focus-visible {
+  outline-color: var(--primary);
+}
+
+.site-header.site-header {
+  border-color: var(--border-color);
+  background-color: var(--page-background);
+  background-image: none;
+}
+
+.site-header .nav-links a,
+.site-header .nav-links.nav-links a,
+.footer-top p,
+.footer-bottom,
+.section-copy,
+.hero .hero-lead,
+.hero.hero .hero-copy .hero-lead,
+.hero.hero .hero-copy .hero-lead .split-word,
+.hero .trust-line {
+  color: var(--text-secondary);
+}
+
+.site-header .nav-links a:hover,
+.site-header .nav-links.nav-links a:hover,
+.footer-bottom a:hover,
+.footer-bottom button:hover {
+  color: var(--primary);
+}
+
+.brand-signal,
+.site-header .menu-toggle,
+.site-header .nav-links.open {
+  border-color: var(--border-color);
+  color: var(--text-primary);
+  background-color: var(--card-background);
+  background-image: none;
+}
+
+.site-header .menu-toggle > span {
+  border-color: var(--primary);
+}
+
+.brand-signal i:nth-child(2),
+.menu-toggle span,
+.eyebrow > span {
+  background-color: var(--primary);
+}
+
+.eyebrow {
+  color: var(--text-secondary);
+}
+
+.site-header .header-support-cta {
+  border-color: var(--primary);
+  color: var(--text-primary);
+  background-color: var(--card-background);
+  background-image: none;
+}
+
+.site-header .header-support-cta .header-support-text-wrapper {
+  background-color: var(--card-background);
+  background-image: none;
+}
+
+.site-header .header-support-cta .header-support-overlay,
+.site-header .header-support-cta .header-support-gradient {
+  background-color: var(--primary);
+  background-image: none;
+}
+
+.site-header .header-support-cta .zelect-roll-text > span {
+  color: var(--text-primary);
+}
+
+.site-header .header-support-cta .zelect-roll-text > span:last-child {
+  color: var(--page-background);
+}
+
+.site-header .header-support-cta:focus-visible {
+  outline-color: var(--primary);
+}
+
+.hero.hero,
+.section,
+.exchange-section.exchange-section,
+.hero + .exchange-section.exchange-section,
+.submit-section.submit-section,
+.process-section,
+.rules-section,
+.faq-section {
+  border-color: var(--border-color);
+  background-color: var(--page-background);
+  background-image: none;
+}
+
+.hero.hero::before,
+.hero.hero::after,
+.hero .hero-glow,
+.hero .hero-visual::before,
+.hero .hero-visual::after,
+.hero .hero-visual.hero-visual::before,
+.hero .hero-visual.hero-visual::after,
+.hero + .exchange-section.exchange-section::before,
+.submit-section.submit-section::before,
+.submit-section.submit-section::after {
+  background: none;
+  box-shadow: none;
+}
+
+.hero.hero h1,
+.hero .hero-title-line,
+.hero .hero-title-third,
+.hero.hero .hero-title-third,
+.hero.hero .hero-title-line.hero-title-third,
+.section-heading h2,
+.exchange-section .exchange-heading-pc h2,
+.hero + .exchange-section .exchange-heading-pc h2,
+.submit-section .submit-intro .section-heading h2 {
+  color: var(--text-primary);
+  -webkit-text-fill-color: var(--text-primary);
+}
+
+.hero .hero-title-gradient,
+.exchange-section .exchange-heading-highlight,
+.hero + .exchange-section .exchange-heading-highlight,
+h1 em,
+h2 em {
+  color: var(--primary);
+  background-color: transparent;
+  background-image: none;
+  -webkit-text-fill-color: var(--primary);
+}
+
+.hero .eyebrow,
+.hero .hero-badge,
+.hero.hero .hero-copy .eyebrow,
+.submit-section .section-heading .eyebrow {
+  border-color: var(--primary);
+  color: var(--text-primary);
+  background-color: var(--card-background);
+  background-image: none;
+}
+
+.hero.hero .hero-copy .eyebrow > span,
+.hero + .exchange-section .section-heading .eyebrow > span,
+.submit-section .section-heading .eyebrow > span {
+  border-color: var(--primary);
+  background-color: var(--primary);
+  box-shadow: none;
+}
+
+.hero + .exchange-section .section-heading .eyebrow {
+  color: var(--text-secondary);
+  background-image: none;
+}
+
+.button,
+.hero .hero-actions .premium-cta,
+.hero .hero-actions .desktop-hero-action.premium-cta,
+.submit-section .review-actions .review-zelect-primary,
+.exchange-section .exchange-card-register,
+.discord-help-action {
+  border-color: var(--primary);
+  color: var(--page-background);
+  background-color: var(--primary);
+  background-image: none;
+  box-shadow: 0 8px 22px rgb(var(--primary-rgb) / 18%);
+}
+
+.button:hover,
+.hero .hero-actions .premium-cta:hover,
+.hero .hero-actions .desktop-hero-action.premium-cta:hover,
+.submit-section .review-actions .review-zelect-primary:hover,
+.exchange-section .exchange-card-register:hover,
+.discord-help-action:hover {
+  border-color: var(--secondary);
+  color: var(--page-background);
+  background-color: var(--secondary);
+  background-image: none;
+  box-shadow: 0 10px 26px rgb(var(--primary-rgb) / 22%);
+}
+
+.button.premium-cta:focus-visible {
+  outline-color: var(--primary);
+}
+
+.button.secondary,
+.hero .hero-actions .secondary,
+.hero .hero-actions .desktop-hero-action.secondary,
+.submit-section .review-actions .review-zelect-secondary,
+.discord-review-button,
+.exchange-transfer,
+.exchange-section .exchange-transfer,
+.exchange-section .exchange-card-transfer,
+.exchange-review-cta,
+.exchange-discord-cta {
+  border-color: var(--primary);
+  color: var(--text-primary);
+  background-color: var(--card-background);
+  background-image: none;
+  box-shadow: none;
+}
+
+.button.secondary:hover,
+.hero .hero-actions .secondary:hover,
+.hero .hero-actions .desktop-hero-action.secondary:hover,
+.submit-section .review-actions .review-zelect-secondary:hover,
+.discord-review-button:hover,
+.exchange-transfer:hover,
+.exchange-section .exchange-transfer:hover,
+.exchange-section .exchange-card-transfer:hover,
+.exchange-review-cta:hover,
+.exchange-discord-cta:hover {
+  border-color: var(--secondary);
+  color: var(--text-primary);
+  background-color: var(--card-background-secondary);
+  background-image: none;
+  box-shadow: none;
+}
+
+.button.disabled,
+.button:disabled,
+.discord-review-button:disabled,
+.exchange-section .exchange-card-register:disabled,
+.exchange-section .exchange-card-transfer:disabled {
+  border-color: var(--border-color);
+  color: var(--text-secondary);
+  background-color: var(--card-background-secondary);
+  background-image: none;
+  box-shadow: none;
+}
+
+.hero.hero .hero-actions .desktop-hero-action.premium-cta,
+.hero.hero .hero-actions .desktop-hero-action.premium-cta:hover {
+  border-color: var(--primary);
+  color: var(--page-background);
+  background-color: var(--primary);
+}
+
+.hero.hero .hero-actions .desktop-hero-action.secondary,
+.hero.hero .hero-actions .desktop-hero-action.secondary:hover {
+  border-color: var(--primary);
+  color: var(--text-primary);
+  background-color: var(--card-background);
+}
+
+.hero.hero .hero-actions .desktop-hero-action .zelect-button-overlay,
+.submit-section .review-button-overlay {
+  background-color: var(--secondary);
+  background-image: none;
+}
+
+.hero.hero .hero-actions .desktop-hero-action.secondary .zelect-button-overlay,
+.submit-section .review-zelect-secondary .review-button-overlay {
+  background-color: var(--primary);
+}
+
+.hero.hero .hero-actions .desktop-hero-action.premium-cta .zelect-roll-text > span,
+.submit-section .review-zelect-primary .review-roll-text > span {
+  color: var(--page-background);
+}
+
+.hero.hero .hero-actions .desktop-hero-action.premium-cta::before {
+  background-color: var(--secondary);
+  background-image: none;
+}
+
+.hero.hero .hero-actions .desktop-hero-action.premium-cta::after {
+  background: transparent;
+  opacity: 0;
+}
+
+.hero.hero .hero-actions .desktop-hero-action.premium-cta:focus-visible {
+  outline-color: var(--primary);
+}
+
+.hero.hero .hero-actions .desktop-hero-action.secondary .zelect-roll-text > span:first-child,
+.submit-section .review-zelect-secondary .review-roll-text > span:first-child {
+  color: var(--text-primary);
+}
+
+.hero.hero .hero-actions .desktop-hero-action.secondary .zelect-roll-text > span:last-child,
+.submit-section .review-zelect-secondary .review-roll-text > span:last-child {
+  color: var(--page-background);
+}
+
+.submit-section .review-actions .review-zelect-secondary,
+.submit-section .review-actions .discord-review-button {
+  box-shadow: inset 0 0 0 1px var(--primary);
+}
+
+.submit-section .review-actions .review-zelect-secondary:hover,
+.submit-section .review-actions .discord-review-button:hover {
+  box-shadow: inset 0 0 0 1px var(--secondary);
+}
+
+.hero .hero-interface-backplate.hero-interface-backplate {
+  border-color: var(--border-color);
+  color: var(--text-primary);
+  background-color: var(--card-background-secondary);
+  background-image: none;
+  box-shadow: 0 24px 62px rgb(var(--page-rgb) / 36%);
+}
+
+.hero .hero-interface-backplate::after,
+.hero .hero-video-frame::before {
+  background-color: transparent;
+  background-image: none;
+}
+
+.hero .hero-video-frame.hero-video-frame {
+  border-color: var(--border-color);
+  background-color: var(--card-background);
+  background-image: none;
+  box-shadow: 0 24px 64px rgb(var(--page-rgb) / 42%);
+}
+
+.hero .terminal-label,
+.hero.hero .hero-visual .terminal-label,
+.hero .hero-interface-backplate__head,
+.hero .hero-interface-backplate__head span,
+.hero-interface-backplate__summary span,
+.hero-interface-backplate__rows p {
+  color: var(--text-secondary);
+}
+
+.hero .terminal-label i,
+.hero-interface-backplate__rows p > i {
+  background-color: var(--primary);
+  box-shadow: none;
+}
+
+.hero .trust-line i {
+  border-color: var(--primary);
+  background-color: var(--primary);
+}
+
+.hero-interface-backplate__head i,
+.hero-interface-backplate__rows p > b {
+  color: var(--primary);
+  background-color: transparent;
+}
+
+.hero-interface-backplate__lines span,
+.hero-interface-backplate__rows p {
+  border-color: var(--border-color);
+  background-color: var(--card-background);
+}
+
+.hero .hero-interface-backplate__lines,
+.hero .hero-interface-backplate__rows {
+  border-color: var(--border-color);
+  background-color: var(--card-background);
+  background-image: none;
+}
+
+.exchange-section .exchange-heading-pc h2 {
+  background-image: none;
+}
+
+.exchange-section .exchange-marquee,
+.exchange-section .exchange-marquee::before,
+.exchange-section .exchange-marquee::after {
+  border-color: var(--border-color);
+  color: var(--text-secondary);
+  background-color: var(--page-background);
+  background-image: none;
+}
+
+.exchange-section .exchange-marquee-group strong,
+.exchange-section .exchange-marquee-group span:last-of-type {
+  color: var(--primary);
+}
+
+.hero + .exchange-section .exchange-marquee-group,
+.hero + .exchange-section .exchange-marquee-group > span {
+  color: var(--text-secondary);
+}
+
+.exchange-section .exchange-platform-card,
+.exchange-section .exchange-platform-card:nth-child(2),
+.hero + .exchange-section .exchange-platform-card,
+.hero + .exchange-section .exchange-platform-card:nth-child(2) {
+  border-color: var(--border-color);
+  color: var(--text-primary);
+  background-color: var(--card-background);
+  background-image: none;
+  box-shadow: inset 0 1px 0 rgb(var(--text-primary-rgb) / 4%);
+}
+
+.exchange-section .exchange-platform-card::before,
+.exchange-section .exchange-platform-card:nth-child(2)::before,
+.hero + .exchange-section .exchange-platform-card::before,
+.hero + .exchange-section .exchange-platform-card:nth-child(2)::before {
+  border-color: var(--border-color);
+  background-color: var(--card-background);
+  background-image: none;
+}
+
+.exchange-section .exchange-platform-card::after,
+.hero + .exchange-section .exchange-platform-card::after {
+  background-color: var(--primary);
+  background-image: none;
+}
+
+.exchange-section .exchange-platform-card:hover,
+.exchange-section .exchange-platform-card:focus-within,
+.exchange-section .exchange-platform-card.is-scroll-active,
+.hero + .exchange-section .exchange-platform-card:hover,
+.hero + .exchange-section .exchange-platform-card.is-scroll-active {
+  border-color: var(--primary);
+  background-color: var(--card-background-secondary);
+  background-image: none;
+}
+
+.exchange-section .exchange-platform-card:hover::before,
+.exchange-section .exchange-platform-card:focus-within::before,
+.exchange-section .exchange-platform-card.is-scroll-active::before,
+.hero + .exchange-section .exchange-platform-card:hover::before,
+.hero + .exchange-section .exchange-platform-card.is-scroll-active::before {
+  border-color: var(--primary);
+  background-color: var(--card-background-secondary);
+  background-image: none;
+}
+
+.hero + .exchange-section .exchange-card-list:has(.exchange-platform-card:hover)
+  .exchange-platform-card.is-scroll-active:not(:hover)::before {
+  border-color: var(--border-color);
+  background-color: var(--card-background);
+  background-image: none;
+}
+
+.exchange-section .exchange-card-logo,
+.exchange-section .exchange-logo {
+  border-color: var(--border-color);
+  background-color: var(--card-background-secondary);
+}
+
+.exchange-section .exchange-card-primary,
+.exchange-section .exchange-card-rates,
+.exchange-section .exchange-card-actions,
+.exchange-section .exchange-card-rates > div,
+.exchange-table-head,
+.exchange-table-row,
+.exchange-cell {
+  border-color: var(--border-color);
+}
+
+.exchange-section .exchange-card-identity h3,
+.exchange-section .exchange-card-rates strong,
+.exchange-section .exchange-name-line strong {
+  color: var(--text-primary);
+}
+
+.exchange-section .exchange-card-identity p,
+.exchange-section .exchange-card-rates span,
+.exchange-section .exchange-mobile-label,
+.exchange-section .exchange-review-help {
+  color: var(--text-secondary);
+}
+
+.exchange-section .exchange-card-identity strong,
+.exchange-section .exchange-card-identity p strong,
+.exchange-section .exchange-rebate strong,
+.exchange-section .desktop-exchange-rebate strong,
+.exchange-section .recommended,
+.exchange-section .exchange-card-register-arrow,
+.exchange-section .exchange-card-link-arrow,
+.exchange-section .exchange-review-arrow,
+.exchange-section .exchange-discord-arrow {
+  color: var(--primary);
+}
+
+.exchange-section .exchange-card-register,
+.exchange-section .exchange-card-register:hover {
+  border-color: var(--primary);
+  color: var(--page-background);
+  background-color: var(--primary);
+  background-image: none;
+}
+
+.exchange-section .exchange-card-register:hover {
+  border-color: var(--secondary);
+  background-color: var(--secondary);
+}
+
+.exchange-section .exchange-card-register .exchange-card-register-arrow {
+  color: var(--page-background);
+}
+
+.exchange-section .exchange-card-transfer {
+  border-color: var(--primary);
+  color: var(--text-primary);
+  background-color: var(--card-background);
+}
+
+.exchange-section .exchange-card-transfer:hover {
+  border-color: var(--secondary);
+  color: var(--text-primary);
+  background-color: var(--card-background-secondary);
+}
+
+.exchange-section .exchange-badge.success,
+.exchange-section .exchange-badge.info {
+  border-color: var(--primary);
+  color: var(--primary);
+  background-color: rgb(var(--primary-rgb) / 12%);
+}
+
+.exchange-section .exchange-badge.warning {
+  border-color: var(--border-color);
+  color: var(--text-secondary);
+  background-color: var(--card-background-secondary);
+}
+
+.submit-section > .submit-layout::before {
+  border-color: var(--border-color);
+  background-color: var(--card-background);
+  background-image: none;
+  box-shadow: none;
+}
+
+.submit-section .application-form,
+.submit-section .review-steps-card {
+  border-color: var(--border-color);
+  color: var(--text-primary);
+  background-color: var(--card-background);
+  background-image: none;
+  box-shadow: inset 0 1px 0 rgb(var(--text-primary-rgb) / 4%);
+}
+
+.submit-section .application-form-heading,
+.submit-section .review-steps-card li,
+.submit-section .review-steps-card::before {
+  border-color: var(--border-color);
+  background-color: transparent;
+}
+
+.submit-section .review-steps-card::before {
+  background-color: var(--border-color);
+  background-image: none;
+}
+
+.submit-section .application-form-heading > span,
+.submit-section .form-grid label > span b,
+.submit-section .review-steps-title > span {
+  color: var(--primary);
+}
+
+.submit-section .application-form-heading h3,
+.submit-section .review-steps-title strong,
+.submit-section .review-preview > strong {
+  color: var(--text-primary);
+}
+
+.submit-section .application-form-copy,
+.submit-section .form-grid label > span,
+.submit-section .application-form .form-grid label > span,
+.submit-section .review-steps-card li p,
+.submit-section .review-preview pre {
+  color: var(--text-secondary);
+}
+
+.submit-section .review-steps-title > span,
+.submit-section .review-steps-card li > span {
+  border-color: var(--primary);
+  color: var(--page-background);
+  background-color: var(--primary);
+}
+
+.submit-section input,
+.submit-section select,
+.submit-section .application-form .form-grid input,
+.submit-section .application-form .form-grid select {
+  border-color: var(--border-color);
+  color: var(--text-primary);
+  background-color: var(--card-background-secondary);
+  box-shadow: none;
+}
+
+.submit-section select,
+.submit-section .application-form .form-grid select {
+  background-image: var(--select-arrow-image);
+  background-position: calc(100% - 16px) 50%;
+  background-size: 10px 7px;
+  background-repeat: no-repeat;
+}
+
+.submit-section input::placeholder,
+.submit-section .application-form .form-grid input::placeholder,
+.submit-section select.is-placeholder,
+.submit-section .application-form .form-grid select.is-placeholder {
+  color: var(--text-secondary);
+  opacity: 1;
+}
+
+.submit-section input:hover,
+.submit-section select:hover,
+.submit-section .application-form .form-grid input:hover,
+.submit-section .application-form .form-grid select:hover {
+  border-color: var(--primary);
+}
+
+.submit-section input:focus,
+.submit-section select:focus,
+.submit-section .application-form .form-grid input:focus,
+.submit-section .application-form .form-grid select:focus {
+  border-color: var(--primary);
+  outline: 0;
+  box-shadow: 0 0 0 3px rgb(var(--primary-rgb) / 18%);
+}
+
+.submit-section .review-preview {
+  border-color: var(--primary);
+  color: var(--text-primary);
+  background-color: var(--card-background-secondary);
+  background-image: none;
+  box-shadow: 0 0 0 1px rgb(var(--primary-rgb) / 8%);
+}
+
+.submit-section .field-error,
+.submit-section .review-message.error {
+  color: var(--loss);
+}
+
+.submit-section .review-message.warning {
+  color: var(--loss);
+}
+
+.submit-section .review-message.success {
+  color: var(--primary);
+}
+
+.submit-section .sensitive-warning {
+  border-color: var(--loss);
+  color: var(--text-secondary);
+  background-color: rgb(var(--loss-rgb) / 8%);
+  background-image: none;
+}
+
+.submit-section .sensitive-warning > span {
+  border-color: var(--loss);
+  color: var(--loss);
+  background-color: rgb(var(--loss-rgb) / 8%);
+}
+
+.submit-section .review-actions .review-zelect-action:focus-visible {
+  outline-color: var(--primary);
+}
+
+.submit-section .review-zelect-primary .copy-icon i:last-child {
+  background-color: var(--page-background);
+}
+
+.section-note,
+.review-preview,
+.review-steps-card,
+.application-form,
+.support-panel,
+.discord-help-dialog {
+  border-color: var(--border-color);
+  background-color: var(--card-background);
+  background-image: none;
+}
+
+.section-note-icon {
+  border-color: var(--primary);
+  color: var(--primary);
+  background-color: rgb(var(--primary-rgb) / 12%);
+}
+
+.support-button {
+  border-color: var(--primary);
+  color: var(--text-primary);
+  background-color: var(--card-background);
+  background-image: none;
+  box-shadow: 0 15px 35px rgb(var(--page-rgb) / 45%);
+}
+
+.support-button:hover {
+  border-color: var(--secondary);
+  background-color: var(--card-background-secondary);
+}
+
+.support-button span,
+.support-panel a:hover,
+.discord-help-close:hover {
+  color: var(--primary);
+}
+
+.support-panel a:hover {
+  color: var(--secondary);
+}
+
+.support-button .support-chat-icon {
+  border-color: var(--primary);
+  color: var(--primary);
+}
+
+.support-button .support-chat-icon::after {
+  border-color: var(--primary);
+}
+
+.support-button em {
+  color: var(--text-primary);
+}
+
+.support-panel .support-links button > span,
+.support-panel .support-links a > span {
+  border-color: var(--border-color);
+  color: var(--text-secondary);
+  background-color: var(--card-background-secondary);
+  background-image: none;
+}
+
+.support-panel p,
+.support-panel a,
+.discord-help-dialog p {
+  color: var(--text-secondary);
+}
+
+.discord-help-modal {
+  background-color: rgb(var(--page-rgb) / 84%);
+  background-image: none;
+}
+
+.discord-help-close,
+.discord-help-icon {
+  border-color: var(--border-color);
+  color: var(--text-primary);
+  background-color: var(--card-background-secondary);
+}
+
+.discord-help-action {
+  color: var(--page-background);
+}
+
+footer,
+.footer-bottom {
+  border-color: var(--border-color);
+  background-color: var(--page-background);
+}
+
+/* Functional market-state colors remain distinct from the brand palette. */
+.live-price strong,
+.zone-support span {
+  color: var(--profit);
+}
+
+.candle,
+.legend-dot.green {
+  border-color: var(--profit);
+  background-color: var(--profit);
+}
+
+.zone-support {
+  border-color: var(--profit);
+  background-color: rgb(var(--profit-rgb) / 8%);
+}
+
+.candle.down,
+.legend-dot.red {
+  border-color: var(--loss);
+  background-color: var(--loss);
+}
+
+.zone-resistance span {
+  color: var(--loss);
+}
+
+.zone-resistance {
+  border-color: var(--loss);
+  background-color: rgb(var(--loss-rgb) / 8%);
 }
