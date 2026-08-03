@@ -33,7 +33,9 @@ test("server-renders the production PM4 page without starter content", async () 
   assert.match(html, /id="home"/);
   assert.match(html, /id="exchanges"/);
   assert.match(html, /id="indicator-review"/);
-  assert.match(html, /id="faq"/);
+  assert.doesNotMatch(html, /id="process"|id="faq"|rules-section/);
+  assert.match(html, /完成注册后/);
+  assert.match(html, /提交交易所 UID 与 TradingView 用户名/);
   assert.match(html, /pm4-indicator-preview\.mp4/);
   assert.match(html, /indicator-preview-poster\.jpg/);
   assert.match(html, /playsinline=""/i);
@@ -73,7 +75,7 @@ test("keeps the hero CTA scroll interruptible and free of repeated anchor alignm
   ]);
 
   assert.equal((page.match(/href="#indicator-review"/g) ?? []).length >= 2, true);
-  assert.equal((page.match(/href="#exchanges"/g) ?? []).length >= 2, true);
+  assert.equal((page.match(/href="#exchanges"/g) ?? []).length >= 1, true);
   assert.equal((page.match(/alignMobileReviewAnchor/g) ?? []).length, 0);
   assert.match(page, /const scrollToDesktopSection/);
   assert.match(page, /if \(window\.innerWidth < 1024\) return;/);

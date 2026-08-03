@@ -3,13 +3,7 @@
 import { type MouseEvent, useEffect, useState } from "react";
 import SplitText from "./components/SplitText";
 import {
-  accessRules,
-  desktopAccessRules,
-  desktopFaqs,
   exchanges,
-  faqs,
-  heroStats,
-  processSteps,
   siteConfig,
 } from "./site-data";
 
@@ -87,8 +81,9 @@ function Header({
     <header className="site-header">
       <div className="container nav-wrap">
         <a className="brand" href="#home" aria-label="PM4 首页">
-          <span className="brand-signal"><i /><i /><i /></span>
-          <span>PM4</span>
+          <span className="brand-logo" aria-hidden="true">
+            <img src="/images/pm4-logo-horizontal.png" alt="" />
+          </span>
         </a>
         <nav className={menuOpen ? "nav-links open" : "nav-links"} aria-label="主要导航">
           {siteConfig.nav.map((item) => (
@@ -97,9 +92,21 @@ function Header({
             </a>
           ))}
         </nav>
-        <a className="button button-small header-cta" href="#exchanges">
-          立即免费开通 <ArrowIcon />
-        </a>
+        <button
+          className="header-support-cta"
+          type="button"
+          aria-label="打开客服入口"
+          onClick={() => window.dispatchEvent(new Event("pm4:open-support"))}
+        >
+          <span className="header-support-text-wrapper">
+            <span className="zelect-roll-text">
+              <span>联系客服</span>
+              <span aria-hidden="true">联系客服</span>
+            </span>
+          </span>
+          <span className="header-support-overlay" aria-hidden="true" />
+          <span className="header-support-gradient" aria-hidden="true" />
+        </button>
         <button
           className="menu-toggle"
           type="button"
@@ -394,6 +401,89 @@ function DesktopExchangeRow({
   );
 }
 
+function ExchangePlatformCard({
+  exchange,
+  onTransfer,
+}: {
+  exchange: (typeof exchanges)[number];
+  onTransfer: (name: string) => void;
+}) {
+  const transferContent = (
+    <span>身份转移</span>
+  );
+
+  return (
+    <article className="exchange-platform-card reveal" role="listitem">
+      <div className="exchange-card-primary">
+        <div className="exchange-card-logo">
+          <img src={exchange.logo} alt={`${exchange.name} Logo`} />
+        </div>
+        <div className="exchange-card-identity">
+          <h3>{exchange.name}</h3>
+          <p>
+            <span>最高返佣</span>
+            <strong>{exchange.rebate}</strong>
+          </p>
+        </div>
+      </div>
+
+      <div className="exchange-card-rates" aria-label={`${exchange.name} 交易费率`}>
+        <div>
+          <span>挂单费率</span>
+          <strong>{exchange.makerFee}</strong>
+        </div>
+        <div>
+          <span>吃单费率</span>
+          <strong>{exchange.takerFee}</strong>
+        </div>
+      </div>
+
+      <div className="exchange-card-actions">
+        {exchange.registerUrl ? (
+          <a
+            className="exchange-card-register"
+            href={exchange.registerUrl}
+            target="_blank"
+            rel="noopener noreferrer"
+          >
+            <span>立即注册</span>
+          </a>
+        ) : (
+          <button className="exchange-card-register" type="button" disabled>
+            <span>暂未开放</span>
+          </button>
+        )}
+
+        {exchange.transferUrl?.startsWith("http") ? (
+          <a
+            className="exchange-card-transfer"
+            href={exchange.transferUrl}
+            target="_blank"
+            rel="noopener noreferrer"
+          >
+            {transferContent}
+          </a>
+        ) : (
+          <button
+            className="exchange-card-transfer"
+            type="button"
+            disabled={!exchange.transferUrl}
+            onClick={() => {
+              if (exchange.transferUrl === "#support") {
+                window.dispatchEvent(new Event("pm4:open-support"));
+                return;
+              }
+              if (exchange.transferUrl) onTransfer(exchange.name);
+            }}
+          >
+            {transferContent}
+          </button>
+        )}
+      </div>
+    </article>
+  );
+}
+
 function ApplicationForm({ selectedExchange }: { selectedExchange: string }) {
   const [exchange, setExchange] = useState(selectedExchange || "");
   const [uid, setUid] = useState("");
@@ -459,10 +549,16 @@ TradingView 用户名：${tradingViewUser.trim() || "—"}`;
 
   return (
     <form className="application-form" onSubmit={(event) => event.preventDefault()} noValidate>
+      <div className="application-form-heading">
+        <span>完成注册后</span>
+        <h3>提交交易所 UID 与 TradingView 用户名</h3>
+        <p className="application-form-copy">提交以下信息，完成审核后即可申请 PM4 专属指标使用权限。</p>
+      </div>
       <div className="form-grid">
         <label>
           <span>交易所选择</span>
           <select
+            className={!exchange ? "is-placeholder" : undefined}
             name="exchange"
             value={exchange}
             onChange={(event) => {
@@ -520,12 +616,27 @@ TradingView 用户名：${tradingViewUser.trim() || "—"}`;
       </div>
 
       <div className="review-actions">
-        <button className="button copy-review-button" type="button" onClick={copyReviewInfo}>
-          <span className="copy-icon" aria-hidden="true"><i /><i /></span>
-          {copyButtonCopied ? "已复制" : "复制审核信息"}
+        <button
+          className="button copy-review-button review-zelect-action review-zelect-primary"
+          type="button"
+          onClick={copyReviewInfo}
+        >
+          <span className="review-button-text-wrapper">
+            <span className="review-roll-text">
+              <span>
+                <span className="copy-icon" aria-hidden="true"><i /><i /></span>
+                {copyButtonCopied ? "已复制" : "复制审核信息"}
+              </span>
+              <span aria-hidden="true">
+                <span className="copy-icon"><i /><i /></span>
+                {copyButtonCopied ? "已复制" : "复制审核信息"}
+              </span>
+            </span>
+          </span>
+          <span className="review-button-overlay" aria-hidden="true" />
         </button>
         <a
-          className="button discord-review-button"
+          className="button discord-review-button review-zelect-action review-zelect-secondary"
           href={siteConfig.discordReviewUrl}
           target="_blank"
           rel="noopener noreferrer"
@@ -538,7 +649,13 @@ TradingView 用户名：${tradingViewUser.trim() || "—"}`;
             }
           }}
         >
-          前往 Discord 审核 <span aria-hidden="true">↗</span>
+          <span className="review-button-text-wrapper">
+            <span className="review-roll-text">
+              <span>前往 Discord 审核 <b aria-hidden="true">↗</b></span>
+              <span aria-hidden="true">前往 Discord 审核 <b>↗</b></span>
+            </span>
+          </span>
+          <span className="review-button-overlay" aria-hidden="true" />
         </a>
       </div>
       {message && <p className={`review-message ${messageTone}`} role="status">{message}</p>}
@@ -574,9 +691,9 @@ function SupportWidget() {
   ];
 
   useEffect(() => {
-    const showSupportPanel = () => setOpen(true);
-    window.addEventListener("pm4:open-support", showSupportPanel);
-    return () => window.removeEventListener("pm4:open-support", showSupportPanel);
+    const toggleSupportPanel = () => setOpen((current) => !current);
+    window.addEventListener("pm4:open-support", toggleSupportPanel);
+    return () => window.removeEventListener("pm4:open-support", toggleSupportPanel);
   }, []);
 
   useEffect(() => {
@@ -724,10 +841,15 @@ function SupportWidget() {
 
 export default function Home() {
   const [menuOpen, setMenuOpen] = useState(false);
-  const [selectedExchange, setSelectedExchange] = useState("Bybit");
+  const [selectedExchange, setSelectedExchange] = useState("");
 
   useEffect(() => {
-    if (window.innerWidth <= 700) return;
+    const revealElements = document.querySelectorAll<HTMLElement>(".reveal");
+
+    if (window.innerWidth <= 700 || !("IntersectionObserver" in window)) {
+      revealElements.forEach((element) => element.classList.add("visible"));
+      return;
+    }
 
     const reveal = new IntersectionObserver(
       (entries) => entries.forEach((entry) => {
@@ -739,8 +861,64 @@ export default function Home() {
       }),
       { threshold: 0.12 },
     );
-    document.querySelectorAll(".reveal").forEach((element) => reveal.observe(element));
-    return () => reveal.disconnect();
+    document.documentElement.classList.add("reveal-ready");
+    revealElements.forEach((element) => reveal.observe(element));
+    return () => {
+      reveal.disconnect();
+      document.documentElement.classList.remove("reveal-ready");
+    };
+  }, []);
+
+  useEffect(() => {
+    const desktopQuery = window.matchMedia("(min-width: 1101px)");
+    const exchangeSection = document.getElementById("exchanges");
+    const cards = Array.from(
+      document.querySelectorAll<HTMLElement>(".exchange-card-list .exchange-platform-card"),
+    );
+    let frame = 0;
+
+    const updateActiveCard = () => {
+      frame = 0;
+      cards.forEach((card) => card.classList.remove("is-scroll-active"));
+
+      if (!desktopQuery.matches || !exchangeSection || cards.length === 0) return;
+
+      const sectionRect = exchangeSection.getBoundingClientRect();
+      if (sectionRect.bottom <= 80 || sectionRect.top >= window.innerHeight) return;
+
+      const focusLine = window.innerHeight * 0.62;
+      const visibleCards = cards.filter((card) => {
+        const rect = card.getBoundingClientRect();
+        return rect.bottom > 80 && rect.top < window.innerHeight;
+      });
+
+      const activeCard = visibleCards.reduce<HTMLElement | null>((closest, card) => {
+        if (!closest) return card;
+        const cardCenter = card.getBoundingClientRect().top + card.offsetHeight / 2;
+        const closestCenter = closest.getBoundingClientRect().top + closest.offsetHeight / 2;
+        return Math.abs(cardCenter - focusLine) < Math.abs(closestCenter - focusLine) ? card : closest;
+      }, null);
+
+      activeCard?.classList.add("is-scroll-active");
+    };
+
+    const scheduleUpdate = () => {
+      if (frame) return;
+      frame = window.requestAnimationFrame(updateActiveCard);
+    };
+
+    scheduleUpdate();
+    window.addEventListener("scroll", scheduleUpdate, { passive: true });
+    window.addEventListener("resize", scheduleUpdate);
+    desktopQuery.addEventListener("change", scheduleUpdate);
+
+    return () => {
+      if (frame) window.cancelAnimationFrame(frame);
+      window.removeEventListener("scroll", scheduleUpdate);
+      window.removeEventListener("resize", scheduleUpdate);
+      desktopQuery.removeEventListener("change", scheduleUpdate);
+      cards.forEach((card) => card.classList.remove("is-scroll-active"));
+    };
   }, []);
 
   useEffect(() => {
@@ -822,8 +1000,8 @@ export default function Home() {
                     tag="span"
                     text="降低交易成本"
                     className="hero-split-segment"
-                    delay={34}
-                    duration={0.7}
+                    delay={9}
+                    duration={0.48}
                     ease="power3.out"
                     splitType="chars"
                     from={{ opacity: 0, y: 36 }}
@@ -833,43 +1011,15 @@ export default function Home() {
                     textAlign="left"
                   />
                 </span>
-                <span className="hero-title-line hero-title-second">
-                  <SplitText
-                    tag="span"
-                    text="免费获得"
-                    className="hero-split-segment hero-title-accent"
-                    delay={34}
-                    duration={0.7}
-                    ease="power3.out"
-                    splitType="chars"
-                    from={{ opacity: 0, y: 36 }}
-                    to={{ opacity: 1, y: 0 }}
-                    threshold={0.12}
-                    rootMargin="-70px"
-                    textAlign="left"
-                  />
-                  <SplitText
-                    tag="span"
-                    text="专属指标"
-                    className="hero-split-segment"
-                    delay={34}
-                    duration={0.7}
-                    ease="power3.out"
-                    splitType="chars"
-                    from={{ opacity: 0, y: 36 }}
-                    to={{ opacity: 1, y: 0 }}
-                    threshold={0.12}
-                    rootMargin="-70px"
-                    textAlign="left"
-                  />
-                </span>
+                <span className="hero-title-line hero-title-gradient">免费获得专属指标</span>
+                <span className="hero-title-line hero-title-third">让交易更简单</span>
               </h1>
               <SplitText
                 tag="p"
                 text="通过 PM4 专属链接注册合作交易所，最高可享 33% 手续费返佣；满足当前活动审核条件后，还可免费开通 TradingView 支撑阻力位指标。"
                 className="hero-lead"
-                delay={9}
-                duration={0.5}
+                delay={4}
+                duration={0.42}
                 ease="power3.out"
                 splitType="words"
                 from={{ opacity: 0, y: 14 }}
@@ -884,9 +1034,13 @@ export default function Home() {
                   href="#indicator-review"
                   onClick={(event) => scrollToDesktopSection(event, "indicator-review")}
                 >
-                  <span>领取专属指标</span>
-                  <span className="premium-cta__arrow" aria-hidden="true">→</span>
-                  <ArrowIcon />
+                  <span className="zelect-button-text-wrapper">
+                    <span className="zelect-roll-text">
+                      <span className="zelect-button-v1">领取专属指标</span>
+                      <span className="zelect-button-v2" aria-hidden="true">领取专属指标</span>
+                    </span>
+                  </span>
+                  <span className="zelect-button-overlay" aria-hidden="true" />
                 </a>
                 <button
                   className="button premium-cta mobile-hero-action"
@@ -902,7 +1056,13 @@ export default function Home() {
                   href="#exchanges"
                   onClick={(event) => scrollToDesktopSection(event, "exchanges")}
                 >
-                  查看手续费返佣 <span>↓</span>
+                  <span className="zelect-button-text-wrapper">
+                    <span className="zelect-roll-text">
+                      <span className="zelect-button-v1">查看手续费返佣</span>
+                      <span className="zelect-button-v2" aria-hidden="true">查看手续费返佣</span>
+                    </span>
+                  </span>
+                  <span className="zelect-button-overlay" aria-hidden="true" />
                 </a>
                 <button
                   className="button secondary mobile-hero-action"
@@ -918,6 +1078,24 @@ export default function Home() {
             </div>
             <div className="hero-visual">
               <div className="terminal-label"><i /> PM4 INDICATOR · LIVE PREVIEW</div>
+              <div className="hero-interface-backplate" aria-hidden="true">
+                <div className="hero-interface-backplate__head">
+                  <span>TradingView</span>
+                  <i>ONLINE</i>
+                </div>
+                <div className="hero-interface-backplate__summary">
+                  <strong>PM4 Indicator</strong>
+                  <span>实时行情分析</span>
+                </div>
+                <div className="hero-interface-backplate__lines">
+                  <span /><span /><span />
+                </div>
+                <div className="hero-interface-backplate__rows">
+                  <p><i /> 支撑位 <b>ACTIVE</b></p>
+                  <p><i /> 阻力位 <b>ACTIVE</b></p>
+                  <p><i /> 趋势信号 <b>LIVE</b></p>
+                </div>
+              </div>
               <div className="hero-video-frame">
                 <video
                   className="hero-preview-video"
@@ -939,84 +1117,21 @@ export default function Home() {
               </div>
             </div>
           </div>
-          <div className="container stats-grid">
-            {heroStats.map((stat, index) => (
-              <div className="stat" key={stat.label}>
-                {index === 0 ? (
-                  <>
-                    <strong className="desktop-stat-copy">交易返佣</strong>
-                    <span className="desktop-stat-copy">降低每笔交易成本</span>
-                    <strong className="mobile-stat-copy">{stat.value}</strong>
-                    <span className="mobile-stat-copy">{stat.label}</span>
-                    <strong className="phone-stat-copy">交易返佣</strong>
-                    <span className="phone-stat-copy">降低每笔交易成本</span>
-                  </>
-                ) : (
-                  <>
-                    <strong className={stat.tone === "accent" ? "accent-text" : ""}>{stat.value}</strong>
-                    <span>{stat.label}</span>
-                  </>
-                )}
-              </div>
-            ))}
-          </div>
-        </section>
-
-        <section className="section process-section reveal" id="process">
-          <div className="container">
-            <SectionHeading
-              eyebrow="开通流程"
-              title="四步免费开通"
-              description="完成注册、KYC、入金与资料审核后，即可申请开通指标权限。"
-            />
-            <div className="process-grid">
-              {processSteps.map((item, index) => (
-                <article className="process-card" key={item.step}>
-                  <div className="step-number">{item.step}</div>
-                  <h3>{item.title}</h3>
-                  <p>{item.description}</p>
-                  {index < processSteps.length - 1 && <span className="step-line" />}
-                </article>
-              ))}
-            </div>
-            <p className="section-note">
-              <span className="section-note-icon" aria-hidden="true">i</span>
-              <span>
-                指标开通需要完成注册、KYC、入金及资料审核。不同交易所的最低入金要求和活动规则可能不同，请以对应交易所页面的最新说明为准。
-              </span>
-            </p>
-          </div>
         </section>
 
         <section className="section exchange-section reveal" id="exchanges">
           <div className="container">
-            <div className="split-heading">
-              <SectionHeading
-                eyebrow="支持交易所"
-                title="选择你使用的交易所"
-                description="不同平台的返佣比例、身份转移规则和指标审核条件可能不同，请根据你的账户情况选择。"
-                animateText
-              />
-              <div className="exchange-heading-side">
-                <div className="exchange-heading-actions">
-                  <a className="exchange-review-cta" href="#indicator-review">
-                    <span>已经注册？提交指标审核</span>
-                    <span className="exchange-review-arrow" aria-hidden="true">→</span>
-                  </a>
-                  <a
-                    className="exchange-discord-cta"
-                    href={siteConfig.discordCommunityUrl}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                  >
-                    <img src="/icons/discord.svg" alt="" aria-hidden="true" />
-                    <span>加入 Discord</span>
-                    <span className="exchange-discord-arrow" aria-hidden="true">↗</span>
-                  </a>
-                </div>
-                <p className="exchange-review-help">
-                  完成注册或身份转移后，在此提交 UID 与 TradingView 用户名。
-                </p>
+            <div className="split-heading exchange-heading-pc">
+              <div className="section-heading">
+                <p className="eyebrow"><span />支持交易所</p>
+                <h2>
+                  <span className="exchange-heading-line">
+                    注册合作交易所，<span className="exchange-heading-highlight">即可享受手续费返佣</span>
+                  </span>
+                  <span className="exchange-heading-line">
+                    完成审核后，申请 TradingView 支撑阻力位指标
+                  </span>
+                </h2>
               </div>
             </div>
             <div
@@ -1041,75 +1156,38 @@ export default function Home() {
                 ))}
               </div>
             </div>
-            <div className="exchange-table" role="table" aria-label="交易所返佣与指标资格">
-              <div className="exchange-table-head desktop-exchange-head desktop-exchange-only" role="row">
-                <span role="columnheader">交易所</span>
-                <span role="columnheader">手续费返佣</span>
-                <span role="columnheader">挂单费率</span>
-                <span role="columnheader">吃单费率</span>
-                <span role="columnheader">立即注册</span>
-                <span role="columnheader">身份转移</span>
-              </div>
+            <div className="exchange-card-list" role="list" aria-label="交易所返佣与费率">
               {[...exchanges]
                 .sort((a, b) => a.desktopOrder - b.desktopOrder)
                 .map((exchange) => (
-                  <DesktopExchangeRow
-                    key={`desktop-${exchange.name}`}
+                  <ExchangePlatformCard
+                    key={exchange.name}
                     exchange={exchange}
                     onTransfer={chooseExchange}
                   />
                 ))}
-              <div className="exchange-table-head mobile-exchange-only" role="row">
-                <span role="columnheader">交易所</span>
-                <span role="columnheader">返佣比例</span>
-                <span role="columnheader">新用户</span>
-                <span role="columnheader">老用户</span>
-                <span role="columnheader">指标资格</span>
-                <span role="columnheader">操作</span>
-              </div>
-              {exchanges.map((exchange) => (
-                <ExchangeRow key={`tablet-${exchange.name}`} exchange={exchange} onTransfer={chooseExchange} />
-              ))}
-              {[...exchanges]
-                .sort((a, b) => a.desktopOrder - b.desktopOrder)
-                .map((exchange) => (
-                  <PhoneExchangeRow key={`phone-${exchange.name}`} exchange={exchange} onTransfer={chooseExchange} />
-                ))}
             </div>
-            <p className="exchange-disclaimer">
-              <span aria-hidden="true">i</span>
-              点击「立即注册」将离开本网站，前往对应交易所完成注册。PM4 不保管你的账户及资金信息。
-            </p>
-          </div>
-        </section>
-
-        <section className="section rules-section reveal">
-          <div className="container rules-layout">
-            <div className="rules-intro">
-              <SectionHeading
-                eyebrow="审核规则"
-                title="指标开通与续期规则"
-                description="权限按固定周期审核，达到当前活动要求后自动延续。"
-              />
-              <div className="rule-alert">
-                不同交易所的活动规则、交易量要求和体验期限可能不同，请以对应交易所页面显示的最新规则为准。
+            <div className="exchange-heading-side">
+              <div className="exchange-heading-actions">
+                <a className="exchange-review-cta" href="#indicator-review">
+                  <span>已经注册？提交指标审核</span>
+                  <span className="exchange-review-arrow" aria-hidden="true">→</span>
+                </a>
+                <a
+                  className="exchange-discord-cta"
+                  href={siteConfig.discordCommunityUrl}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                >
+                  <img src="/icons/discord.svg" alt="" aria-hidden="true" />
+                  <span>加入 Discord</span>
+                  <span className="exchange-discord-arrow" aria-hidden="true">↗</span>
+                </a>
               </div>
+              <p className="exchange-review-help">
+                完成注册或身份转移后，在此提交 UID 与 TradingView 用户名。
+              </p>
             </div>
-            <ol className="rules-list desktop-rules-list desktop-rules-only">
-              {desktopAccessRules.map((rule, index) => (
-                <li key={rule}><span>{String(index + 1).padStart(2, "0")}</span><p>{rule}</p></li>
-              ))}
-            </ol>
-            <ol className="rules-list mobile-rules-only">
-              {accessRules.map((rule, index) => (
-                <li key={rule}><span>{String(index + 1).padStart(2, "0")}</span><p>{rule}</p></li>
-              ))}
-            </ol>
-            <ol className="rules-list phone-rules-only">
-              {desktopAccessRules.map((rule, index) => (
-                <li key={rule}><span>{String(index + 1).padStart(2, "0")}</span><p>{rule}</p></li>
-              ))}
-            </ol>
           </div>
         </section>
 
@@ -1119,7 +1197,6 @@ export default function Home() {
               <SectionHeading
                 eyebrow="资料审核"
                 title="提交指标审核资料"
-                description="填写交易所 UID 和 TradingView 用户名，复制审核信息后前往 Discord 留言申请。"
               />
               <div className="review-steps-card">
                 <div className="review-steps-title">
@@ -1167,32 +1244,6 @@ export default function Home() {
               </div>
             </div>
             <ApplicationForm key={selectedExchange} selectedExchange={selectedExchange} />
-          </div>
-        </section>
-
-        <section className="section faq-section reveal" id="faq">
-          <div className="container faq-layout">
-            <SectionHeading
-              eyebrow="常见问题"
-              title="开始之前，你可能想知道"
-              description="简明说明注册、审核、权限与风险问题。"
-            />
-            <div className="faq-list desktop-faq-list desktop-faq-only">
-              {desktopFaqs.map((faq, index) => (
-                <details key={faq.question} open={index === 0}>
-                  <summary>{faq.question}<span>+</span></summary>
-                  <p>{faq.answer}</p>
-                </details>
-              ))}
-            </div>
-            <div className="faq-list mobile-faq-only">
-              {faqs.map((faq, index) => (
-                <details key={faq.question} open={index === 0}>
-                  <summary>{faq.question}<span>+</span></summary>
-                  <p>{faq.answer}</p>
-                </details>
-              ))}
-            </div>
           </div>
         </section>
 
