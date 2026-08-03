@@ -11086,3 +11086,306 @@ footer,
   border-color: var(--loss);
   background-color: rgb(var(--loss-rgb) / 8%);
 }
+
+/* Second-section live rebate board, adapted to the PM4 color system. */
+.live-rebate-board {
+  width: min(100%, 1120px);
+  margin: 50px auto 0;
+  padding: 34px;
+  border: 1px solid var(--border-color);
+  border-radius: 24px;
+  background-color: var(--card-background);
+  box-shadow: 0 24px 70px rgb(var(--page-rgb) / 42%);
+}
+
+.live-rebate-title-row {
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: 28px;
+  margin-bottom: 28px;
+}
+
+.live-rebate-title-row p {
+  display: flex;
+  align-items: center;
+  gap: 9px;
+  margin: 0 0 10px;
+  color: var(--text-secondary);
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: .12em;
+}
+
+.live-rebate-title-row p > span {
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background-color: var(--primary);
+  box-shadow: 0 0 0 5px rgb(var(--primary-rgb) / 10%);
+}
+
+.live-rebate-title-row h3 {
+  margin: 0;
+  color: var(--text-primary);
+  font-size: clamp(30px, 2.5vw, 42px);
+  font-weight: 680;
+  line-height: 1.12;
+  letter-spacing: -.035em;
+}
+
+.live-rebate-title-row h3 span {
+  margin-left: .2em;
+  color: var(--primary);
+}
+
+.live-rebate-status {
+  min-height: 34px;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 0 13px;
+  border: 1px solid rgb(var(--primary-rgb) / 34%);
+  border-radius: 999px;
+  color: var(--secondary);
+  background-color: rgb(var(--primary-rgb) / 8%);
+  font-size: 12px;
+  font-weight: 700;
+  white-space: nowrap;
+}
+
+.live-rebate-status i {
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background-color: var(--primary);
+  animation: live-rebate-pulse 1.8s ease-in-out infinite;
+}
+
+.live-rebate-table {
+  display: grid;
+  gap: 10px;
+}
+
+.live-rebate-head,
+.live-rebate-row {
+  display: grid;
+  grid-template-columns: 1.25fr .85fr 1fr .62fr;
+  align-items: center;
+  gap: 20px;
+}
+
+.live-rebate-head {
+  min-height: 46px;
+  padding: 0 24px;
+  border: 1px solid var(--border-color);
+  border-radius: 12px;
+  color: var(--text-secondary);
+  background-color: var(--card-background-secondary);
+  font-size: 12px;
+  font-weight: 700;
+}
+
+.live-rebate-row {
+  min-height: 70px;
+  padding: 10px 24px;
+  border: 1px solid var(--border-color);
+  border-radius: 14px;
+  color: var(--text-primary);
+  background-color: var(--card-background-secondary);
+  transition: border-color .22s ease, background-color .22s ease, transform .22s ease;
+}
+
+.live-rebate-row:hover {
+  border-color: rgb(var(--primary-rgb) / 65%);
+  background-color: color-mix(in srgb, var(--card-background-secondary) 88%, var(--primary));
+  transform: translateY(-2px);
+}
+
+.live-rebate-user {
+  min-width: 0;
+  display: flex;
+  align-items: center;
+  gap: 13px;
+}
+
+.live-rebate-logo {
+  width: 38px;
+  height: 38px;
+  display: grid;
+  flex: 0 0 38px;
+  place-items: center;
+  border: 1px solid var(--border-color);
+  border-radius: 11px;
+  background-color: var(--card-background);
+}
+
+.live-rebate-logo img {
+  width: 24px;
+  height: 24px;
+  display: block;
+  object-fit: contain;
+}
+
+.live-rebate-user > span:last-child {
+  min-width: 0;
+  display: grid;
+  gap: 3px;
+}
+
+.live-rebate-user strong,
+.live-rebate-amount {
+  overflow: hidden;
+  color: var(--text-primary);
+  font-size: 15px;
+  font-weight: 750;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.live-rebate-user small,
+.live-rebate-row time {
+  color: var(--text-secondary);
+  font-size: 12px;
+  font-style: normal;
+}
+
+.live-rebate-amount {
+  color: var(--secondary);
+  font-variant-numeric: tabular-nums;
+}
+
+.live-rebate-paid {
+  width: fit-content;
+  min-height: 30px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  padding: 0 11px;
+  border: 1px solid rgb(var(--profit-rgb) / 40%);
+  border-radius: 999px;
+  color: var(--profit);
+  background-color: rgb(var(--profit-rgb) / 7%);
+  font-size: 12px;
+  font-weight: 720;
+  white-space: nowrap;
+}
+
+.live-rebate-paid i {
+  width: 15px;
+  height: 15px;
+  display: grid;
+  place-items: center;
+  border-radius: 50%;
+  color: var(--page-background);
+  background-color: var(--profit);
+  font-size: 9px;
+  font-style: normal;
+  line-height: 1;
+}
+
+.live-rebate-note {
+  margin: 16px 2px 0;
+  color: var(--text-secondary);
+  font-size: 11px;
+  line-height: 1.6;
+  text-align: right;
+}
+
+@keyframes live-rebate-pulse {
+  0%, 100% { opacity: .45; transform: scale(.86); }
+  50% { opacity: 1; transform: scale(1); }
+}
+
+@media (min-width: 1024px) {
+  .hero + .exchange-section > .container {
+    min-height: auto;
+  }
+
+  .hero + .exchange-section .exchange-card-list {
+    margin-top: 36px;
+  }
+
+  .hero + .exchange-section > .container > .exchange-heading-side {
+    position: static;
+    width: fit-content;
+    min-width: 0;
+    margin: 34px auto 0;
+    transform: none;
+  }
+}
+
+@media (max-width: 767px) {
+  .live-rebate-board {
+    margin-top: 34px;
+    padding: 20px 14px;
+    border-radius: 18px;
+  }
+
+  .live-rebate-title-row {
+    align-items: flex-start;
+    margin-bottom: 20px;
+  }
+
+  .live-rebate-title-row h3 {
+    font-size: 27px;
+  }
+
+  .live-rebate-title-row h3 span {
+    display: block;
+    margin: 4px 0 0;
+  }
+
+  .live-rebate-status {
+    min-height: 30px;
+    padding-inline: 10px;
+    font-size: 10px;
+  }
+
+  .live-rebate-head {
+    display: none;
+  }
+
+  .live-rebate-table {
+    gap: 8px;
+  }
+
+  .live-rebate-row {
+    min-height: 76px;
+    grid-template-columns: minmax(0, 1.45fr) minmax(88px, .8fr) auto;
+    gap: 10px;
+    padding: 11px 12px;
+  }
+
+  .live-rebate-row time {
+    display: none;
+  }
+
+  .live-rebate-logo {
+    width: 34px;
+    height: 34px;
+    flex-basis: 34px;
+  }
+
+  .live-rebate-logo img {
+    width: 21px;
+    height: 21px;
+  }
+
+  .live-rebate-user strong,
+  .live-rebate-amount {
+    font-size: 13px;
+  }
+
+  .live-rebate-paid {
+    min-height: 28px;
+    padding-inline: 8px;
+    font-size: 10px;
+  }
+
+  .live-rebate-note {
+    font-size: 10px;
+    text-align: left;
+  }
+}

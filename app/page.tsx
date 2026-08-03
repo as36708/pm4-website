@@ -9,6 +9,44 @@ import {
 
 type FormErrors = Record<string, string>;
 
+const liveRebateRows = [
+  {
+    nickname: "PM4***88",
+    exchange: "Bitget",
+    logo: "/exchanges/bitget.svg",
+    amount: "11.38 USDT",
+    time: "今日 16:02",
+  },
+  {
+    nickname: "Trader***27",
+    exchange: "Bybit",
+    logo: "/exchanges/bybit.svg",
+    amount: "13.81 USDT",
+    time: "今日 15:56",
+  },
+  {
+    nickname: "BTC***91",
+    exchange: "BingX",
+    logo: "/exchanges/bingx.svg",
+    amount: "32.61 USDT",
+    time: "今日 15:26",
+  },
+  {
+    nickname: "Alpha***03",
+    exchange: "Bitget",
+    logo: "/exchanges/bitget.svg",
+    amount: "7.87 USDT",
+    time: "今日 14:56",
+  },
+  {
+    nickname: "Wave***16",
+    exchange: "Bybit",
+    logo: "/exchanges/bybit.svg",
+    amount: "5.99 USDT",
+    time: "今日 13:50",
+  },
+];
+
 function SectionHeading({
   eyebrow,
   title,
@@ -1133,6 +1171,46 @@ export default function Home() {
                   </span>
                 </h2>
               </div>
+            </div>
+            <div className="live-rebate-board" aria-labelledby="live-rebate-title">
+              <div className="live-rebate-title-row">
+                <div>
+                  <p><span aria-hidden="true" />实时返佣记录</p>
+                  <h3 id="live-rebate-title">
+                    返佣正在<span>实时到账</span>
+                  </h3>
+                </div>
+                <span className="live-rebate-status"><i aria-hidden="true" />实时更新</span>
+              </div>
+              <div className="live-rebate-table" role="table" aria-label="近期手续费返佣到账记录">
+                <div className="live-rebate-head" role="row">
+                  <span role="columnheader">用户昵称</span>
+                  <span role="columnheader">返佣金额</span>
+                  <span role="columnheader">返佣时间</span>
+                  <span role="columnheader">状态</span>
+                </div>
+                <div className="live-rebate-body" role="rowgroup">
+                  {liveRebateRows.map((row) => (
+                    <div className="live-rebate-row" role="row" key={`${row.nickname}-${row.time}`}>
+                      <div className="live-rebate-user" role="cell">
+                        <span className="live-rebate-logo">
+                          <img src={row.logo} alt="" aria-hidden="true" />
+                        </span>
+                        <span>
+                          <strong>{row.nickname}</strong>
+                          <small>{row.exchange}</small>
+                        </span>
+                      </div>
+                      <strong className="live-rebate-amount" role="cell">{row.amount}</strong>
+                      <time role="cell">{row.time}</time>
+                      <span className="live-rebate-paid" role="cell">
+                        <i aria-hidden="true">✓</i>已到账
+                      </span>
+                    </div>
+                  ))}
+                </div>
+              </div>
+              <p className="live-rebate-note">最近返佣记录 · 实际到账时间与金额以交易所结算为准</p>
             </div>
             <div
               className="exchange-marquee desktop-exchange-only"
