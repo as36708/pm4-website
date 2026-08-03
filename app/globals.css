@@ -11428,3 +11428,130 @@ footer,
     text-align: left;
   }
 }
+
+/* The support entry now lives at the true end of the page. */
+.footer-bottom nav {
+  align-items: center;
+}
+
+.footer-support-cta {
+  position: relative;
+  width: 112px;
+  height: 44px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 1px;
+  overflow: hidden;
+  border: 0;
+  border-radius: 7px;
+  color: var(--text-primary);
+  background: transparent;
+  font: 600 14px/20px Inter, "Noto Sans SC", "Microsoft YaHei", sans-serif;
+  cursor: pointer;
+  isolation: isolate;
+}
+
+.footer-support-text-wrapper {
+  position: relative;
+  z-index: 3;
+  width: 100%;
+  height: 42px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 9px 16px;
+  border-radius: 6px;
+  background-color: var(--card-background);
+}
+
+.footer-support-cta .zelect-roll-text {
+  position: relative;
+  z-index: 5;
+  height: 20px;
+  display: block;
+  overflow: hidden;
+  line-height: 20px;
+  white-space: nowrap;
+}
+
+.footer-support-cta .zelect-roll-text > span {
+  display: block;
+  color: var(--text-primary);
+  transition: transform .5s cubic-bezier(.25, .46, .45, .94);
+  will-change: transform;
+}
+
+.footer-support-cta .zelect-roll-text > span:last-child {
+  position: absolute;
+  top: 100%;
+  left: 0;
+  display: block;
+  color: var(--page-background);
+}
+
+.footer-support-overlay {
+  position: absolute;
+  z-index: 2;
+  inset: 0;
+  background-color: var(--primary);
+  transform: translate3d(-101%, 0, 0);
+  transition: transform .5s cubic-bezier(.25, .46, .45, .94);
+  will-change: transform;
+}
+
+.footer-support-gradient {
+  position: absolute;
+  z-index: 1;
+  top: 50%;
+  left: 50%;
+  width: 18px;
+  height: 330px;
+  background: linear-gradient(90deg, transparent, var(--primary), transparent);
+  opacity: .84;
+  transform: translate3d(-50%, -50%, 0);
+  animation: header-support-border-spin 7s linear infinite;
+  pointer-events: none;
+}
+
+.footer-support-cta:hover .footer-support-overlay {
+  transform: translate3d(0, 0, 0);
+}
+
+.footer-support-cta:hover .zelect-roll-text > span {
+  transform: translate3d(0, -100%, 0);
+}
+
+.footer-support-cta:focus-visible {
+  outline: 2px solid var(--primary);
+  outline-offset: 4px;
+}
+
+@media (max-width: 767px) {
+  .footer-bottom nav {
+    width: 100%;
+    align-items: center;
+    justify-content: space-between;
+  }
+
+  .footer-support-cta {
+    width: 104px;
+    height: 42px;
+    font-size: 13px;
+  }
+
+  .footer-support-text-wrapper {
+    height: 40px;
+    padding: 9px 14px;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .footer-support-overlay,
+  .footer-support-gradient,
+  .footer-support-cta .zelect-roll-text > span {
+    transition-duration: .01ms;
+    animation-duration: .01ms;
+    animation-iteration-count: 1;
+  }
+}

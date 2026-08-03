@@ -169,21 +169,6 @@ function Header({
           ))}
         </nav>
         <button
-          className="header-support-cta"
-          type="button"
-          aria-label="打开客服入口"
-          onClick={() => window.dispatchEvent(new Event("pm4:open-support"))}
-        >
-          <span className="header-support-text-wrapper">
-            <span className="zelect-roll-text">
-              <span>联系客服</span>
-              <span aria-hidden="true">联系客服</span>
-            </span>
-          </span>
-          <span className="header-support-overlay" aria-hidden="true" />
-          <span className="header-support-gradient" aria-hidden="true" />
-        </button>
-        <button
           className="menu-toggle"
           type="button"
           aria-label={menuOpen ? "关闭菜单" : "打开菜单"}
@@ -1427,7 +1412,22 @@ export default function Home() {
         <div className="container footer-bottom">
           <span>© {new Date().getFullYear()} PM4. All rights reserved.</span>
           <nav aria-label="页脚导航">
-            <a href="#risk">风险披露</a><button type="button" onClick={() => document.querySelector(".support-button")?.dispatchEvent(new MouseEvent("click", { bubbles: true }))}>联系我们</button>
+            <a href="#risk">风险披露</a>
+            <button
+              className="footer-support-cta"
+              type="button"
+              aria-label="打开客服入口"
+              onClick={() => window.dispatchEvent(new Event("pm4:open-support"))}
+            >
+              <span className="footer-support-text-wrapper">
+                <span className="zelect-roll-text">
+                  <span>联系客服</span>
+                  <span aria-hidden="true">联系客服</span>
+                </span>
+              </span>
+              <span className="footer-support-overlay" aria-hidden="true" />
+              <span className="footer-support-gradient" aria-hidden="true" />
+            </button>
           </nav>
         </div>
       </footer>
