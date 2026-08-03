@@ -6,7 +6,12 @@ import { ScrollTrigger } from "gsap/ScrollTrigger";
 import { SplitText as GSAPSplitText } from "gsap/SplitText";
 import { useGSAP } from "@gsap/react";
 
-gsap.registerPlugin(ScrollTrigger, GSAPSplitText, useGSAP);
+// Cloudflare Workers evaluate the server bundle outside a request handler.
+// Register browser-only GSAP plugins only after a browser runtime exists so
+// their internal timers are never created during Worker module evaluation.
+if (typeof window !== "undefined") {
+  gsap.registerPlugin(ScrollTrigger, GSAPSplitText, useGSAP);
+}
 
 const SplitText = ({
   text,
