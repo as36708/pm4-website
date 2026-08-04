@@ -22,6 +22,7 @@ interface ExecutionContext {
 
 const supportedExchanges = new Set(["Bybit", "Bitget", "BingX", "OKX"]);
 const supportedEvents = new Set(["visit", "exchange_click", "transfer_click", "application_submit"]);
+const adminDashboardOrigin = "https://pm4-admin-console-v2.chexin1103.chatgpt.site";
 let schemaReady: Promise<void> | null = null;
 
 function jsonResponse(body: unknown, status = 200) {
@@ -37,6 +38,19 @@ function jsonResponse(body: unknown, status = 200) {
 function isSameOriginRequest(request: Request) {
   const origin = request.headers.get("origin");
   return !origin || origin === new URL(request.url).origin;
+}
+
+function dashboardStatsResponse(body: unknown, status = 200) {
+  return Response.json(body, {
+    status,
+    headers: {
+      "access-control-allow-credentials": "true",
+      "access-control-allow-origin": adminDashboardOrigin,
+      "cache-control": "no-store",
+      "vary": "origin",
+      "x-content-type-options": "nosniff",
+    },
+  });
 }
 
 function dayString(date = new Date()) {
@@ -218,6 +232,50 @@ async function handleAdminData(request: Request, env: Env) {
   });
 }
 
+async function handleDashboardStats(request: Request, env: Env) {
+  if (request.method !== "GET") return dashboardStatsResponse({ error: "Method not allowed" }, 405);
+  if (request.headers.get("origin") !== adminDashboardOrigin) {
+    return dashboardStatsResponse({ error: "Origin not allowed" }, 403);
+  }
+  if (!request.headers.get("oai-authenticated-user-id") || !request.headers.get("oai-authenticated-user-email")) {
+    return dashboardStatsResponse({ error: "Unauthorized" }, 401);
+  }
+
+  await ensureSchema(env.DB);
+  const requestedDays = Number(new URL(request.url).searchParams.get("days") ?? 7);
+  const days = [7, 30, 90].includes(requestedDays) ? requestedDays : 7;
+  const metricsResult = await env.DB.prepare(`
+    SELECT event_type, exchange, SUM(event_count) AS total
+    FROM front_daily_metrics
+    WHERE day >= ?
+    GROUP BY event_type, exchange
+  `).bind(startDay(days)).all<{ event_type: string; exchange: string; total: number }>();
+  const totals = { visits: 0, exchangeClicks: 0, transferClicks: 0, submissions: 0 };
+  const byExchange: Record<string, { clicks: number; transfers: number; submissions: number }> = {};
+  for (const row of metricsResult.results ?? []) {
+    const count = Number(row.total) || 0;
+    if (row.event_type === "visit") totals.visits += count;
+    if (row.event_type === "exchange_click") totals.exchangeClicks += count;
+    if (row.event_type === "transfer_click") totals.transferClicks += count;
+    if (row.event_type === "application_submit") totals.submissions += count;
+    if (row.exchange) {
+      byExchange[row.exchange] ??= { clicks: 0, transfers: 0, submissions: 0 };
+      if (row.event_type === "exchange_click") byExchange[row.exchange].clicks += count;
+      if (row.event_type === "transfer_click") byExchange[row.exchange].transfers += count;
+      if (row.event_type === "application_submit") byExchange[row.exchange].submissions += count;
+    }
+  }
+
+  return dashboardStatsResponse({
+    metrics: {
+      days,
+      ...totals,
+      conversionRate: totals.visits ? Number(((totals.submissions / totals.visits) * 100).toFixed(1)) : 0,
+      byExchange,
+    },
+  });
+}
+
 const worker = {
   async fetch(request: Request, env: Env, ctx: ExecutionContext): Promise<Response> {
     const url = new URL(request.url);
@@ -225,6 +283,7 @@ const worker = {
     try {
       if (url.pathname === "/api/track") return await handleTrack(request, env);
       if (url.pathname === "/api/applications") return await handleApplication(request, env);
+      if (url.pathname === "/api/dashboard-stats") return await handleDashboardStats(request, env);
       if (url.pathname === "/api/admin-data") return await handleAdminData(request, env);
     } catch (error) {
       const message = error instanceof Error ? error.message : "Request failed";

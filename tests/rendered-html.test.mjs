@@ -68,6 +68,16 @@ test("keeps production links, copy flow, and media assets configured", async () 
   ]);
 });
 
+test("exposes dashboard metrics only to the authenticated admin origin", async () => {
+  const workerSource = await readFile(new URL("../worker/index.ts", import.meta.url), "utf8");
+  assert.match(workerSource, /\/api\/dashboard-stats/);
+  assert.match(workerSource, /pm4-admin-console-v2\.chexin1103\.chatgpt\.site/);
+  assert.match(workerSource, /oai-authenticated-user-id/);
+  assert.match(workerSource, /oai-authenticated-user-email/);
+  assert.match(workerSource, /access-control-allow-credentials/);
+  assert.doesNotMatch(workerSource, /access-control-allow-origin["']:\s*["']\*/);
+});
+
 test("keeps the hero CTA scroll interruptible and free of repeated anchor alignment", async () => {
   const [page, styles] = await Promise.all([
     readFile(new URL("../app/page.tsx", import.meta.url), "utf8"),
