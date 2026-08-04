@@ -11487,7 +11487,7 @@ footer,
   top: 100%;
   left: 0;
   display: block;
-  color: var(--page-background);
+  color: #fff;
 }
 
 .footer-support-overlay {
@@ -11546,6 +11546,53 @@ footer,
   }
 }
 
+@media (min-width: 1024px) {
+  .site-header .mobile-header-support-cta {
+    display: none;
+  }
+
+  .footer-support-cta {
+    position: fixed;
+    z-index: 90;
+    width: 172px;
+    height: 58px;
+    right: auto;
+    bottom: 24px;
+    left: 32px;
+    margin: 0;
+    font-size: 16px;
+  }
+
+  .footer-support-text-wrapper {
+    height: 56px;
+    padding: 16px 24px;
+  }
+
+  .footer-support-cta .zelect-roll-text {
+    height: 24px;
+    line-height: 24px;
+  }
+
+  .footer-support-cta .zelect-roll-text > span {
+    color: #fff;
+    font-size: 20px;
+    font-weight: 700;
+    letter-spacing: .01em;
+  }
+}
+
+@media (max-width: 1023px) {
+  .footer-support-cta {
+    display: none;
+  }
+}
+
+@media (max-width: 900px) {
+  .site-header .mobile-header-support-cta {
+    display: inline-flex;
+  }
+}
+
 @media (prefers-reduced-motion: reduce) {
   .footer-support-overlay,
   .footer-support-gradient,
@@ -11553,5 +11600,268 @@ footer,
     transition-duration: .01ms;
     animation-duration: .01ms;
     animation-iteration-count: 1;
+  }
+}
+
+/* PC-only: bring the exchange section closer to the hero without
+   changing the section's internal spacing or any responsive layout. */
+@media (min-width: 1101px) {
+  .hero.hero {
+    padding-bottom: 60px;
+  }
+
+  .hero + .exchange-section .exchange-card-table-head {
+    width: 100%;
+    min-height: 54px;
+    display: grid;
+    grid-template-columns: 40% 38% 22%;
+    align-items: center;
+    margin: 36px auto 0;
+    overflow: hidden;
+    border: 1px solid var(--border-color);
+    border-bottom: 0;
+    border-radius: 14px 14px 0 0;
+    color: var(--text-primary);
+    background: var(--card-background-secondary);
+    font-size: 12px;
+    font-weight: 650;
+    line-height: 1;
+  }
+
+  .hero + .exchange-section .exchange-card-table-head-primary {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) 110px;
+    align-items: center;
+    padding: 0 32px;
+  }
+
+  .hero + .exchange-section .exchange-card-table-head-primary span:first-child {
+    padding-left: 64px;
+  }
+
+  .hero + .exchange-section .exchange-card-table-head-rates {
+    min-height: 30px;
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    align-items: center;
+    padding: 0 30px;
+    border-left: 1px solid var(--border-color);
+  }
+
+  .hero + .exchange-section .exchange-card-table-head-actions {
+    min-height: 30px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-left: 1px solid var(--border-color);
+  }
+
+  .hero + .exchange-section .exchange-card-table-head + .exchange-card-list {
+    gap: 0;
+    margin-top: 0;
+  }
+
+  .hero + .exchange-section .exchange-platform-card,
+  .hero + .exchange-section .exchange-platform-card:nth-child(2) {
+    width: 100%;
+    height: 90px;
+    min-height: 90px;
+    margin: 0;
+    padding: 18px 32px;
+    border-right: 1px solid var(--border-color);
+    border-bottom: 1px solid var(--border-color);
+    border-left: 1px solid var(--border-color);
+    border-radius: 0;
+    background: var(--card-background);
+  }
+
+  .hero + .exchange-section .exchange-platform-card:last-child {
+    border-radius: 0 0 14px 14px;
+  }
+
+  .hero + .exchange-section .exchange-platform-card::before,
+  .hero + .exchange-section .exchange-platform-card:nth-child(2)::before {
+    border: 0;
+    border-radius: 0;
+    background: var(--card-background);
+  }
+
+  .hero + .exchange-section .exchange-platform-card:last-child::before,
+  .hero + .exchange-section .exchange-platform-card:last-child::after {
+    border-radius: 0 0 14px 14px;
+  }
+
+  .hero + .exchange-section .exchange-platform-card::after {
+    border-radius: 0;
+  }
+
+  .hero + .exchange-section .exchange-platform-card:hover,
+  .hero + .exchange-section .exchange-platform-card.is-scroll-active {
+    z-index: 3;
+    transform: translateY(-1px) scale(1.012);
+  }
+
+  .hero + .exchange-section .exchange-card-primary {
+    gap: 16px;
+    padding-right: 24px;
+  }
+
+  .hero + .exchange-section .exchange-card-identity {
+    width: 100%;
+    display: grid;
+    grid-template-columns: minmax(100px, 1fr) 110px;
+    align-items: center;
+    gap: 16px;
+  }
+
+  .hero + .exchange-section .exchange-card-identity p {
+    margin: 0;
+  }
+
+  .hero + .exchange-section .exchange-card-identity p > span {
+    display: none;
+  }
+
+  .hero + .exchange-section .exchange-card-rates {
+    min-height: 44px;
+    padding: 0 30px;
+  }
+}
+
+/* PC-only audit fixes: preserve a deliberate desktop gutter at narrower
+   widths and keep the fixed support entry clear of the hero CTAs on short
+   desktop viewports. Tablet and mobile breakpoints remain untouched. */
+@media (min-width: 1101px) and (max-width: 1366px) {
+  .hero .hero-grid.hero-grid {
+    width: calc(100% - 80px);
+    max-width: 1290px;
+  }
+}
+
+@media (min-width: 1101px) and (max-height: 850px) {
+  .hero.hero {
+    padding-top: 165px;
+  }
+}
+
+/* Final PC-only polish: strengthen the second-section hierarchy and improve
+   review-form readability without changing content, controls or responsive
+   layouts below the desktop breakpoint. */
+@media (min-width: 1101px) {
+  .hero + .exchange-section .exchange-card-logo-fallback {
+    display: grid;
+    width: 32px;
+    height: 32px;
+    place-items: center;
+    border-radius: 50%;
+    color: #fff;
+    background: var(--primary);
+    font-size: 16px;
+    font-weight: 800;
+    line-height: 1;
+  }
+
+  .hero + .exchange-section .exchange-platform-card--template .exchange-card-identity strong,
+  .hero + .exchange-section .exchange-platform-card--template .exchange-card-rates strong {
+    color: var(--text-secondary);
+    font-size: 13px;
+  }
+
+  .hero + .exchange-section > .container {
+    width: min(calc(100% - 96px), 1180px);
+    max-width: 1180px;
+  }
+
+  .hero + .exchange-section .exchange-heading-pc {
+    width: min(100%, 1180px);
+    max-width: 1180px;
+    height: auto;
+    min-height: 104px;
+  }
+
+  .hero + .exchange-section .exchange-heading-pc h2 {
+    max-width: 1180px;
+    font-size: 44px;
+    line-height: 52px;
+  }
+
+  .hero + .exchange-section .live-rebate-board {
+    width: 100%;
+    margin-top: 42px;
+    padding: 36px;
+  }
+
+  .hero + .exchange-section .live-rebate-title-row {
+    margin-bottom: 24px;
+  }
+
+  .hero + .exchange-section .live-rebate-title-row h3 {
+    font-size: 36px;
+  }
+
+  .hero + .exchange-section .live-rebate-head {
+    font-size: 13px;
+  }
+
+  .hero + .exchange-section .live-rebate-user strong,
+  .hero + .exchange-section .live-rebate-amount {
+    font-size: 16px;
+  }
+
+  .hero + .exchange-section .live-rebate-user small,
+  .hero + .exchange-section .live-rebate-row time {
+    font-size: 13px;
+  }
+
+  .submit-section.submit-section {
+    min-height: 0;
+    padding-top: 96px;
+    padding-bottom: 112px;
+  }
+
+  .submit-section > .submit-layout {
+    row-gap: 46px;
+  }
+
+  .submit-section .application-form {
+    padding: 50px 0 50px 68px;
+  }
+
+  .submit-section .review-steps-card {
+    margin: 50px 68px 50px 0;
+    padding: 30px;
+  }
+
+  .submit-section .application-form-copy {
+    margin-top: 8px;
+    color: color-mix(in srgb, var(--text-primary) 68%, var(--text-secondary));
+    font-size: 13px;
+    line-height: 20px;
+  }
+
+  .submit-section .application-form .form-grid {
+    gap: 16px;
+  }
+
+  .submit-section .form-grid label > span,
+  .submit-section .application-form .form-grid label > span,
+  .submit-section .review-steps-card li p,
+  .submit-section .review-preview pre {
+    color: color-mix(in srgb, var(--text-primary) 66%, var(--text-secondary));
+  }
+
+  .submit-section .review-preview {
+    margin-top: 18px;
+    padding: 16px 18px;
+  }
+
+  .submit-section .review-steps-card li p {
+    font-size: 13px;
+    line-height: 19px;
+  }
+
+  .submit-section .sensitive-warning {
+    font-size: 11px;
+    line-height: 16px;
   }
 }

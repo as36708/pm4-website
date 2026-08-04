@@ -30,6 +30,7 @@ export type Exchange = {
   rebate: string;
   makerFee: string;
   takerFee: string;
+  rebateTiming: string;
   code: string;
   desktopOrder: number;
   desktopFeatured: boolean;
@@ -50,6 +51,7 @@ export const exchanges: Exchange[] = [
     rebate: "33%",
     makerFee: "0.02%",
     takerFee: "0.055%",
+    rebateTiming: "每日 13:00 前",
     code: "PM4BYBIT",
     desktopOrder: 1,
     desktopFeatured: true,
@@ -68,6 +70,7 @@ export const exchanges: Exchange[] = [
     rebate: "30%",
     makerFee: "0.02%",
     takerFee: "0.06%",
+    rebateTiming: "次日 16:30 起",
     code: "PM4BITGET",
     desktopOrder: 2,
     desktopFeatured: false,
@@ -86,6 +89,7 @@ export const exchanges: Exchange[] = [
     rebate: "30%",
     makerFee: "0.02%",
     takerFee: "0.05%",
+    rebateTiming: "次日 03:00",
     code: "PM4BINGX",
     desktopOrder: 3,
     desktopFeatured: false,

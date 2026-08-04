@@ -3,16 +3,37 @@
 import { type MouseEvent, useEffect, useState } from "react";
 import SplitText from "./components/SplitText";
 import {
+  type Exchange,
   exchanges,
   siteConfig,
 } from "./site-data";
 
 type FormErrors = Record<string, string>;
 
+const gateDesktopTemplate: Exchange = {
+  name: "Gate",
+  logo: "",
+  rebate: "待确认",
+  makerFee: "待确认",
+  takerFee: "待确认",
+  rebateTiming: "待确认",
+  code: "GATE_TEMPLATE",
+  desktopOrder: 4,
+  desktopFeatured: false,
+  description: "合作资料待确认",
+  newUserStatus: "暂未开放",
+  existingUserStatus: "需确认",
+  indicatorStatus: "规则待确认",
+  registerUrl: null,
+  transferUrl: "#support",
+  status: "pending",
+  featured: false,
+};
+
 const liveRebateRows = [
   {
     nickname: "林浩然",
-    id: "alex***88",
+    id: "bluefox***88",
     exchange: "Bitget",
     logo: "/exchanges/bitget.svg",
     amount: "11.38 USDT",
@@ -20,39 +41,39 @@ const liveRebateRows = [
   },
   {
     nickname: "陳子豪",
-    id: "river***27",
+    id: "orbit***27",
     exchange: "Bybit",
     logo: "/exchanges/bybit.svg",
     amount: "13.81 USDT",
     time: "今日 15:56",
   },
   {
-    nickname: "王若琳",
-    id: "noah***91",
+    nickname: "Chloe Reed",
+    id: "cobalt***91",
     exchange: "BingX",
     logo: "/exchanges/bingx.svg",
     amount: "32.61 USDT",
     time: "今日 15:26",
   },
   {
-    nickname: "林芷晴",
-    id: "luna***03",
+    nickname: "王若琳",
+    id: "maple***03",
     exchange: "Bitget",
     logo: "/exchanges/bitget.svg",
     amount: "7.87 USDT",
     time: "今日 14:56",
   },
   {
-    nickname: "周宇辰",
-    id: "ethan***16",
+    nickname: "張偉倫",
+    id: "nova***16",
     exchange: "Bybit",
     logo: "/exchanges/bybit.svg",
     amount: "5.99 USDT",
     time: "今日 13:50",
   },
   {
-    nickname: "張偉倫",
-    id: "mason***42",
+    nickname: "Maya Stone",
+    id: "pixel***42",
     exchange: "BingX",
     logo: "/exchanges/bingx.svg",
     amount: "18.26 USDT",
@@ -60,7 +81,7 @@ const liveRebateRows = [
   },
   {
     nickname: "李静怡",
-    id: "claire***75",
+    id: "harbor***75",
     exchange: "Bitget",
     logo: "/exchanges/bitget.svg",
     amount: "9.64 USDT",
@@ -68,7 +89,7 @@ const liveRebateRows = [
   },
   {
     nickname: "黃雅雯",
-    id: "owen***64",
+    id: "echo***64",
     exchange: "Bybit",
     logo: "/exchanges/bybit.svg",
     amount: "24.17 USDT",
@@ -168,6 +189,21 @@ function Header({
             </a>
           ))}
         </nav>
+        <button
+          className="header-support-cta mobile-header-support-cta"
+          type="button"
+          aria-label="打开客服入口"
+          onClick={() => window.dispatchEvent(new Event("pm4:open-support"))}
+        >
+          <span className="header-support-text-wrapper">
+            <span className="zelect-roll-text">
+              <span>联系客服</span>
+              <span aria-hidden="true">联系客服</span>
+            </span>
+          </span>
+          <span className="header-support-overlay" aria-hidden="true" />
+          <span className="header-support-gradient" aria-hidden="true" />
+        </button>
         <button
           className="menu-toggle"
           type="button"
@@ -474,10 +510,17 @@ function ExchangePlatformCard({
   );
 
   return (
-    <article className="exchange-platform-card reveal" role="listitem">
+    <article
+      className={`exchange-platform-card reveal${exchange.name === "Gate" ? " exchange-platform-card--template" : ""}`}
+      role="listitem"
+    >
       <div className="exchange-card-primary">
         <div className="exchange-card-logo">
-          <img src={exchange.logo} alt={`${exchange.name} Logo`} />
+          {exchange.logo ? (
+            <img src={exchange.logo} alt={`${exchange.name} Logo`} />
+          ) : (
+            <span className="exchange-card-logo-fallback" aria-hidden="true">G</span>
+          )}
         </div>
         <div className="exchange-card-identity">
           <h3>{exchange.name}</h3>
@@ -490,12 +533,12 @@ function ExchangePlatformCard({
 
       <div className="exchange-card-rates" aria-label={`${exchange.name} 交易费率`}>
         <div>
-          <span>挂单费率</span>
-          <strong>{exchange.makerFee}</strong>
+          <span>交易费率（挂单 / 吃单）</span>
+          <strong>{exchange.makerFee} / {exchange.takerFee}</strong>
         </div>
         <div>
-          <span>吃单费率</span>
-          <strong>{exchange.takerFee}</strong>
+          <span>返佣到账</span>
+          <strong>{exchange.rebateTiming}</strong>
         </div>
       </div>
 
@@ -1265,8 +1308,7 @@ export default function Home() {
                                 <img src={row.logo} alt="" aria-hidden="true" />
                               </span>
                               <span>
-                                <strong>{row.nickname}</strong>
-                                <small>{row.id} · {row.exchange}</small>
+                                <strong>{row.id}</strong>
                               </span>
                             </div>
                             <strong className="live-rebate-amount" role="cell">{row.amount}</strong>
@@ -1281,7 +1323,7 @@ export default function Home() {
                   </div>
                 </div>
               </div>
-              <p className="live-rebate-note">记录持续滚动 · 实际到账时间与金额以交易所结算为准</p>
+              <p className="live-rebate-note">记录持续滚动 · 以下返佣时间按韩国时间（UTC+9）显示 · 实际到账时间与金额以交易所结算为准</p>
             </div>
             <div
               className="exchange-marquee desktop-exchange-only"
@@ -1305,8 +1347,19 @@ export default function Home() {
                 ))}
               </div>
             </div>
+            <div className="exchange-card-table-head" aria-hidden="true">
+              <div className="exchange-card-table-head-primary">
+                <span>交易所</span>
+                <span>最高返佣</span>
+              </div>
+              <div className="exchange-card-table-head-rates">
+                <span>交易费率</span>
+                <span>返佣到账</span>
+              </div>
+              <span className="exchange-card-table-head-actions">操作</span>
+            </div>
             <div className="exchange-card-list" role="list" aria-label="交易所返佣与费率">
-              {[...exchanges]
+              {[...exchanges, gateDesktopTemplate]
                 .sort((a, b) => a.desktopOrder - b.desktopOrder)
                 .map((exchange) => (
                   <ExchangePlatformCard
