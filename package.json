@@ -1,5 +1,5 @@
 {
-  "name": "pm4-trading-tools",
+  "name": "pm4-website",
   "version": "0.1.0",
   "private": true,
   "engines": {
@@ -8,16 +8,13 @@
   "scripts": {
     "dev": "vinext dev",
     "build": "vinext build",
-    "vercel:build": "npm run build && node scripts/vercel-build.mjs",
     "start": "vinext start",
     "test": "npm run build && node --test tests/rendered-html.test.mjs",
-    "lint": "eslint . --ignore-pattern dist --ignore-pattern .next --ignore-pattern work --ignore-pattern .codex",
+    "lint": "eslint . --ignore-pattern dist --ignore-pattern .next",
     "db:generate": "drizzle-kit generate"
   },
   "dependencies": {
-    "@gsap/react": "^2.1.2",
     "drizzle-orm": "0.45.2",
-    "gsap": "^3.15.0",
     "next": "16.2.6",
     "react": "19.2.6",
     "react-dom": "19.2.6"

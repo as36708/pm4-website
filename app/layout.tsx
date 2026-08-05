@@ -1,41 +1,39 @@
 import type { Metadata } from "next";
+import { Geist, Geist_Mono } from "next/font/google";
+import { headers } from "next/headers";
 import "./globals.css";
 
-const title = "PM4交易所返佣与专属指标";
-const description =
-  "通过PM4专属链接注册合作交易所，享受手续费优惠，并根据活动规则免费开通PM4 TradingView支撑阻力位指标。";
+const geistSans = Geist({ variable: "--font-geist-sans", subsets: ["latin"] });
+const geistMono = Geist_Mono({ variable: "--font-geist-mono", subsets: ["latin"] });
 
-export const metadata: Metadata = {
-  metadataBase: new URL("https://pm4-trading-tools.chexin1103.chatgpt.site"),
-  title,
-  description,
-  keywords: ["PM4", "交易所返佣", "TradingView指标", "支撑阻力位"],
-  icons: {
-    icon: "/favicon.svg",
-    shortcut: "/favicon.svg",
-  },
-  openGraph: {
-    title,
-    description,
-    type: "website",
-    locale: "zh_CN",
-    siteName: "PM4",
-    images: [{ url: "/og.png", width: 1680, height: 945, alt: "PM4 交易成本与专属指标" }],
-  },
-  twitter: {
-    card: "summary_large_image",
-    title,
-    description,
-    images: ["/og.png"],
-  },
-};
+export async function generateMetadata(): Promise<Metadata> {
+  const requestHeaders = await headers();
+  const host = requestHeaders.get("x-forwarded-host") ?? requestHeaders.get("host") ?? "localhost:3000";
+  const protocol = requestHeaders.get("x-forwarded-proto") ?? (host.includes("localhost") ? "http" : "https");
+  const origin = `${protocol}://${host}`;
 
-export default function RootLayout({
-  children,
-}: Readonly<{ children: React.ReactNode }>) {
+  return {
+    title: "PM4 指标返佣与审核",
+    description: "通过合作交易所专属链接完成注册与任务，享受最高 65% 手续费返佣并申请 PM4 TradingView 专属指标。",
+    icons: { icon: "/favicon.svg", shortcut: "/favicon.svg" },
+    openGraph: {
+      title: "一次注册，指标返佣双享",
+      description: "注册合作交易所，享受最高 65% 手续费返佣并申请 PM4 TradingView 专属指标。",
+      images: [{ url: `${origin}/og.png`, width: 1536, height: 1024, alt: "PM4 指标返佣平台" }],
+    },
+    twitter: {
+      card: "summary_large_image",
+      title: "一次注册，指标返佣双享",
+      description: "注册合作交易所，享受最高 65% 手续费返佣并申请 PM4 TradingView 专属指标。",
+      images: [`${origin}/og.png`],
+    },
+  };
+}
+
+export default function RootLayout({ children }: Readonly<{ children: React.ReactNode }>) {
   return (
     <html lang="zh-CN">
-      <body>{children}</body>
+      <body className={`${geistSans.variable} ${geistMono.variable}`}>{children}</body>
     </html>
   );
 }

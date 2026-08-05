@@ -2,100 +2,103 @@ import assert from "node:assert/strict";
 import { access, readFile } from "node:fs/promises";
 import test from "node:test";
 
-async function render() {
+async function render(pathname = "/") {
   const workerUrl = new URL("../dist/server/index.js", import.meta.url);
   workerUrl.searchParams.set("test", `${process.pid}-${Date.now()}`);
   const { default: worker } = await import(workerUrl.href);
 
   return worker.fetch(
-    new Request("http://localhost/", {
-      headers: { accept: "text/html" },
-    }),
-    {
-      ASSETS: {
-        fetch: async () => new Response("Not found", { status: 404 }),
-      },
-    },
-    {
-      waitUntil() {},
-      passThroughOnException() {},
-    },
+    new Request(`http://localhost${pathname}`, { headers: { accept: "text/html" } }),
+    { ASSETS: { fetch: async () => new Response("Not found", { status: 404 }) } },
+    { waitUntil() {}, passThroughOnException() {} },
   );
 }
 
-test("server-renders the production PM4 page without starter content", async () => {
+test("server-renders the complete PM4 landing page", async () => {
   const response = await render();
   assert.equal(response.status, 200);
   assert.match(response.headers.get("content-type") ?? "", /^text\/html\b/i);
 
   const html = await response.text();
-  assert.match(html, /<title>PM4交易所返佣与专属指标<\/title>/i);
-  assert.match(html, /id="home"/);
-  assert.match(html, /id="exchanges"/);
-  assert.match(html, /id="indicator-review"/);
-  assert.doesNotMatch(html, /id="process"|id="faq"|rules-section/);
-  assert.match(html, /完成注册后/);
-  assert.match(html, /提交交易所 UID 与 TradingView 用户名/);
-  assert.match(html, /pm4-indicator-preview\.mp4/);
-  assert.match(html, /indicator-preview-poster\.jpg/);
-  assert.match(html, /playsinline=""/i);
-  assert.match(html, /preload="metadata"/i);
-  assert.doesNotMatch(html, /codex-preview|Your site is taking shape|Building your site/i);
-  assert.doesNotMatch(html, /href=["']#["']/i);
+  assert.match(html, /<html lang="zh-CN">/i);
+  assert.match(html, /PM4 指标返佣与审核/);
+  assert.match(html, /一次注册/);
+  assert.match(html, /选择交易所注册/);
+  assert.match(html, /已注册，提交审核/);
+  assert.match(html, /注册交易所，完成任务领指标/);
+  assert.match(html, /选择合作交易所/);
+  assert.match(html, /提交指标审核资料/);
+  assert.match(html, /market-panel\.mp4/);
+  assert.match(html, /market-panel-poster\.jpg/);
+  assert.match(html, /https:\/\/partner\.bybit\.com\/b\/PPMM44/);
+  assert.match(html, /https:\/\/partner\.bitget\.com\/bg\/r1ky845p/);
+  assert.match(html, /https:\/\/iciclebridge\.com\/zh-tc\/invite\/GHO8MG87/);
+  assert.match(html, /https:\/\/www\.gateport\.biz\/zh\/share\/VFLEAAPBAQ/);
+  assert.match(html, /<tr\b[^>]*>[\s\S]*?\bGate\b[\s\S]*?65%[\s\S]*?0\.02%[\s\S]*?0\.05%[\s\S]*?<\/tr>/i);
 });
 
-test("keeps production links, copy flow, and media assets configured", async () => {
-  const [page, data] = await Promise.all([
+test("server-renders the Discord review destination", async () => {
+  const response = await render("/review");
+  assert.equal(response.status, 200);
+  const html = await response.text();
+  assert.match(html, /前往审核频道粘贴提交/);
+  assert.match(html, /https:\/\/discord\.com\/channels\/942442247209779230\/1296106331543175219/);
+  assert.match(html, /https:\/\/discord\.gg\/D5CPTzQafD/);
+});
+
+test("keeps the responsive flow and production assets intact", async () => {
+  const [page, review, css, layout, packageJson, links] = await Promise.all([
     readFile(new URL("../app/page.tsx", import.meta.url), "utf8"),
-    readFile(new URL("../app/site-data.ts", import.meta.url), "utf8"),
+    readFile(new URL("../app/components/ReviewSection.tsx", import.meta.url), "utf8"),
+    readFile(new URL("../app/globals.css", import.meta.url), "utf8"),
+    readFile(new URL("../app/layout.tsx", import.meta.url), "utf8"),
+    readFile(new URL("../package.json", import.meta.url), "utf8"),
+    readFile(new URL("../app/links.ts", import.meta.url), "utf8"),
   ]);
 
-  assert.match(page, /navigator\.clipboard\.writeText\(reviewText\)/);
-  assert.match(page, /target="_blank"/);
-  assert.match(page, /rel="noopener noreferrer"/);
-  assert.match(page, /href="#indicator-review"/);
-  assert.match(data, /https:\/\/discord\.com\/channels\//);
-  assert.match(data, /https:\/\/discord\.gg\/D5CPTzQafD/);
-  assert.match(data, /https:\/\/t\.me\/as36701/);
-  assert.doesNotMatch(page + data, /WEEX|PM4WEEX|weex\.com/i);
-  assert.doesNotMatch(page + data, /链接待配置|演示环境|开发提示|测试文字/);
+  assert.match(page, /STEP 01 · REGISTER/);
+  assert.match(page, /STEP 02 · VERIFY/);
+  assert.match(page, /STEP 03 · ACTIVATE/);
+  assert.match(page, /hero-quick-primary[\s\S]{0,300}选择交易所注册/);
+  assert.match(page, /hero-quick-secondary[\s\S]{0,300}已注册，提交审核/);
+  assert.doesNotMatch(page, /<span className="chevron">⌄<\/span>/);
+  assert.match(page, /scope="col"/);
+  assert.match(page, /data-label="返佣权益"/);
+  assert.doesNotMatch(page, /任务要求/);
+  assert.match(review, /id="review"/);
+  assert.match(review, /className="review-primary"[^>]*>[\s\S]*?复制审核信息[\s\S]*?<\/button>/);
+  assert.doesNotMatch(review, /提交并复制审核信息/);
+
+  assert.match(css, /overflow-x:\s*clip/);
+  assert.match(css, /font-size:\s*clamp\(34px,10vw,38px\)/);
+  assert.match(css, /position:\s*sticky/);
+  assert.match(css, /\.exchange-table tbody tr\s*\{[^}]*grid-template-columns:\s*1fr 1fr/);
+  assert.doesNotMatch(css, /\.campaign-card:nth-child\([^)]*\)\s*\{\s*display:\s*none/);
+
+  const mobileCardRule = css.indexOf(".exchange-table-scroll { overflow: visible");
+  assert.notEqual(mobileCardRule, -1, "mobile exchange cards should disable horizontal table scrolling");
+  const mobileCardBreakpoint = css.lastIndexOf("@media", mobileCardRule);
+  assert.notEqual(mobileCardBreakpoint, -1, "mobile exchange card rules should be inside a media query");
+  assert.match(
+    css.slice(mobileCardBreakpoint, mobileCardRule),
+    /max-width:\s*960px/,
+    "exchange table card layout should cover viewports up to 960px",
+  );
+
+  assert.match(layout, /PM4 指标返佣与审核/);
+  assert.match(layout, /<html lang="zh-CN">/);
+  assert.match(packageJson, /"build": "vinext build"/);
+  assert.doesNotMatch(packageJson, /static-export/);
+  assert.match(links, /https:\/\/www\.bybit\.com\/zh-TW\/help-center\/article\/How-to-Transfer-Your-Identity-to-Another-Account/);
+  assert.match(links, /https:\/\/t\.me\/as36701/);
+  assert.match(page, /setSupportOpen\(true\)/);
 
   await Promise.all([
-    access(new URL("../public/videos/pm4-indicator-preview.mp4", import.meta.url)),
-    access(new URL("../public/images/indicator-preview-poster.jpg", import.meta.url)),
-    access(new URL("../public/icons/discord.svg", import.meta.url)),
-    access(new URL("../public/icons/telegram.svg", import.meta.url)),
+    access(new URL("../public/media/market-panel.mp4", import.meta.url)),
+    access(new URL("../public/media/market-panel-poster.jpg", import.meta.url)),
+    access(new URL("../public/logos/bybit.png", import.meta.url)),
+    access(new URL("../public/logos/bitget.png", import.meta.url)),
+    access(new URL("../public/logos/bingx.png", import.meta.url)),
+    access(new URL("../public/logos/gate.svg", import.meta.url)),
   ]);
-});
-
-test("exposes dashboard metrics only to the authenticated admin origin", async () => {
-  const workerSource = await readFile(new URL("../worker/index.ts", import.meta.url), "utf8");
-  assert.match(workerSource, /\/api\/dashboard-stats/);
-  assert.match(workerSource, /pm4-admin-console-v2\.chexin1103\.chatgpt\.site/);
-  assert.match(workerSource, /oai-authenticated-user-id/);
-  assert.match(workerSource, /oai-authenticated-user-email/);
-  assert.match(workerSource, /access-control-allow-credentials/);
-  assert.doesNotMatch(workerSource, /access-control-allow-origin["']:\s*["']\*/);
-});
-
-test("keeps the hero CTA scroll interruptible and free of repeated anchor alignment", async () => {
-  const [page, styles] = await Promise.all([
-    readFile(new URL("../app/page.tsx", import.meta.url), "utf8"),
-    readFile(new URL("../app/globals.css", import.meta.url), "utf8"),
-  ]);
-
-  assert.equal((page.match(/href="#indicator-review"/g) ?? []).length >= 2, true);
-  assert.equal((page.match(/href="#exchanges"/g) ?? []).length >= 1, true);
-  assert.equal((page.match(/alignMobileReviewAnchor/g) ?? []).length, 0);
-  assert.match(page, /const scrollToDesktopSection/);
-  assert.match(page, /if \(window\.innerWidth < 1024\) return;/);
-  assert.match(page, /const scrollToMobileSection/);
-  assert.match(page, /target\.scrollIntoView\(\{ behavior: "smooth", block: "start" \}\)/);
-  assert.equal((page.match(/scrollToMobileSection\("indicator-review"\)/g) ?? []).length, 1);
-  assert.equal((page.match(/scrollToMobileSection\("exchanges"\)/g) ?? []).length, 1);
-  assert.equal((page.match(/window\.scrollTo\(/g) ?? []).length, 1);
-  assert.equal((page.match(/scrollToDesktopSection\(event, "indicator-review"\)/g) ?? []).length, 1);
-  assert.equal((page.match(/scrollToDesktopSection\(event, "exchanges"\)/g) ?? []).length, 1);
-  assert.match(styles, /@media \(min-width: 1024px\)[\s\S]*?html\s*\{\s*scroll-behavior: auto;/);
-  assert.match(styles, /@media \(max-width: 1023px\)[\s\S]*?\.desktop-hero-action[\s\S]*?\.mobile-hero-action/);
 });
