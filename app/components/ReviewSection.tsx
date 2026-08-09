@@ -15,12 +15,19 @@ type ReviewSectionProps = {
   standalone?: boolean;
 };
 
+type SubmissionResponse = {
+  submitted?: boolean;
+  duplicate?: boolean;
+  error?: string;
+};
+
 export default function ReviewSection({ prefillExchange = "", prefillUid = "", prefilled = false, standalone = false }: ReviewSectionProps) {
   const [exchange, setExchange] = useState(prefillExchange);
   const [uid, setUid] = useState(prefillUid);
   const [tradingView, setTradingView] = useState("");
   const [notice, setNotice] = useState(prefilled ? "已带入交易所和 UID，请继续填写 TradingView 用户名" : "");
   const [errors, setErrors] = useState<ReviewErrors>({});
+  const [submitting, setSubmitting] = useState(false);
   const exchangeRef = useRef<HTMLSelectElement>(null);
   const uidRef = useRef<HTMLInputElement>(null);
   const tradingViewRef = useRef<HTMLInputElement>(null);
@@ -40,21 +47,34 @@ export default function ReviewSection({ prefillExchange = "", prefillUid = "", p
     setErrors((current) => ({ ...current, [field]: undefined }));
   }
 
-  async function copyReview() {
+  async function copyReviewToClipboard() {
+    try {
+      await navigator.clipboard.writeText(reviewText);
+      return true;
+    } catch {
+      return false;
+    }
+  }
+
+  async function submitReview() {
+    if (submitting) return;
+
     const nextErrors: ReviewErrors = {};
     const normalizedUid = uid.trim();
     const normalizedTradingView = tradingView.trim().replace(/^@/, "");
 
     if (!reviewExchanges.includes(exchange)) nextErrors.exchange = "请选择合作交易所。";
     if (!normalizedUid) nextErrors.uid = "请输入交易所 UID。";
-    else if (!/^\d+$/.test(normalizedUid)) nextErrors.uid = "交易所 UID 只能包含数字。";
+    else if (!/^\d{4,32}$/.test(normalizedUid)) nextErrors.uid = "交易所 UID 需要填写 4–32 位数字。";
     if (!normalizedTradingView) nextErrors.tradingView = "请输入 TradingView 用户名。";
-    else if (/\s/.test(normalizedTradingView)) nextErrors.tradingView = "TradingView 用户名不能包含空格。";
+    else if (!/^[A-Za-z0-9_.-]{2,64}$/.test(normalizedTradingView)) {
+      nextErrors.tradingView = "TradingView 用户名只能包含字母、数字、点、横线或下划线。";
+    }
 
     setErrors(nextErrors);
     const firstError = (["exchange", "uid", "tradingView"] as const).find((field) => nextErrors[field]);
     if (firstError) {
-      setNotice("请检查标注字段后再复制审核信息");
+      setNotice("请检查标注字段后再提交审核资料。");
       const firstErrorRef = {
         exchange: exchangeRef,
         uid: uidRef,
@@ -64,11 +84,39 @@ export default function ReviewSection({ prefillExchange = "", prefillUid = "", p
       return;
     }
 
+    setSubmitting(true);
+    setNotice("正在保存资料并同步到 PM4 管理后台…");
+    const copied = await copyReviewToClipboard();
+
     try {
-      await navigator.clipboard.writeText(reviewText);
-      setNotice("审核信息已复制。下一步：先加入 Discord 服务器，再前往审核频道粘贴提交。");
+      const response = await fetch("/api/indicator-applications", {
+        method: "POST",
+        cache: "no-store",
+        headers: { "content-type": "application/json" },
+        body: JSON.stringify({
+          exchange,
+          uid: normalizedUid,
+          tradingViewUser: normalizedTradingView,
+        }),
+      });
+      const payload = await response.json().catch(() => null) as SubmissionResponse | null;
+
+      if (!response.ok || !payload?.submitted) {
+        const fallback = response.status === 409
+          ? "该 UID 已有不同资料，请到 Discord 审核频道联系管理员核对。"
+          : "资料暂时未进入后台，请稍后重试。";
+        setNotice(`${payload?.error || fallback}${copied ? " 审核信息已复制，可先到 Discord 粘贴提交。" : " 请手动复制预览内容并到 Discord 提交。"}`);
+        return;
+      }
+
+      const savedMessage = payload.duplicate
+        ? "这份资料已在 PM4 管理后台，无需重复提交。"
+        : "资料已保存并进入 PM4 管理后台。";
+      setNotice(`${savedMessage}${copied ? " 审核信息也已复制，请继续到 Discord 审核频道粘贴。" : " 请继续到 Discord 审核频道提交。"}`);
     } catch {
-      setNotice("复制失败，请手动复制预览内容");
+      setNotice(`网络暂时不可用，资料尚未进入后台。${copied ? " 审核信息已复制，可先到 Discord 粘贴提交。" : " 请手动复制预览内容并到 Discord 提交。"}`);
+    } finally {
+      setSubmitting(false);
     }
   }
 
@@ -78,7 +126,7 @@ export default function ReviewSection({ prefillExchange = "", prefillUid = "", p
       <div className="review-heading">
         <span className="review-kicker"><i /> 资料审核</span>
         <HeadingTag id="home-review-title">提交指标审核资料</HeadingTag>
-        <p>完成注册与任务后，提交交易所 UID 和 TradingView 用户名，申请开通 PM4 专属指标。</p>
+        <p>完成注册与任务后，提交交易所 UID 和 TradingView 用户名，资料会自动进入 PM4 管理后台。</p>
       </div>
 
       <div className="review-layout">
@@ -86,10 +134,10 @@ export default function ReviewSection({ prefillExchange = "", prefillUid = "", p
           <div className="review-card-heading">
             <span>完成注册后</span>
             <h3 id="home-review-form-title">提交交易所 UID 与 TradingView 用户名</h3>
-            <p>填写并复制审核资料。下一步先加入 Discord 服务器，再前往审核频道粘贴提交。</p>
+            <p>提交后会安全保存到 PM4 管理后台；Discord 审核频道继续保留为通知与人工核对流程。</p>
           </div>
 
-          <form noValidate onSubmit={(event) => { event.preventDefault(); void copyReview(); }}>
+          <form noValidate aria-busy={submitting} onSubmit={(event) => { event.preventDefault(); void submitReview(); }}>
             <label>
               <span>交易所选择 <b>*</b></span>
               <select
@@ -137,7 +185,9 @@ export default function ReviewSection({ prefillExchange = "", prefillUid = "", p
               <pre>{reviewText}</pre>
             </div>
             <div className="review-actions">
-              <button className="review-primary" type="submit"><span>▣</span> 复制审核信息</button>
+              <button className="review-primary" type="submit" disabled={submitting}>
+                <span>▣</span> {submitting ? "正在提交…" : "提交审核资料"}
+              </button>
               <a className="review-secondary" href={EXTERNAL_LINKS.discordInvite} target="_blank" rel="noopener noreferrer">下一步：加入 Discord 服务器 <span>↗</span></a>
             </div>
             <a className="review-discord-help" href={EXTERNAL_LINKS.discordReview} target="_blank" rel="noopener noreferrer">已加入服务器？前往审核频道粘贴提交 <span>↗</span></a>
@@ -181,8 +231,8 @@ export default function ReviewSection({ prefillExchange = "", prefillUid = "", p
             <ol>
               <li><b>1</b><span>选择合作交易所并填写 UID</span></li>
               <li><b>2</b><span>填写 TradingView 用户名</span></li>
-              <li><b>3</b><span>复制审核信息</span></li>
-              <li><b>4</b><span>加入 Discord 后，前往审核频道粘贴提交</span></li>
+              <li><b>3</b><span>提交资料并自动进入后台</span></li>
+              <li><b>4</b><span>到 Discord 审核频道确认并等待开通</span></li>
             </ol>
             <div className="review-warning">
               <b>!</b>

@@ -416,6 +416,7 @@ button:focus-visible, input:focus-visible, select:focus-visible { outline: 2px s
 .review-actions button:hover,.review-actions a:hover { transform: translateY(-2px); }
 .review-primary { border: 0; background: var(--orange); color: #111; }
 .review-primary:hover { background: #ffb446; }
+.review-actions .review-primary:disabled { cursor: wait; opacity: .68; transform: none; }
 .review-secondary { border: 1px solid rgba(247,166,41,.72); background: transparent; color: #f3f3f4; }
 .review-secondary:hover { border-color: var(--orange); background: rgba(247,166,41,.07); }
 .review-discord-help { width: fit-content; display: inline-flex; gap: 6px; color: #afb1b6; font-size: 14px; text-decoration: none; }
