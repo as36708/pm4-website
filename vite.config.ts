@@ -8,6 +8,9 @@ const localBindingConfig = {
   main: "./worker/index.ts",
   compatibility_date: "2026-05-22",
   compatibility_flags: ["nodejs_compat"],
+  // Git-connected deploys must retain secrets configured in the Cloudflare
+  // dashboard instead of replacing the bindings with an empty vars object.
+  keep_vars: true,
 };
 
 export default defineConfig(async () => {
