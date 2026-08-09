@@ -223,12 +223,26 @@ export default function Home() {
                     <td className="exchange-actions-cell" data-label="操作">
                       <span className="exchange-actions">
                         {exchange.registerUrl ? (
-                          <a className="primary-cta exchange-action" href={exchange.registerUrl} target="_blank" rel="noopener noreferrer">立即注册</a>
+                          <a
+                            className="primary-cta exchange-action"
+                            href={exchange.registerUrl}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            data-pm4-event="exchange_click"
+                            data-pm4-exchange={exchange.name}
+                          >立即注册</a>
                         ) : (
                           <button className="primary-cta exchange-action exchange-action-disabled" type="button" disabled title="该交易所注册链接尚未配置">暂未配置</button>
                         )}
                         {exchange.transferUrl ? (
-                          <a className="primary-cta exchange-action" href={exchange.transferUrl} target="_blank" rel="noopener noreferrer">身份转移</a>
+                          <a
+                            className="primary-cta exchange-action"
+                            href={exchange.transferUrl}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            data-pm4-event="transfer_click"
+                            data-pm4-exchange={exchange.name}
+                          >身份转移</a>
                         ) : (
                           <button className="primary-cta exchange-action" type="button" onClick={openSupport}>身份转移</button>
                         )}

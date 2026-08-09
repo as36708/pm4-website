@@ -53,9 +53,10 @@ test("server-renders the Discord review destination", async () => {
 });
 
 test("keeps the responsive flow and production assets intact", async () => {
-  const [page, review, css, layout, packageJson, links] = await Promise.all([
+  const [page, review, analytics, css, layout, packageJson, links] = await Promise.all([
     readFile(new URL("../app/page.tsx", import.meta.url), "utf8"),
     readFile(new URL("../app/components/ReviewSection.tsx", import.meta.url), "utf8"),
+    readFile(new URL("../app/components/FrontendAnalytics.tsx", import.meta.url), "utf8"),
     readFile(new URL("../app/globals.css", import.meta.url), "utf8"),
     readFile(new URL("../app/layout.tsx", import.meta.url), "utf8"),
     readFile(new URL("../package.json", import.meta.url), "utf8"),
@@ -77,6 +78,12 @@ test("keeps the responsive flow and production assets intact", async () => {
   assert.match(review, /disabled=\{submitting\}/);
   assert.doesNotMatch(review, /PM4_ADMIN_INGEST_SECRET|PM4_ADMIN_SITES_BYPASS_TOKEN/);
   assert.doesNotMatch(review, /提交并复制审核信息/);
+  assert.match(page, /data-pm4-event="exchange_click"/);
+  assert.match(page, /data-pm4-event="transfer_click"/);
+  assert.match(analytics, /fetch\("\/api\/frontend-events"/);
+  assert.match(analytics, /pm4-visit-day/);
+  assert.match(analytics, /window\.localStorage/);
+  assert.doesNotMatch(analytics, /PM4_ADMIN_INGEST_SECRET|PM4_ADMIN_SITES_BYPASS_TOKEN/);
 
   assert.match(css, /overflow-x:\s*clip/);
   assert.match(css, /font-size:\s*clamp\(34px,10vw,38px\)/);
@@ -96,6 +103,7 @@ test("keeps the responsive flow and production assets intact", async () => {
 
   assert.match(layout, /PM4 指标返佣与审核/);
   assert.match(layout, /<html lang="zh-CN">/);
+  assert.match(layout, /<FrontendAnalytics \/>/);
   assert.match(packageJson, /"build": "vinext build"/);
   assert.doesNotMatch(packageJson, /static-export/);
   assert.match(links, /https:\/\/www\.bybit\.com\/zh-TW\/help-center\/article\/How-to-Transfer-Your-Identity-to-Another-Account/);
@@ -110,6 +118,95 @@ test("keeps the responsive flow and production assets intact", async () => {
     access(new URL("../public/logos/bingx.png", import.meta.url)),
     access(new URL("../public/logos/gate.svg", import.meta.url)),
   ]);
+});
+
+test("forwards privacy-preserving visit and exchange events", async () => {
+  const originalFetch = globalThis.fetch;
+  const forwarded = [];
+  globalThis.fetch = async (input, init) => {
+    forwarded.push({ input: String(input), init });
+    return Response.json({ tracked: true });
+  };
+  const env = {
+    PM4_ADMIN_INGEST_URL: "https://pm4-rebate-admin.chexin1103.chatgpt.site/api/frontend-ingest",
+    PM4_ADMIN_INGEST_SECRET: "test-ingest-secret",
+    PM4_ADMIN_SITES_BYPASS_TOKEN: "test-sites-token",
+  };
+
+  try {
+    const visit = await render(
+      "/api/frontend-events",
+      env,
+      {
+        method: "POST",
+        headers: { origin: "http://localhost", "content-type": "application/json" },
+        body: JSON.stringify({ eventType: "visit", exchange: "" }),
+      },
+    );
+    assert.equal(visit.status, 200);
+    assert.deepEqual(await visit.json(), { tracked: true });
+
+    const exchangeClick = await render(
+      "/api/frontend-events",
+      env,
+      {
+        method: "POST",
+        headers: { origin: "http://localhost", "content-type": "application/json" },
+        body: JSON.stringify({ eventType: "exchange_click", exchange: "Bybit" }),
+      },
+    );
+    assert.equal(exchangeClick.status, 200);
+
+    assert.equal(forwarded.length, 2);
+    assert.deepEqual(forwarded.map(({ init }) => JSON.parse(init.body)), [
+      { action: "track", eventType: "visit", exchange: "" },
+      { action: "track", eventType: "exchange_click", exchange: "Bybit" },
+    ]);
+    for (const request of forwarded) {
+      assert.equal(request.input, "https://pm4-rebate-admin.chexin1103.chatgpt.site/api/frontend-ingest");
+      const headers = new Headers(request.init.headers);
+      assert.equal(headers.get("authorization"), "Bearer test-ingest-secret");
+      assert.equal(headers.get("oai-sites-authorization"), "Bearer test-sites-token");
+    }
+  } finally {
+    globalThis.fetch = originalFetch;
+  }
+});
+
+test("rejects unsafe or unconfigured frontend events", async () => {
+  const missingOrigin = await render(
+    "/api/frontend-events",
+    {},
+    {
+      method: "POST",
+      headers: { "content-type": "application/json" },
+      body: JSON.stringify({ eventType: "visit", exchange: "" }),
+    },
+  );
+  assert.equal(missingOrigin.status, 403);
+
+  const invalidExchange = await render(
+    "/api/frontend-events",
+    {},
+    {
+      method: "POST",
+      headers: { origin: "http://localhost", "content-type": "application/json" },
+      body: JSON.stringify({ eventType: "exchange_click", exchange: "Unknown" }),
+    },
+  );
+  assert.equal(invalidExchange.status, 400);
+
+  const unconfigured = await render(
+    "/api/frontend-events",
+    {},
+    {
+      method: "POST",
+      headers: { origin: "http://localhost", "content-type": "application/json" },
+      body: JSON.stringify({ eventType: "visit", exchange: "" }),
+    },
+  );
+  assert.equal(unconfigured.status, 503);
+  assert.equal((await unconfigured.json()).code, "FRONTEND_STATS_NOT_CONFIGURED");
 });
 
 test("forwards a validated indicator application without exposing server secrets", async () => {

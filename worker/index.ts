@@ -23,6 +23,7 @@ interface ExecutionContext {
 
 const supportedExchanges = new Set(["Bybit", "Bitget", "BingX", "Gate"]);
 const maximumRequestBytes = 2_048;
+const maximumEventBytes = 1_024;
 const expectedAdminOrigin = "https://pm4-rebate-admin.chexin1103.chatgpt.site";
 
 function jsonResponse(body: unknown, status = 200) {
@@ -69,6 +70,70 @@ async function anonymousSourceKey(request: Request, secret: string) {
   return Array.from(new Uint8Array(digest).slice(0, 16))
     .map((value) => value.toString(16).padStart(2, "0"))
     .join("");
+}
+
+async function handleFrontendEvent(request: Request, env: Env) {
+  if (request.method !== "POST") return jsonResponse({ error: "只支持 POST 请求" }, 405);
+  if (!isSameOriginRequest(request)) return jsonResponse({ error: "请求来源无效" }, 403);
+  if (!request.headers.get("content-type")?.toLowerCase().startsWith("application/json")) {
+    return jsonResponse({ error: "请求格式无效" }, 415);
+  }
+
+  const contentLength = Number(request.headers.get("content-length") ?? "0");
+  if (Number.isFinite(contentLength) && contentLength > maximumEventBytes) {
+    return jsonResponse({ error: "统计内容过大" }, 413);
+  }
+  const requestText = await request.text();
+  if (new TextEncoder().encode(requestText).byteLength > maximumEventBytes) {
+    return jsonResponse({ error: "统计内容过大" }, 413);
+  }
+  const body = (() => {
+    try {
+      return JSON.parse(requestText);
+    } catch {
+      return null;
+    }
+  })() as { eventType?: unknown; exchange?: unknown } | null;
+  if (!body) return jsonResponse({ error: "请求数据格式无效" }, 400);
+
+  const eventType = typeof body.eventType === "string" ? body.eventType.trim() : "";
+  const exchange = typeof body.exchange === "string" ? body.exchange.trim() : "";
+  if (!new Set(["visit", "exchange_click", "transfer_click"]).has(eventType)) {
+    return jsonResponse({ error: "统计事件无效" }, 400);
+  }
+  if (eventType === "visit" && exchange) return jsonResponse({ error: "访问统计不应包含交易所" }, 400);
+  if (eventType !== "visit" && !supportedExchanges.has(exchange)) {
+    return jsonResponse({ error: "交易所无效" }, 400);
+  }
+
+  const adminUrl = configuredAdminUrl(env.PM4_ADMIN_INGEST_URL);
+  const ingestSecret = env.PM4_ADMIN_INGEST_SECRET?.trim() ?? "";
+  const sitesBypassToken = env.PM4_ADMIN_SITES_BYPASS_TOKEN?.trim() ?? "";
+  if (!adminUrl || !ingestSecret || !sitesBypassToken) {
+    return jsonResponse({ code: "FRONTEND_STATS_NOT_CONFIGURED", error: "网站统计正在配置" }, 503);
+  }
+
+  try {
+    const response = await fetch(adminUrl, {
+      method: "POST",
+      cache: "no-store",
+      signal: AbortSignal.timeout(5_000),
+      headers: {
+        accept: "application/json",
+        authorization: `Bearer ${ingestSecret}`,
+        "content-type": "application/json",
+        "OAI-Sites-Authorization": `Bearer ${sitesBypassToken}`,
+      },
+      body: JSON.stringify({ action: "track", eventType, exchange }),
+    });
+    const payload = await response.json().catch(() => null) as { tracked?: boolean } | null;
+    if (!response.ok || !payload?.tracked) {
+      return jsonResponse({ code: "FRONTEND_STATS_FAILED", error: "网站统计暂时不可用" }, 503);
+    }
+    return jsonResponse({ tracked: true });
+  } catch {
+    return jsonResponse({ code: "FRONTEND_STATS_FAILED", error: "网站统计暂时不可用" }, 503);
+  }
 }
 
 async function handleIndicatorApplication(request: Request, env: Env) {
@@ -194,6 +259,10 @@ const worker = {
 
     if (url.pathname === "/api/indicator-applications") {
       return handleIndicatorApplication(request, env);
+    }
+
+    if (url.pathname === "/api/frontend-events") {
+      return handleFrontendEvent(request, env);
     }
 
     if (url.pathname === "/_vinext/image") {
