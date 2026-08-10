@@ -21,6 +21,8 @@ async function sendFrontendEvent(eventType: FrontendEventType, exchange = "") {
 
 export default function FrontendAnalytics() {
   useEffect(() => {
+    if (navigator.doNotTrack === "1" || window.doNotTrack === "1") return;
+
     const day = new Date().toISOString().slice(0, 10);
     const visitKey = "pm4-visit-day";
     let alreadyTracked = false;
@@ -52,7 +54,7 @@ export default function FrontendAnalytics() {
       void sendFrontendEvent(eventType, exchange);
     };
 
-    document.addEventListener("click", handleClick);
+    document.addEventListener("click", handleClick, { passive: true });
     return () => document.removeEventListener("click", handleClick);
   }, []);
 

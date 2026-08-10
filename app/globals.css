@@ -9,11 +9,15 @@
   --orange-deep: #f08c00;
   --green: #23d18b;
   --red: #ef5b6d;
+  --font-geist-sans: "Microsoft YaHei", "PingFang SC", Arial, sans-serif;
+  --font-geist-mono: "Cascadia Mono", "SFMono-Regular", Consolas, monospace;
 }
 
 * { box-sizing: border-box; }
 html { scroll-behavior: smooth; background: #050505; }
 body { margin: 0; background: #050505; color: var(--ink); font-family: var(--font-geist-sans), "Microsoft YaHei", "PingFang SC", Arial, sans-serif; text-rendering: optimizeLegibility; }
+.skip-link { position: fixed; z-index: 200; top: 8px; left: 8px; padding: 10px 14px; border-radius: 10px; background: #fff; color: #111; font-weight: 800; transform: translateY(-150%); transition: transform .15s; }
+.skip-link:focus { transform: translateY(0); }
 button { font: inherit; }
 button:focus-visible, input:focus-visible, select:focus-visible { outline: 2px solid var(--orange); outline-offset: 3px; }
 
@@ -105,6 +109,8 @@ button:focus-visible, input:focus-visible, select:focus-visible { outline: 2px s
 .market-terminal { position: relative; z-index: 2; width: 100%; max-width: 570px; margin-left: 0; display: grid; gap: 14px; }
 .video-terminal { width: 100%; height: auto; aspect-ratio: 16 / 9; display: block; overflow: hidden; border-radius: 22px; background: #050505; box-shadow: 0 24px 55px rgba(0,0,0,.32); }
 .market-video { width: 100%; height: 100%; display: block; border-radius: inherit; object-fit: contain; }
+.video-toggle { position: absolute; right: 14px; bottom: 14px; min-height: 40px; padding: 0 14px; border: 1px solid rgba(255,255,255,.26); border-radius: 999px; background: rgba(5,5,5,.78); color: #fff; font: inherit; font-size: 13px; cursor: pointer; backdrop-filter: blur(8px); }
+.video-toggle:focus-visible { outline: 3px solid var(--orange); outline-offset: 2px; }
 .terminal-top { height: 250px; display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
 .panel { border: 1px solid rgba(255,255,255,.055); background: linear-gradient(145deg, rgba(31,32,36,.96), rgba(17,18,20,.96)); box-shadow: 0 28px 60px rgba(0,0,0,.4); }
 .trend-card, .cfd-card { height: 250px; padding: 22px; border-radius: 18px; }
@@ -172,7 +178,7 @@ button:focus-visible, input:focus-visible, select:focus-visible { outline: 2px s
 .campaign-arrow { position: absolute; right: 20px; bottom: 20px; color: #9b9da2; }
 
 .spotx { min-height: 780px; padding: 80px max(4vw,32px) 88px; background: #efefef; color: #111; }
-.exchange-comparison,.review-embed { scroll-margin-top: 66px; }
+.exchange-comparison,.review-embed,#claim,#process,#rebate-note { scroll-margin-top: 70px; }
 .spotx-heading { max-width: 920px; margin: 0 auto; text-align: center; }
 .spotx-heading p { margin: 0 0 16px; font-size: 13px; font-weight: 800; letter-spacing: .5em; }
 .spotx-heading h2 { margin: 0; font-size: clamp(44px,4vw,56px); line-height: 1.08; letter-spacing: -.045em; font-weight: 540; }
@@ -202,6 +208,7 @@ button:focus-visible, input:focus-visible, select:focus-visible { outline: 2px s
 .primary-cta.exchange-action-disabled:hover { transform: none; background: #d6d6d6; }
 .exchange-note { display: flex; align-items: center; justify-content: space-between; gap: 26px; margin: 16px 0 0; padding: 18px 22px; border: 1px solid #f4d2bc; border-radius: 16px; background: #fff2e9; color: #585b60; font-size: 14px; line-height: 1.55; text-align: left; }
 .exchange-note-copy { display: grid; gap: 4px; }
+.exchange-note-copy small { color: #73767c; font-size: 12px; line-height: 1.5; }
 .exchange-note strong { color: #333; font-size: 16px; }
 .exchange-coming-soon { margin: 12px 4px 0; color: #686a70; font-size: 13px; line-height: 1.55; }
 .exchange-coming-soon strong { color: #292b2f; }
@@ -230,6 +237,8 @@ button:focus-visible, input:focus-visible, select:focus-visible { outline: 2px s
 .site-disclosures { padding: 58px max(4vw,32px) 64px; border-top: 1px solid rgba(255,255,255,.08); background: #0d0e10; color: #d8dadd; }
 .disclosure-inner { max-width: 1200px; margin: 0 auto; }
 .site-disclosures h2 { margin: 0 0 24px; color: #fff; font-size: 28px; letter-spacing: -.025em; }
+.disclosure-links { margin-top: 18px; display: flex; flex-wrap: wrap; gap: 16px; }
+.disclosure-links a { color: #f7a629; text-underline-offset: 3px; }
 .disclosure-grid { display: grid; grid-template-columns: repeat(4,1fr); gap: 16px; }
 .disclosure-grid article { padding: 20px; border: 1px solid rgba(255,255,255,.09); border-radius: 16px; background: #15161a; }
 .disclosure-grid h3 { margin: 0 0 9px; color: var(--orange); font-size: 15px; }
@@ -404,6 +413,11 @@ button:focus-visible, input:focus-visible, select:focus-visible { outline: 2px s
 .review-form-card label > span { color: #b4b6bb; font-size: 14px; }
 .review-form-card label b { color: var(--orange); }
 .review-form-card input,.review-form-card select { box-sizing: border-box; width: 100%; height: 52px; padding: 0 18px; border: 1px solid rgba(255,255,255,.1); border-radius: 14px; outline: 0; background: #1a1c20; color: #f7f7f7; font: inherit; font-size: 15px; transition: border-color .2s,box-shadow .2s; }
+.review-form-card .review-honeypot { position: absolute; width: 1px; height: 1px; overflow: hidden; clip-path: inset(50%); white-space: nowrap; }
+.review-form-card .review-consent { grid-template-columns: 22px 1fr; align-items: start; gap: 10px; }
+.review-form-card .review-consent input { width: 20px; height: 20px; margin: 1px 0 0; padding: 0; accent-color: var(--orange); }
+.review-form-card .review-consent span { color: #b4b6bb; font-size: 13px; line-height: 1.55; }
+.review-form-card .review-consent a { color: var(--orange); text-underline-offset: 3px; }
 .review-form-card select { cursor: pointer; }
 .review-form-card select option { background: #181a1e; }
 .review-form-card input::placeholder { color: #97999f; }
@@ -421,6 +435,8 @@ button:focus-visible, input:focus-visible, select:focus-visible { outline: 2px s
 .review-secondary:hover { border-color: var(--orange); background: rgba(247,166,41,.07); }
 .review-discord-help { width: fit-content; display: inline-flex; gap: 6px; color: #afb1b6; font-size: 14px; text-decoration: none; }
 .review-discord-help:hover { color: var(--orange); }
+.review-copy { width: fit-content; padding: 8px 12px; border: 1px solid rgba(255,255,255,.18); border-radius: 9px; background: transparent; color: #d4d5d7; font: inherit; font-size: 13px; cursor: pointer; }
+.review-copy:hover { border-color: var(--orange); color: var(--orange); }
 .review-notice { margin: -4px 0 0; color: var(--orange); font-size: 14px; }
 .review-field-error { margin: -2px 0 0; color: #ff7772; font-size: 12px; line-height: 1.45; }
 .review-form-card input[aria-invalid="true"],.review-form-card select[aria-invalid="true"] { border-color: #ff625c; box-shadow: 0 0 0 3px rgba(255,98,92,.08); }
@@ -435,6 +451,19 @@ button:focus-visible, input:focus-visible, select:focus-visible { outline: 2px s
 .review-warning { margin-top: 20px; padding: 15px; display: grid; grid-template-columns: 28px 1fr; gap: 10px; border: 1px solid rgba(255,93,86,.7); border-radius: 13px; background: rgba(255,79,72,.055); color: #b8babf; }
 .review-warning b { width: 24px; height: 24px; display: grid; place-items: center; border: 1px solid #ff625c; border-radius: 50%; color: #ff625c; }
 .review-warning p { margin: 0; font-size: 13px; line-height: 1.55; }
+
+.legal-page { box-sizing: border-box; min-height: 100vh; max-width: 900px; margin: 0 auto; padding: 80px 28px 96px; color: #e5e6e8; }
+.legal-page h1 { margin: 10px 0 8px; color: #fff; font-size: clamp(38px,7vw,64px); letter-spacing: -.045em; }
+.legal-page h2 { margin: 0 0 10px; color: #fff; font-size: 22px; }
+.legal-page p { color: #b9bbc0; line-height: 1.8; }
+.legal-page section { margin-top: 32px; padding: 24px; border: 1px solid rgba(255,255,255,.09); border-radius: 16px; background: rgba(255,255,255,.025); }
+.legal-page section p { margin: 0; }
+.legal-page a { color: var(--orange); text-underline-offset: 3px; }
+.legal-kicker { margin: 0; color: var(--orange) !important; font-size: 12px; font-weight: 900; letter-spacing: .14em; }
+.legal-updated { margin-top: 0; font-size: 13px; }
+.legal-actions { margin-top: 34px; display: flex; flex-wrap: wrap; gap: 12px; }
+.legal-actions a { min-height: 44px; display: inline-flex; align-items: center; padding: 0 18px; border: 1px solid rgba(247,166,41,.55); border-radius: 12px; text-decoration: none; }
+.not-found-page { display: flex; flex-direction: column; justify-content: center; }
 .discord-template { grid-column: 1 / -1; padding: 0; border: 1px solid rgba(88,101,242,.46); border-radius: 18px; background: #191a1f; box-shadow: 0 18px 38px rgba(0,0,0,.24); }
 .discord-template > summary { padding: 18px 20px; color: #f1f2f4; font-size: 14px; font-weight: 750; cursor: pointer; }
 .discord-template[open] > summary { border-bottom: 1px solid rgba(255,255,255,.08); }

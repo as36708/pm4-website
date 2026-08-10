@@ -36,11 +36,21 @@ test("server-renders the complete PM4 landing page", async () => {
   assert.match(html, /提交指标审核资料/);
   assert.match(html, /market-panel\.mp4/);
   assert.match(html, /market-panel-poster\.jpg/);
+  assert.match(html, /src="\/logos\/bybit\.png"/);
+  assert.match(html, /src="\/logos\/bitget\.png"/);
+  assert.match(html, /src="\/logos\/bingx\.png"/);
+  assert.doesNotMatch(html, /_vinext\/image\?[^"']*logos%2F(?:bybit|bitget|bingx)/i);
   assert.match(html, /https:\/\/partner\.bybit\.com\/b\/PPMM44/);
   assert.match(html, /https:\/\/partner\.bitget\.com\/bg\/r1ky845p/);
   assert.match(html, /https:\/\/iciclebridge\.com\/zh-tc\/invite\/GHO8MG87/);
   assert.match(html, /https:\/\/www\.gateport\.biz\/zh\/share\/VFLEAAPBAQ/);
-  assert.match(html, /<tr\b[^>]*>[\s\S]*?\bGate\b[\s\S]*?65%[\s\S]*?0\.02%[\s\S]*?0\.05%[\s\S]*?<\/tr>/i);
+  assert.match(html, /<tr\b[^>]*>[\s\S]*?\bGate\b[\s\S]*?最高 65%[\s\S]*?分级费率[\s\S]*?<\/tr>/i);
+  assert.match(html, /Bitget[\s\S]*?0\.06% 基准/i);
+  assert.match(html, /id="main-content"/);
+  assert.match(html, /跳到主要内容/);
+  assert.match(html, /application\/ld\+json/);
+  assert.equal(response.headers.get("x-frame-options"), "DENY");
+  assert.match(response.headers.get("content-security-policy") ?? "", /frame-ancestors 'none'/);
 });
 
 test("server-renders the Discord review destination", async () => {
@@ -76,10 +86,15 @@ test("keeps the responsive flow and production assets intact", async () => {
   assert.match(review, /fetch\("\/api\/indicator-applications"/);
   assert.match(review, /className="review-primary"[^>]*[\s\S]*?提交审核资料[\s\S]*?<\/button>/);
   assert.match(review, /disabled=\{submitting\}/);
+  assert.match(review, /acceptedPrivacy/);
+  assert.match(review, /review-honeypot/);
+  assert.match(review, /Discord 用户名（选填）/);
+  assert.match(review, /复制审核信息/);
   assert.doesNotMatch(review, /PM4_ADMIN_INGEST_SECRET|PM4_ADMIN_SITES_BYPASS_TOKEN/);
   assert.doesNotMatch(review, /提交并复制审核信息/);
   assert.match(page, /data-pm4-event="exchange_click"/);
   assert.match(page, /data-pm4-event="transfer_click"/);
+  assert.match(page, /sizes="34px" unoptimized/);
   assert.match(analytics, /fetch\("\/api\/frontend-events"/);
   assert.match(analytics, /pm4-visit-day/);
   assert.match(analytics, /window\.localStorage/);
@@ -104,6 +119,8 @@ test("keeps the responsive flow and production assets intact", async () => {
   assert.match(layout, /PM4 指标返佣与审核/);
   assert.match(layout, /<html lang="zh-CN">/);
   assert.match(layout, /<FrontendAnalytics \/>/);
+  assert.match(layout, /metadataBase: siteOrigin/);
+  assert.doesNotMatch(layout, /headers\(\)|x-forwarded-host/);
   assert.match(packageJson, /"build": "vinext build"/);
   assert.doesNotMatch(packageJson, /static-export/);
   assert.match(links, /https:\/\/www\.bybit\.com\/zh-TW\/help-center\/article\/How-to-Transfer-Your-Identity-to-Another-Account/);
@@ -118,6 +135,26 @@ test("keeps the responsive flow and production assets intact", async () => {
     access(new URL("../public/logos/bingx.png", import.meta.url)),
     access(new URL("../public/logos/gate.svg", import.meta.url)),
   ]);
+});
+
+test("publishes privacy, terms, robots, sitemap, and a useful 404", async () => {
+  const [privacy, terms, robots, sitemap, missing] = await Promise.all([
+    render("/privacy"),
+    render("/terms"),
+    render("/robots.txt"),
+    render("/sitemap.xml"),
+    render("/missing-page"),
+  ]);
+  assert.equal(privacy.status, 200);
+  assert.match(await privacy.text(), /查询、更正与删除/);
+  assert.equal(terms.status, 200);
+  assert.match(await terms.text(), /交易风险/);
+  assert.equal(robots.status, 200);
+  assert.match(await robots.text(), /Sitemap: https:\/\/cpm4\.com\/sitemap\.xml/);
+  assert.equal(sitemap.status, 200);
+  assert.match(await sitemap.text(), /https:\/\/cpm4\.com\/privacy/);
+  assert.equal(missing.status, 404);
+  assert.match(await missing.text(), /页面不存在/);
 });
 
 test("forwards privacy-preserving visit and exchange events", async () => {
@@ -139,7 +176,7 @@ test("forwards privacy-preserving visit and exchange events", async () => {
       env,
       {
         method: "POST",
-        headers: { origin: "http://localhost", "content-type": "application/json" },
+        headers: { origin: "http://localhost", "cf-connecting-ip": "203.0.113.4", "content-type": "application/json" },
         body: JSON.stringify({ eventType: "visit", exchange: "" }),
       },
     );
@@ -151,17 +188,22 @@ test("forwards privacy-preserving visit and exchange events", async () => {
       env,
       {
         method: "POST",
-        headers: { origin: "http://localhost", "content-type": "application/json" },
+        headers: { origin: "http://localhost", "cf-connecting-ip": "203.0.113.4", "content-type": "application/json" },
         body: JSON.stringify({ eventType: "exchange_click", exchange: "Bybit" }),
       },
     );
     assert.equal(exchangeClick.status, 200);
 
     assert.equal(forwarded.length, 2);
-    assert.deepEqual(forwarded.map(({ init }) => JSON.parse(init.body)), [
+    const forwardedBodies = forwarded.map(({ init }) => JSON.parse(init.body));
+    assert.deepEqual(forwardedBodies.map(({ action, eventType, exchange }) => ({ action, eventType, exchange })), [
       { action: "track", eventType: "visit", exchange: "" },
       { action: "track", eventType: "exchange_click", exchange: "Bybit" },
     ]);
+    for (const body of forwardedBodies) {
+      assert.match(body.sourceKey, /^[a-f0-9]{32}$/);
+      assert.match(body.eventKey, /^[a-f0-9]{48}$/);
+    }
     for (const request of forwarded) {
       assert.equal(request.input, "https://pm4-rebate-admin.chexin1103.chatgpt.site/api/frontend-ingest");
       const headers = new Headers(request.init.headers);
@@ -236,6 +278,9 @@ test("forwards a validated indicator application without exposing server secrets
           exchange: "Bybit",
           uid: "579533336",
           tradingViewUser: "pm4_test_user",
+          discordUser: "pm4-discord",
+          acceptedPrivacy: true,
+          website: "",
         }),
       },
     );
@@ -257,11 +302,13 @@ test("forwards a validated indicator application without exposing server secrets
       exchange: forwardedBody.exchange,
       uid: forwardedBody.uid,
       tradingViewUser: forwardedBody.tradingViewUser,
+      discordUser: forwardedBody.discordUser,
     }, {
       action: "application",
       exchange: "Bybit",
       uid: "579533336",
       tradingViewUser: "pm4_test_user",
+      discordUser: "pm4-discord",
     });
     assert.match(forwardedBody.sourceKey, /^[a-f0-9]{32}$/);
     assert.doesNotMatch(forwarded.init.body, /203\.0\.113\.7/);
@@ -277,10 +324,33 @@ test("rejects unsafe or unconfigured public application submissions", async () =
     {
       method: "POST",
       headers: { "content-type": "application/json" },
-      body: JSON.stringify({ exchange: "Bybit", uid: "579533336", tradingViewUser: "pm4_test" }),
+      body: JSON.stringify({ exchange: "Bybit", uid: "579533336", tradingViewUser: "pm4_test", acceptedPrivacy: true }),
     },
   );
   assert.equal(missingOrigin.status, 403);
+
+  const missingConsent = await render(
+    "/api/indicator-applications",
+    {},
+    {
+      method: "POST",
+      headers: { origin: "http://localhost", "content-type": "application/json" },
+      body: JSON.stringify({ exchange: "Bybit", uid: "579533336", tradingViewUser: "pm4_test" }),
+    },
+  );
+  assert.equal(missingConsent.status, 400);
+
+  const honeypot = await render(
+    "/api/indicator-applications",
+    {},
+    {
+      method: "POST",
+      headers: { origin: "http://localhost", "content-type": "application/json" },
+      body: JSON.stringify({ website: "spam.example" }),
+    },
+  );
+  assert.equal(honeypot.status, 200);
+  assert.equal((await honeypot.json()).duplicate, true);
 
   const invalidUid = await render(
     "/api/indicator-applications",
@@ -288,7 +358,7 @@ test("rejects unsafe or unconfigured public application submissions", async () =
     {
       method: "POST",
       headers: { origin: "http://localhost", "content-type": "application/json" },
-      body: JSON.stringify({ exchange: "Bybit", uid: "not-a-uid", tradingViewUser: "pm4_test" }),
+      body: JSON.stringify({ exchange: "Bybit", uid: "not-a-uid", tradingViewUser: "pm4_test", acceptedPrivacy: true }),
     },
   );
   assert.equal(invalidUid.status, 400);
@@ -299,7 +369,7 @@ test("rejects unsafe or unconfigured public application submissions", async () =
     {
       method: "POST",
       headers: { origin: "http://localhost", "content-type": "application/json" },
-      body: JSON.stringify({ exchange: "Bybit", uid: "579533336", tradingViewUser: "pm4_test" }),
+      body: JSON.stringify({ exchange: "Bybit", uid: "579533336", tradingViewUser: "pm4_test", acceptedPrivacy: true }),
     },
   );
   assert.equal(unconfigured.status, 503);
@@ -322,7 +392,7 @@ test("rejects unsafe or unconfigured public application submissions", async () =
           "cf-connecting-ip": "203.0.113.8",
           "content-type": "application/json",
         },
-        body: JSON.stringify({ exchange: "Bybit", uid: "579533336", tradingViewUser: "pm4_test" }),
+        body: JSON.stringify({ exchange: "Bybit", uid: "579533336", tradingViewUser: "pm4_test", acceptedPrivacy: true }),
       },
     );
     assert.equal(rateLimited.status, 429);

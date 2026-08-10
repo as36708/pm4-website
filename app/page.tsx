@@ -28,14 +28,25 @@ type ExchangeRow = {
 
 const exchangeRows: ExchangeRow[] = [
   { name: "Bybit", symbol: "B", logo: "/logos/bybit.png", color: "#f7a600", rebateBenefit: "33%", kyc: "需要", makerFee: "0.02%", takerFee: "0.055%", indicator: "专属指标", reviewTime: "预计24小时", registerUrl: EXTERNAL_LINKS.bybitRegister, transferUrl: EXTERNAL_LINKS.bybitIdentityTransfer },
-  { name: "Bitget", symbol: "G", logo: "/logos/bitget.png", color: "#20d5d2", rebateBenefit: "30%", kyc: "需要", makerFee: "0.02%", takerFee: "0.04%", indicator: "专属指标", reviewTime: "预计24小时", registerUrl: EXTERNAL_LINKS.bitgetRegister },
+  { name: "Bitget", symbol: "G", logo: "/logos/bitget.png", color: "#20d5d2", rebateBenefit: "30%", kyc: "需要", makerFee: "0.02% 基准", takerFee: "0.06% 基准", indicator: "专属指标", reviewTime: "预计24小时", registerUrl: EXTERNAL_LINKS.bitgetRegister },
   { name: "BingX", symbol: "X", logo: "/logos/bingx.png", color: "#2f6df6", rebateBenefit: "30%", kyc: "需要", makerFee: "0.02%", takerFee: "0.05%", indicator: "专属指标", reviewTime: "预计24小时", registerUrl: EXTERNAL_LINKS.bingxRegister },
-  { name: "Gate", symbol: "G", logo: "/logos/gate.svg", color: "#0068ff", rebateBenefit: "65%", kyc: "需要", makerFee: "0.02%", takerFee: "0.05%", indicator: "专属指标", reviewTime: "预计24小时", registerUrl: EXTERNAL_LINKS.gateRegister },
+  { name: "Gate", symbol: "G", logo: "/logos/gate.svg", color: "#0068ff", rebateBenefit: "最高 65%", kyc: "需要", makerFee: "分级费率", takerFee: "分级费率", indicator: "专属指标", reviewTime: "预计24小时", registerUrl: EXTERNAL_LINKS.gateRegister },
 ];
+
+const organizationJsonLd = JSON.stringify({
+  "@context": "https://schema.org",
+  "@type": "Organization",
+  name: "PM4",
+  url: "https://cpm4.com",
+  logo: "https://cpm4.com/favicon.svg",
+  sameAs: [EXTERNAL_LINKS.discordInvite, EXTERNAL_LINKS.telegramContact],
+}).replace(/</g, "\\u003c");
 
 export default function Home() {
   const [menuOpen, setMenuOpen] = useState(false);
   const [supportOpen, setSupportOpen] = useState(false);
+  const [supportContext, setSupportContext] = useState("身份转移、活动条件或返佣未到账");
+  const [videoPaused, setVideoPaused] = useState(false);
   const supportDialogRef = useRef<HTMLElement>(null);
   const supportCloseRef = useRef<HTMLButtonElement>(null);
   const supportReturnFocusRef = useRef<HTMLElement | null>(null);
@@ -46,8 +57,9 @@ export default function Home() {
     document.querySelector(selector)?.scrollIntoView({ behavior: "smooth", block: "start" });
   }
 
-  function openSupport() {
+  function openSupport(context = "身份转移、活动条件或返佣未到账") {
     supportReturnFocusRef.current = document.activeElement instanceof HTMLElement ? document.activeElement : null;
+    setSupportContext(context);
     setMenuOpen(false);
     setSupportOpen(true);
   }
@@ -61,13 +73,27 @@ export default function Home() {
     if (!video) return;
     const motionPreference = window.matchMedia("(prefers-reduced-motion: reduce)");
     const syncPlayback = () => {
-      if (motionPreference.matches) video.pause();
-      else void video.play().catch(() => undefined);
+      if (motionPreference.matches) {
+        video.pause();
+        setVideoPaused(true);
+      } else {
+        void video.play().then(() => setVideoPaused(false)).catch(() => setVideoPaused(true));
+      }
     };
     syncPlayback();
     motionPreference.addEventListener("change", syncPlayback);
     return () => motionPreference.removeEventListener("change", syncPlayback);
   }, []);
+
+  function toggleVideo() {
+    const video = videoRef.current;
+    if (!video) return;
+    if (video.paused) void video.play().then(() => setVideoPaused(false)).catch(() => setVideoPaused(true));
+    else {
+      video.pause();
+      setVideoPaused(true);
+    }
+  }
 
   useEffect(() => {
     if (!supportOpen) return;
@@ -105,7 +131,8 @@ export default function Home() {
   }, [supportOpen]);
 
   return (
-    <main className="site-shell">
+    <div className="site-shell">
+      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: organizationJsonLd }} />
       <header className="topbar">
         <button className="brand" onClick={() => window.scrollTo({ top: 0, behavior: "smooth" })} aria-label="返回顶部">
           <span className="pm4-mark" aria-hidden="true" />
@@ -120,7 +147,7 @@ export default function Home() {
           <button onClick={() => scrollToSection("#review")}>提交资料</button>
           <button onClick={() => scrollToSection("#rebate-note")}>返佣说明</button>
           <button onClick={() => window.open(EXTERNAL_LINKS.discordInvite, "_blank", "noopener,noreferrer")}>Discord</button>
-          <button className="rwa" onClick={openSupport}>客服支持</button>
+          <button className="rwa" onClick={() => openSupport()}>客服支持</button>
         </nav>
 
         <div className="header-actions">
@@ -129,6 +156,8 @@ export default function Home() {
           </button>
         </div>
       </header>
+
+      <main id="main-content">
 
       <section id="claim" className="hero" aria-labelledby="hero-title">
         <div className="hero-lines hero-lines-left" aria-hidden="true" />
@@ -155,6 +184,9 @@ export default function Home() {
           <video ref={videoRef} className="market-video" muted loop playsInline preload="metadata" poster="/media/market-panel-poster.jpg">
             <source src="/media/market-panel.mp4" type="video/mp4" />
           </video>
+          <button className="video-toggle" type="button" aria-pressed={videoPaused} onClick={toggleVideo}>
+            {videoPaused ? "播放视频" : "暂停视频"}
+          </button>
         </div>
       </section>
 
@@ -196,8 +228,8 @@ export default function Home() {
                   <th scope="col">合作交易所</th>
                   <th scope="col">返佣权益</th>
                   <th scope="col">KYC认证</th>
-                  <th scope="col">Maker Fee</th>
-                  <th scope="col">Taker Fee</th>
+                  <th scope="col">参考 Maker Fee</th>
+                  <th scope="col">参考 Taker Fee</th>
                   <th scope="col">指标权益</th>
                   <th scope="col">审核时间</th>
                   <th scope="col">操作</th>
@@ -209,7 +241,7 @@ export default function Home() {
                     <td className="exchange-name-cell" data-label="合作交易所">
                       <span className="exchange-name">
                         <span className="exchange-badge" style={{ background: exchange.logo ? undefined : exchange.color, color: exchange.logo ? undefined : "#fff" }}>
-                          {exchange.logo ? <Image src={exchange.logo} alt="" width={34} height={34} unoptimized /> : exchange.symbol}
+                          {exchange.logo ? <Image src={exchange.logo} alt="" width={34} height={34} sizes="34px" unoptimized /> : exchange.symbol}
                         </span>
                         <strong>{exchange.name}</strong>
                       </span>
@@ -244,7 +276,13 @@ export default function Home() {
                             data-pm4-exchange={exchange.name}
                           >身份转移</a>
                         ) : (
-                          <button className="primary-cta exchange-action" type="button" onClick={openSupport}>身份转移</button>
+                          <button
+                            className="primary-cta exchange-action"
+                            type="button"
+                            data-pm4-event="transfer_click"
+                            data-pm4-exchange={exchange.name}
+                            onClick={() => openSupport(`${exchange.name} 已有账户身份转移`)}
+                          >咨询身份转移</button>
                         )}
                       </span>
                     </td>
@@ -257,8 +295,9 @@ export default function Home() {
             <span className="exchange-note-copy">
               <strong>返佣到账说明</strong>
               <span>手续费返佣由系统自动结算并发放，无需手动申请。如未按时收到返佣，请联系在线客服协助核查。</span>
+              <small>费率为普通用户公开基准或分级提示，可能随 VIP 等级、产品、地区及活动调整；操作前请以交易所注册页和费率页为准。</small>
             </span>
-            <button className="note-support" type="button" onClick={openSupport}>
+            <button className="note-support" type="button" onClick={() => openSupport("返佣未到账核查")}>
               <span className="note-headset" aria-hidden="true" />
               联系客服
             </button>
@@ -282,11 +321,12 @@ export default function Home() {
 
         <div className="exchange-recommend">
           <span className="recommend-copy"><strong>不知道该选择哪家交易所？</strong><small>根据交易习惯与权益条件，快速匹配适合你的方案。</small></span>
-          <button className="primary-cta spot-cta" onClick={openSupport}>联系客服确认适用方案</button>
+          <button className="primary-cta spot-cta" onClick={() => openSupport("选择交易所与活动条件确认")}>联系客服确认适用方案</button>
         </div>
       </section>
 
       <ReviewSection />
+      </main>
 
       <footer className="site-disclosures" aria-labelledby="disclosure-title">
         <div className="disclosure-inner">
@@ -297,12 +337,13 @@ export default function Home() {
             <article><h3>资料用途</h3><p>UID 与 TradingView 用户名仅用于资格核验及开通指标。我们不会索取密码、验证码、API 密钥、私钥或助记词。</p></article>
             <article><h3>风险提示</h3><p>数字资产价格波动较大，可能损失全部本金。本页不构成投资建议，服务可用性也可能受地区限制。</p></article>
           </div>
-          <p className="disclosure-updated">规则更新：2026 年 8 月 4 日 · 费率、返佣周期和参与资格如有变化，以交易所活动页面及审核结果为准。</p>
+          <p className="disclosure-updated">规则更新：2026 年 8 月 10 日 · 费率、返佣周期和参与资格如有变化，以交易所活动页面及审核结果为准。</p>
+          <nav className="disclosure-links" aria-label="法律与隐私"><a href="/privacy">隐私政策</a><a href="/terms">服务条款与风险说明</a></nav>
         </div>
       </footer>
 
       <aside className="floating-tools" aria-label="快捷工具">
-        <button className="support-button" aria-label="打开在线客服" onClick={openSupport}>
+        <button className="support-button" aria-label="打开在线客服" onClick={() => openSupport()}>
           <span className="support-icon" aria-hidden="true"><i /></span>
         </button>
       </aside>
@@ -313,7 +354,7 @@ export default function Home() {
             <button ref={supportCloseRef} className="support-dialog-close" type="button" aria-label="关闭客服窗口" onClick={closeSupport}>×</button>
             <span className="support-dialog-icon" aria-hidden="true"><span className="support-icon"><i /></span></span>
             <h2 id="support-dialog-title">联系客服</h2>
-            <p id="support-dialog-description">身份转移、活动条件或返佣未到账，请通过以下渠道联系我们。</p>
+            <p id="support-dialog-description">关于“{supportContext}”，请通过以下渠道联系我们，并附上交易所名称和 UID（请勿发送密码或 API 密钥）。</p>
             <div className="support-dialog-actions">
               <a href={EXTERNAL_LINKS.discordContact} target="_blank" rel="noopener noreferrer">Discord 联系</a>
               <a href={EXTERNAL_LINKS.telegramContact} target="_blank" rel="noopener noreferrer">Telegram 联系</a>
@@ -322,7 +363,6 @@ export default function Home() {
           </section>
         </div>
       )}
-
-    </main>
+    </div>
   );
 }

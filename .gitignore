@@ -44,6 +44,7 @@ next-env.d.ts
 /work/
 /.sites/
 /.codex/
+/.codex-work/
 /artifacts/
 /.pnpm-store/
 *.log
