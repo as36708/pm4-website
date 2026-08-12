@@ -5,7 +5,7 @@ import { EXTERNAL_LINKS } from "../links";
 
 const reviewExchanges = ["Bybit", "Bitget", "BingX", "Gate"];
 
-type ReviewField = "exchange" | "uid" | "tradingView" | "privacy";
+type ReviewField = "exchange" | "uid" | "tradingView" | "discord" | "privacy";
 type ReviewErrors = Partial<Record<ReviewField, string>>;
 
 type ReviewSectionProps = {
@@ -34,6 +34,7 @@ export default function ReviewSection({ prefillExchange = "", prefillUid = "", p
   const exchangeRef = useRef<HTMLSelectElement>(null);
   const uidRef = useRef<HTMLInputElement>(null);
   const tradingViewRef = useRef<HTMLInputElement>(null);
+  const discordRef = useRef<HTMLInputElement>(null);
   const privacyRef = useRef<HTMLInputElement>(null);
   const HeadingTag = standalone ? "h1" : "h2";
 
@@ -43,8 +44,8 @@ export default function ReviewSection({ prefillExchange = "", prefillUid = "", p
       `交易所：${exchange || "—"}`,
       `交易所 UID：${uid || "—"}`,
       `TradingView 用户名：${tradingView || "—"}`,
+      `Discord 用户名：${discordUser.trim() || "—"}`,
     ];
-    if (discordUser.trim()) lines.push(`Discord 用户名：${discordUser.trim()}`);
     return lines.join("\n");
   }, [discordUser, exchange, uid, tradingView]);
 
@@ -70,6 +71,7 @@ export default function ReviewSection({ prefillExchange = "", prefillUid = "", p
     const nextErrors: ReviewErrors = {};
     const normalizedUid = uid.trim();
     const normalizedTradingView = tradingView.trim().replace(/^@/, "");
+    const normalizedDiscord = discordUser.trim();
 
     if (!reviewExchanges.includes(exchange)) nextErrors.exchange = "请选择合作交易所。";
     if (!normalizedUid) nextErrors.uid = "请输入交易所 UID。";
@@ -78,16 +80,18 @@ export default function ReviewSection({ prefillExchange = "", prefillUid = "", p
     else if (!/^[A-Za-z0-9_.-]{2,64}$/.test(normalizedTradingView)) {
       nextErrors.tradingView = "TradingView 用户名只能包含字母、数字、点、横线或下划线。";
     }
+    if (!normalizedDiscord) nextErrors.discord = "请输入 Discord 用户名。";
     if (!acceptedPrivacy) nextErrors.privacy = "请先阅读并同意隐私政策与服务条款。";
 
     setErrors(nextErrors);
-    const firstError = (["exchange", "uid", "tradingView", "privacy"] as const).find((field) => nextErrors[field]);
+    const firstError = (["exchange", "uid", "tradingView", "discord", "privacy"] as const).find((field) => nextErrors[field]);
     if (firstError) {
       setNotice("请检查标注字段后再提交审核资料。");
       const firstErrorRef = {
         exchange: exchangeRef,
         uid: uidRef,
         tradingView: tradingViewRef,
+        discord: discordRef,
         privacy: privacyRef,
       }[firstError];
       firstErrorRef.current?.focus();
@@ -107,7 +111,7 @@ export default function ReviewSection({ prefillExchange = "", prefillUid = "", p
           exchange,
           uid: normalizedUid,
           tradingViewUser: normalizedTradingView,
-          discordUser: discordUser.trim(),
+          discordUser: normalizedDiscord,
           acceptedPrivacy,
           website,
         }),
@@ -125,7 +129,8 @@ export default function ReviewSection({ prefillExchange = "", prefillUid = "", p
       const savedMessage = payload.duplicate
         ? "这份资料已在 PM4 管理后台，无需重复提交。"
         : "资料已保存并进入 PM4 管理后台。";
-      setNotice(`${savedMessage}${copied ? " 审核信息也已复制，请继续到 Discord 审核频道粘贴。" : " 请继续到 Discord 审核频道提交。"}`);
+      setNotice(`${savedMessage}${copied ? " 审核信息也已复制，正在前往 Discord UID 审核频道。" : " 正在前往 Discord UID 审核频道，请手动复制预览内容。"}`);
+      window.location.assign(EXTERNAL_LINKS.discordReview);
     } catch {
       setNotice(`网络暂时不可用，资料尚未进入后台。${copied ? " 审核信息已复制，可先到 Discord 粘贴提交。" : " 请手动复制预览内容并到 Discord 提交。"}`);
     } finally {
@@ -194,14 +199,19 @@ export default function ReviewSection({ prefillExchange = "", prefillUid = "", p
               {errors.tradingView && <span id="review-tradingview-error" className="review-notice" role="alert">{errors.tradingView}</span>}
             </label>
             <label>
-              <span>Discord 用户名（选填）</span>
+              <span>Discord 用户名 <b>*</b></span>
               <input
+                ref={discordRef}
                 value={discordUser}
-                onChange={(event) => setDiscordUser(event.target.value)}
+                required
+                aria-invalid={Boolean(errors.discord)}
+                aria-describedby={errors.discord ? "review-discord-error" : undefined}
+                onChange={(event) => { setDiscordUser(event.target.value); clearError("discord"); }}
                 maxLength={64}
                 autoComplete="off"
                 placeholder="例如：pm4user"
               />
+              {errors.discord && <span id="review-discord-error" className="review-notice" role="alert">{errors.discord}</span>}
             </label>
             <label className="review-honeypot" aria-hidden="true">
               <span>网站</span>
@@ -224,43 +234,15 @@ export default function ReviewSection({ prefillExchange = "", prefillUid = "", p
               <pre>{reviewText}</pre>
             </div>
             <div className="review-actions">
-              <button className="review-primary" type="submit" disabled={submitting}>
-                <span>▣</span> {submitting ? "正在提交…" : "提交审核资料"}
+              <button className="review-copy" type="button" onClick={() => { void copyReviewToClipboard().then((copied) => setNotice(copied ? "审核信息已复制，可以粘贴到 Discord 审核频道。" : "浏览器无法自动复制，请长按或选中预览内容复制。")); }}>
+                <span aria-hidden="true">▣</span> 复制审核信息
               </button>
-              <a className="review-secondary" href={EXTERNAL_LINKS.discordInvite} target="_blank" rel="noopener noreferrer">下一步：加入 Discord 服务器 <span>↗</span></a>
+              <button className="review-primary" type="submit" disabled={submitting}>
+                <span>▣</span> {submitting ? "正在提交并同步…" : "提交审核资料并前往 UID 审核"} <span aria-hidden="true">↗</span>
+              </button>
             </div>
-            <button className="review-copy" type="button" onClick={() => { void copyReviewToClipboard().then((copied) => setNotice(copied ? "审核信息已复制。" : "浏览器无法自动复制，请长按或选中预览内容复制。")); }}>
-              复制审核信息
-            </button>
-            <a className="review-discord-help" href={EXTERNAL_LINKS.discordReview} target="_blank" rel="noopener noreferrer">已加入服务器？前往审核频道粘贴提交 <span>↗</span></a>
+            <a className="review-discord-help" href={EXTERNAL_LINKS.discordInvite} target="_blank" rel="noopener noreferrer">首次使用 Discord？先加入服务器 <span>↗</span></a>
             {notice && <p className="review-notice" role="status">{notice}</p>}
-
-            <details className="discord-template" aria-labelledby="discord-template-title">
-              <summary className="discord-template-heading">
-                <span className="discord-template-icon" aria-hidden="true">DC</span>
-                <span>
-                  <h3 id="discord-template-title">审核通过通知示例（无需填写）</h3>
-                  <p>审核完成后由 PM4 审核组发送</p>
-                </span>
-              </summary>
-              <div className="discord-message-preview">
-                <div className="discord-bot-avatar" aria-hidden="true">P4</div>
-                <div className="discord-message-body">
-                  <div className="discord-bot-name">PM4 权限通知 <b>APP</b></div>
-                  <div className="discord-embed-card">
-                    <strong>✅ PM4 指标已送达</strong>
-                    <dl>
-                      <div><dt>用户</dt><dd>{discordDisplayUser}</dd></div>
-                      <div><dt>TradingView</dt><dd>{tradingViewHandle}</dd></div>
-                      <div className="discord-wide"><dt>交易所 / UID</dt><dd>{exchange || "—"} / {uid.trim() || "—"}</dd></div>
-                      <div><dt>指标状态</dt><dd>专属指标已开通</dd></div>
-                      <div><dt>审核状态</dt><dd>审核已通过</dd></div>
-                      <div className="discord-wide"><dt>操作管理员</dt><dd>PM4 审核组</dd></div>
-                    </dl>
-                  </div>
-                </div>
-              </div>
-            </details>
           </form>
         </section>
 
@@ -272,7 +254,7 @@ export default function ReviewSection({ prefillExchange = "", prefillUid = "", p
             </div>
             <ol>
               <li><b>1</b><span>选择合作交易所并填写 UID</span></li>
-              <li><b>2</b><span>填写 TradingView 用户名</span></li>
+              <li><b>2</b><span>填写 TradingView 与 Discord 用户名</span></li>
               <li><b>3</b><span>提交资料并自动进入后台</span></li>
               <li><b>4</b><span>到 Discord 审核频道确认并等待开通</span></li>
             </ol>
@@ -281,6 +263,33 @@ export default function ReviewSection({ prefillExchange = "", prefillUid = "", p
               <p>请勿提交交易所密码、验证码、API 密钥或其他敏感信息。</p>
             </div>
           </aside>
+
+          <section className="discord-template" aria-labelledby="discord-template-title">
+            <div className="discord-template-heading">
+              <span className="discord-template-icon" aria-hidden="true">DC</span>
+              <span>
+                <h3 id="discord-template-title">审核通过通知示例（无需填写）</h3>
+                <p>审核完成后由 PM4 审核组发送</p>
+              </span>
+            </div>
+            <div className="discord-message-preview">
+              <div className="discord-bot-avatar" aria-hidden="true">P4</div>
+              <div className="discord-message-body">
+                <div className="discord-bot-name">PM4 权限通知 <b>APP</b></div>
+                <div className="discord-embed-card">
+                  <strong>✅ PM4 指标已送达</strong>
+                  <dl>
+                    <div><dt>用户</dt><dd>{discordDisplayUser}</dd></div>
+                    <div><dt>TradingView</dt><dd>{tradingViewHandle}</dd></div>
+                    <div className="discord-wide"><dt>交易所 / UID</dt><dd>{exchange || "—"} / {uid.trim() || "—"}</dd></div>
+                    <div><dt>指标状态</dt><dd>专属指标已开通</dd></div>
+                    <div><dt>审核状态</dt><dd>审核已通过</dd></div>
+                    <div className="discord-wide"><dt>操作管理员</dt><dd>PM4 审核组</dd></div>
+                  </dl>
+                </div>
+              </div>
+            </div>
+          </section>
         </div>
       </div>
     </section>

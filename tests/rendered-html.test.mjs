@@ -44,8 +44,13 @@ test("server-renders the complete PM4 landing page", async () => {
   assert.match(html, /https:\/\/partner\.bitget\.com\/bg\/r1ky845p/);
   assert.match(html, /https:\/\/iciclebridge\.com\/zh-tc\/invite\/GHO8MG87/);
   assert.match(html, /https:\/\/www\.gateport\.biz\/zh\/share\/VFLEAAPBAQ/);
-  assert.match(html, /<tr\b[^>]*>[\s\S]*?\bGate\b[\s\S]*?最高 65%[\s\S]*?分级费率[\s\S]*?<\/tr>/i);
-  assert.match(html, /Bitget[\s\S]*?0\.06% 基准/i);
+  assert.match(html, /<tr\b[^>]*>[\s\S]*?\bBybit\b[\s\S]*?0\.02%[\s\S]*?0\.055%[\s\S]*?<\/tr>/i);
+  assert.match(html, /<tr\b[^>]*>[\s\S]*?\bBitget\b[\s\S]*?0\.02%[\s\S]*?0\.06%[\s\S]*?<\/tr>/i);
+  assert.match(html, /<tr\b[^>]*>[\s\S]*?\bBingX\b[\s\S]*?0\.02%[\s\S]*?0\.05%[\s\S]*?<\/tr>/i);
+  assert.match(html, /<tr\b[^>]*>[\s\S]*?\bGate\b[\s\S]*?最高 65%[\s\S]*?0\.02%[\s\S]*?0\.05%[\s\S]*?<\/tr>/i);
+  assert.doesNotMatch(html, /基准|分级费率/);
+  assert.match(html, /合约 Maker Fee/);
+  assert.match(html, /合约 Taker Fee/);
   assert.match(html, /id="main-content"/);
   assert.match(html, /跳到主要内容/);
   assert.match(html, /application\/ld\+json/);
@@ -57,9 +62,9 @@ test("server-renders the Discord review destination", async () => {
   const response = await render("/review");
   assert.equal(response.status, 200);
   const html = await response.text();
-  assert.match(html, /前往审核频道粘贴提交/);
-  assert.match(html, /https:\/\/discord\.com\/channels\/942442247209779230\/1296106331543175219/);
-  assert.match(html, /https:\/\/discord\.gg\/D5CPTzQafD/);
+  assert.match(html, /提交审核资料并前往 UID 审核/);
+  assert.match(html, /首次使用 Discord？先加入服务器/);
+  assert.match(html, /https:\/\/discord\.gg\/vAASV36A9p/);
 });
 
 test("keeps the responsive flow and production assets intact", async () => {
@@ -83,12 +88,20 @@ test("keeps the responsive flow and production assets intact", async () => {
   assert.match(page, /data-label="返佣权益"/);
   assert.doesNotMatch(page, /任务要求/);
   assert.match(review, /id="review"/);
+  assert.match(review, /className="review-discord-help"[^>]*href=\{EXTERNAL_LINKS\.discordInvite\}/);
   assert.match(review, /fetch\("\/api\/indicator-applications"/);
-  assert.match(review, /className="review-primary"[^>]*[\s\S]*?提交审核资料[\s\S]*?<\/button>/);
+  assert.match(review, /window\.location\.assign\(EXTERNAL_LINKS\.discordReview\)/);
+  assert.match(links, /https:\/\/discord\.com\/channels\/942442247209779230\/1296106331543175219/);
+  assert.match(review, /className="review-actions"[\s\S]*?className="review-copy"[\s\S]*?复制审核信息[\s\S]*?className="review-primary"/);
+  assert.match(review, /className="review-side-column"[\s\S]*?className="review-steps"[\s\S]*?className="discord-template"/);
+  assert.doesNotMatch(review, /<details className="discord-template"/);
+  assert.match(review, /className="review-primary"[^>]*[\s\S]*?提交审核资料并前往 UID 审核[\s\S]*?<\/button>/);
   assert.match(review, /disabled=\{submitting\}/);
   assert.match(review, /acceptedPrivacy/);
   assert.match(review, /review-honeypot/);
-  assert.match(review, /Discord 用户名（选填）/);
+  assert.match(review, /Discord 用户名 <b>\*<\/b>/);
+  assert.match(review, /nextErrors\.discord = "请输入 Discord 用户名。"/);
+  assert.match(review, /ref=\{discordRef\}[\s\S]*?required[\s\S]*?aria-invalid=\{Boolean\(errors\.discord\)\}/);
   assert.match(review, /复制审核信息/);
   assert.doesNotMatch(review, /PM4_ADMIN_INGEST_SECRET|PM4_ADMIN_SITES_BYPASS_TOKEN/);
   assert.doesNotMatch(review, /提交并复制审核信息/);
@@ -102,6 +115,14 @@ test("keeps the responsive flow and production assets intact", async () => {
 
   assert.match(css, /overflow-x:\s*clip/);
   assert.match(css, /font-size:\s*clamp\(34px,10vw,38px\)/);
+  assert.match(css, /\.hero-copy\s*\{[^}]*text-align:\s*center/);
+  assert.match(css, /\.hero h1\s*\{[^}]*text-align:\s*center/);
+  assert.match(css, /\.nav\s*\{[^}]*grid-template-columns:\s*repeat\(2,minmax\(0,1fr\)\)/);
+  assert.match(css, /\.nav-open\s*\{[^}]*display:\s*grid/);
+  assert.match(css, /\.exchange-table tbody tr > td\.exchange-name-cell\s*\{[^}]*width:\s*auto/);
+  assert.match(css, /\.exchange-table \.exchange-name\s*\{[^}]*justify-content:\s*center/);
+  assert.match(css, /\.exchange-table \.exchange-actions\s*\{[^}]*grid-template-columns:\s*repeat\(2,minmax\(0,1fr\)\)/);
+  assert.match(css, /\.review-card-heading\s*\{[^}]*text-align:\s*center/);
   assert.match(css, /position:\s*sticky/);
   assert.match(css, /\.exchange-table tbody tr\s*\{[^}]*grid-template-columns:\s*1fr 1fr/);
   assert.doesNotMatch(css, /\.campaign-card:nth-child\([^)]*\)\s*\{\s*display:\s*none/);
@@ -340,6 +361,18 @@ test("rejects unsafe or unconfigured public application submissions", async () =
   );
   assert.equal(missingConsent.status, 400);
 
+  const missingDiscord = await render(
+    "/api/indicator-applications",
+    {},
+    {
+      method: "POST",
+      headers: { origin: "http://localhost", "content-type": "application/json" },
+      body: JSON.stringify({ exchange: "Bybit", uid: "579533336", tradingViewUser: "pm4_test", acceptedPrivacy: true }),
+    },
+  );
+  assert.equal(missingDiscord.status, 400);
+  assert.equal((await missingDiscord.json()).error, "请输入 Discord 用户名");
+
   const honeypot = await render(
     "/api/indicator-applications",
     {},
@@ -369,7 +402,7 @@ test("rejects unsafe or unconfigured public application submissions", async () =
     {
       method: "POST",
       headers: { origin: "http://localhost", "content-type": "application/json" },
-      body: JSON.stringify({ exchange: "Bybit", uid: "579533336", tradingViewUser: "pm4_test", acceptedPrivacy: true }),
+      body: JSON.stringify({ exchange: "Bybit", uid: "579533336", tradingViewUser: "pm4_test", discordUser: "pm4-discord", acceptedPrivacy: true }),
     },
   );
   assert.equal(unconfigured.status, 503);
@@ -392,7 +425,7 @@ test("rejects unsafe or unconfigured public application submissions", async () =
           "cf-connecting-ip": "203.0.113.8",
           "content-type": "application/json",
         },
-        body: JSON.stringify({ exchange: "Bybit", uid: "579533336", tradingViewUser: "pm4_test", acceptedPrivacy: true }),
+        body: JSON.stringify({ exchange: "Bybit", uid: "579533336", tradingViewUser: "pm4_test", discordUser: "pm4-discord", acceptedPrivacy: true }),
       },
     );
     assert.equal(rateLimited.status, 429);

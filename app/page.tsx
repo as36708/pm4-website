@@ -28,9 +28,9 @@ type ExchangeRow = {
 
 const exchangeRows: ExchangeRow[] = [
   { name: "Bybit", symbol: "B", logo: "/logos/bybit.png", color: "#f7a600", rebateBenefit: "33%", kyc: "需要", makerFee: "0.02%", takerFee: "0.055%", indicator: "专属指标", reviewTime: "预计24小时", registerUrl: EXTERNAL_LINKS.bybitRegister, transferUrl: EXTERNAL_LINKS.bybitIdentityTransfer },
-  { name: "Bitget", symbol: "G", logo: "/logos/bitget.png", color: "#20d5d2", rebateBenefit: "30%", kyc: "需要", makerFee: "0.02% 基准", takerFee: "0.06% 基准", indicator: "专属指标", reviewTime: "预计24小时", registerUrl: EXTERNAL_LINKS.bitgetRegister },
+  { name: "Bitget", symbol: "G", logo: "/logos/bitget.png", color: "#20d5d2", rebateBenefit: "30%", kyc: "需要", makerFee: "0.02%", takerFee: "0.06%", indicator: "专属指标", reviewTime: "预计24小时", registerUrl: EXTERNAL_LINKS.bitgetRegister },
   { name: "BingX", symbol: "X", logo: "/logos/bingx.png", color: "#2f6df6", rebateBenefit: "30%", kyc: "需要", makerFee: "0.02%", takerFee: "0.05%", indicator: "专属指标", reviewTime: "预计24小时", registerUrl: EXTERNAL_LINKS.bingxRegister },
-  { name: "Gate", symbol: "G", logo: "/logos/gate.svg", color: "#0068ff", rebateBenefit: "最高 65%", kyc: "需要", makerFee: "分级费率", takerFee: "分级费率", indicator: "专属指标", reviewTime: "预计24小时", registerUrl: EXTERNAL_LINKS.gateRegister },
+  { name: "Gate", symbol: "G", logo: "/logos/gate.svg", color: "#0068ff", rebateBenefit: "最高 65%", kyc: "需要", makerFee: "0.02%", takerFee: "0.05%", indicator: "专属指标", reviewTime: "预计24小时", registerUrl: EXTERNAL_LINKS.gateRegister },
 ];
 
 const organizationJsonLd = JSON.stringify({
@@ -228,8 +228,8 @@ export default function Home() {
                   <th scope="col">合作交易所</th>
                   <th scope="col">返佣权益</th>
                   <th scope="col">KYC认证</th>
-                  <th scope="col">参考 Maker Fee</th>
-                  <th scope="col">参考 Taker Fee</th>
+                  <th scope="col">合约 Maker Fee</th>
+                  <th scope="col">合约 Taker Fee</th>
                   <th scope="col">指标权益</th>
                   <th scope="col">审核时间</th>
                   <th scope="col">操作</th>
@@ -295,7 +295,7 @@ export default function Home() {
             <span className="exchange-note-copy">
               <strong>返佣到账说明</strong>
               <span>手续费返佣由系统自动结算并发放，无需手动申请。如未按时收到返佣，请联系在线客服协助核查。</span>
-              <small>费率为普通用户公开基准或分级提示，可能随 VIP 等级、产品、地区及活动调整；操作前请以交易所注册页和费率页为准。</small>
+              <small>费率为各交易所普通用户公开的永续合约费率，可能随 VIP 等级、产品、地区及活动调整；操作前请以交易所官方费率页为准。</small>
             </span>
             <button className="note-support" type="button" onClick={() => openSupport("返佣未到账核查")}>
               <span className="note-headset" aria-hidden="true" />

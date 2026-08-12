@@ -263,6 +263,7 @@ async function handleIndicatorApplication(request: Request, env: Env) {
   if (!/^[A-Za-z0-9_.-]{2,64}$/.test(tradingViewUser)) {
     return jsonResponse({ error: "TradingView 用户名格式无效" }, 400);
   }
+  if (!discordUser) return jsonResponse({ error: "请输入 Discord 用户名" }, 400);
   if (discordUser.length > 64 || /[\u0000-\u001f\u007f]/.test(discordUser)) {
     return jsonResponse({ error: "Discord 用户名格式无效" }, 400);
   }
