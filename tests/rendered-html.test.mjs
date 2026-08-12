@@ -59,7 +59,7 @@ test("server-renders the Discord review destination", async () => {
   const html = await response.text();
   assert.match(html, /前往审核频道粘贴提交/);
   assert.match(html, /https:\/\/discord\.com\/channels\/942442247209779230\/1296106331543175219/);
-  assert.match(html, /https:\/\/discord\.gg\/vAASV36A9p/);
+  assert.match(html, /https:\/\/discord\.gg\/D5CPTzQafD/);
 });
 
 test("keeps the responsive flow and production assets intact", async () => {
