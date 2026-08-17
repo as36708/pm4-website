@@ -107,6 +107,12 @@ test("keeps the responsive flow and production assets intact", async () => {
   assert.doesNotMatch(review, /提交并复制审核信息/);
   assert.match(page, /data-pm4-event="exchange_click"/);
   assert.match(page, /data-pm4-event="transfer_click"/);
+  assert.match(page, /解锁 Gate VIP10 体验卡/);
+  assert.match(page, /onClick=\{\(\) => openSupport\("Gate VIP10 助理登记"\)\}[\s\S]{0,120}>联系助理登记<\/button>/);
+  assert.match(page, /href=\{EXTERNAL_LINKS\.gateRegister\}[\s\S]{0,300}>注册 Gate<\/a>/);
+  assert.match(page, /普通用户[\s\S]{0,100}0\.02%[\s\S]{0,100}0\.05%/);
+  assert.match(page, /VIP10 体验[\s\S]{0,100}0\.01%[\s\S]{0,100}0\.03%/);
+  assert.doesNotMatch(page, /助理等级/);
   assert.match(page, /sizes="34px" unoptimized/);
   assert.match(analytics, /fetch\("\/api\/frontend-events"/);
   assert.match(analytics, /pm4-visit-day/);

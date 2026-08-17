@@ -302,6 +302,44 @@ export default function Home() {
               联系客服
             </button>
           </div>
+
+          <section className="gate-vip-promo" aria-labelledby="gate-vip-title">
+            <div className="gate-vip-copy">
+              <span className="gate-vip-kicker">Gate 限时权益</span>
+              <h3 id="gate-vip-title">解锁 Gate VIP10 体验卡</h3>
+              <ol className="gate-vip-steps" aria-label="领取步骤">
+                <li><b>1</b><span>注册 Gate</span></li>
+                <li><b>2</b><span>提交 Gate UID</span></li>
+                <li><b>3</b><span>助理登记并发放 VIP10</span></li>
+              </ol>
+              <div className="gate-vip-actions">
+                <button className="gate-vip-primary" type="button" onClick={() => openSupport("Gate VIP10 助理登记")}>联系助理登记</button>
+                <a
+                  className="gate-vip-secondary"
+                  href={EXTERNAL_LINKS.gateRegister}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  data-pm4-event="exchange_click"
+                  data-pm4-exchange="Gate"
+                >注册 Gate</a>
+              </div>
+              <small>实际权益以 Gate 官方活动规则及审核结果为准。</small>
+            </div>
+
+            <div className="gate-vip-fees">
+              <p>合约手续费对比</p>
+              <div className="gate-vip-fee-head" aria-hidden="true"><span>用户权益</span><span>Maker</span><span>Taker</span></div>
+              <div className="gate-vip-fee-row"><strong>普通用户</strong><span>0.02%</span><span>0.05%</span></div>
+              <div className="gate-vip-fee-row gate-vip-fee-highlight"><strong>VIP10 体验</strong><span>0.01%</span><span>0.03%</span></div>
+            </div>
+
+            <div className="gate-vip-card" aria-hidden="true">
+              <span className="gate-vip-card-brand">Gate</span>
+              <strong>VIP10</strong>
+              <span>EXPERIENCE</span>
+              <i>PM4 专属体验权益</i>
+            </div>
+          </section>
         </div>
 
         <section id="eligibility" className="eligibility-panel" aria-labelledby="eligibility-title">
