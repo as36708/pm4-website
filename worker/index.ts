@@ -21,7 +21,7 @@ interface ExecutionContext {
   passThroughOnException(): void;
 }
 
-const supportedExchanges = new Set(["Bybit", "Bitget", "BingX", "Gate"]);
+const supportedExchanges = new Set(["Bybit", "Bitget", "BingX", "Gate", "OKX"]);
 const maximumRequestBytes = 2_048;
 const maximumEventBytes = 1_024;
 const expectedAdminOrigin = "https://pm4-rebate-admin.chexin1103.chatgpt.site";

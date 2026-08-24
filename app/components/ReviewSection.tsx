@@ -3,7 +3,7 @@
 import { useMemo, useRef, useState } from "react";
 import { EXTERNAL_LINKS } from "../links";
 
-const reviewExchanges = ["Bybit", "Bitget", "BingX", "Gate"];
+const reviewExchanges = ["Bybit", "OKX", "Bitget", "Gate", "BingX"];
 
 type ReviewField = "exchange" | "uid" | "tradingView" | "discord" | "privacy";
 type ReviewErrors = Partial<Record<ReviewField, string>>;

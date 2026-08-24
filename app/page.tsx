@@ -28,9 +28,10 @@ type ExchangeRow = {
 
 const exchangeRows: ExchangeRow[] = [
   { name: "Bybit", symbol: "B", logo: "/logos/bybit.png", color: "#f7a600", rebateBenefit: "33%", kyc: "需要", makerFee: "0.02%", takerFee: "0.055%", indicator: "专属指标", reviewTime: "预计24小时", registerUrl: EXTERNAL_LINKS.bybitRegister, transferUrl: EXTERNAL_LINKS.bybitIdentityTransfer },
+  { name: "OKX", symbol: "OKX", color: "#000000", rebateBenefit: "20%", kyc: "需要", makerFee: "0.02%", takerFee: "0.05%", indicator: "专属指标", reviewTime: "预计24小时", registerUrl: EXTERNAL_LINKS.okxRegister },
   { name: "Bitget", symbol: "G", logo: "/logos/bitget.png", color: "#20d5d2", rebateBenefit: "30%", kyc: "需要", makerFee: "0.02%", takerFee: "0.06%", indicator: "专属指标", reviewTime: "预计24小时", registerUrl: EXTERNAL_LINKS.bitgetRegister },
-  { name: "BingX", symbol: "X", logo: "/logos/bingx.png", color: "#2f6df6", rebateBenefit: "30%", kyc: "需要", makerFee: "0.02%", takerFee: "0.05%", indicator: "专属指标", reviewTime: "预计24小时", registerUrl: EXTERNAL_LINKS.bingxRegister },
   { name: "Gate", symbol: "G", logo: "/logos/gate.svg", color: "#0068ff", rebateBenefit: "最高 65%", kyc: "需要", makerFee: "0.02%", takerFee: "0.05%", indicator: "专属指标", reviewTime: "预计24小时", registerUrl: EXTERNAL_LINKS.gateRegister },
+  { name: "BingX", symbol: "X", logo: "/logos/bingx.png", color: "#2f6df6", rebateBenefit: "30%", kyc: "需要", makerFee: "0.02%", takerFee: "0.05%", indicator: "专属指标", reviewTime: "预计24小时", registerUrl: EXTERNAL_LINKS.bingxRegister },
 ];
 
 const organizationJsonLd = JSON.stringify({
@@ -375,7 +376,7 @@ export default function Home() {
             <article><h3>资料用途</h3><p>UID 与 TradingView 用户名仅用于资格核验及开通指标。我们不会索取密码、验证码、API 密钥、私钥或助记词。</p></article>
             <article><h3>风险提示</h3><p>数字资产价格波动较大，可能损失全部本金。本页不构成投资建议，服务可用性也可能受地区限制。</p></article>
           </div>
-          <p className="disclosure-updated">规则更新：2026 年 8 月 10 日 · 费率、返佣周期和参与资格如有变化，以交易所活动页面及审核结果为准。</p>
+          <p className="disclosure-updated">规则更新：2026 年 8 月 25 日 · 费率、返佣周期和参与资格如有变化，以交易所活动页面及审核结果为准。</p>
           <nav className="disclosure-links" aria-label="法律与隐私"><a href="/privacy">隐私政策</a><a href="/terms">服务条款与风险说明</a></nav>
         </div>
       </footer>

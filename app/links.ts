@@ -4,6 +4,7 @@ export const EXTERNAL_LINKS = {
   bitgetRegister: "https://partner.bitget.com/bg/r1ky845p",
   bingxRegister: "https://iciclebridge.com/zh-tc/invite/GHO8MG87",
   gateRegister: "https://www.gateport.biz/zh/share/VFLEAAPBAQ",
+  okxRegister: "https://www.topzhjdgxcb.com/join/PPMM44",
   discordInvite: "https://discord.gg/vAASV36A9p",
   discordReview: "https://discord.com/channels/942442247209779230/1296106331543175219",
   discordContact: "https://discord.com/channels/942442247209779230/1296102123418947634",

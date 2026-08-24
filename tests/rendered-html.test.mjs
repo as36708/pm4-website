@@ -44,10 +44,13 @@ test("server-renders the complete PM4 landing page", async () => {
   assert.match(html, /https:\/\/partner\.bitget\.com\/bg\/r1ky845p/);
   assert.match(html, /https:\/\/iciclebridge\.com\/zh-tc\/invite\/GHO8MG87/);
   assert.match(html, /https:\/\/www\.gateport\.biz\/zh\/share\/VFLEAAPBAQ/);
+  assert.match(html, /https:\/\/www\.topzhjdgxcb\.com\/join\/PPMM44/);
   assert.match(html, /<tr\b[^>]*>[\s\S]*?\bBybit\b[\s\S]*?0\.02%[\s\S]*?0\.055%[\s\S]*?<\/tr>/i);
   assert.match(html, /<tr\b[^>]*>[\s\S]*?\bBitget\b[\s\S]*?0\.02%[\s\S]*?0\.06%[\s\S]*?<\/tr>/i);
   assert.match(html, /<tr\b[^>]*>[\s\S]*?\bBingX\b[\s\S]*?0\.02%[\s\S]*?0\.05%[\s\S]*?<\/tr>/i);
   assert.match(html, /<tr\b[^>]*>[\s\S]*?\bGate\b[\s\S]*?最高 65%[\s\S]*?0\.02%[\s\S]*?0\.05%[\s\S]*?<\/tr>/i);
+  assert.match(html, /<tr\b[^>]*>[\s\S]*?\bOKX\b[\s\S]*?20%[\s\S]*?0\.02%[\s\S]*?0\.05%[\s\S]*?<\/tr>/i);
+  assert.match(html, /\bBybit\b[\s\S]*?\bOKX\b[\s\S]*?\bBitget\b[\s\S]*?\bGate\b[\s\S]*?\bBingX\b/i);
   assert.doesNotMatch(html, /基准|分级费率/);
   assert.match(html, /合约 Maker Fee/);
   assert.match(html, /合约 Taker Fee/);
@@ -101,6 +104,7 @@ test("keeps the responsive flow and production assets intact", async () => {
   assert.match(review, /review-honeypot/);
   assert.match(review, /Discord 用户名 <b>\*<\/b>/);
   assert.match(review, /nextErrors\.discord = "请输入 Discord 用户名。"/);
+  assert.match(review, /reviewExchanges = \["Bybit", "OKX", "Bitget", "Gate", "BingX"\]/);
   assert.match(review, /ref=\{discordRef\}[\s\S]*?required[\s\S]*?aria-invalid=\{Boolean\(errors\.discord\)\}/);
   assert.match(review, /复制审核信息/);
   assert.doesNotMatch(review, /PM4_ADMIN_INGEST_SECRET|PM4_ADMIN_SITES_BYPASS_TOKEN/);
