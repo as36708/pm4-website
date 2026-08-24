@@ -8,5 +8,5 @@ export const EXTERNAL_LINKS = {
   discordInvite: "https://discord.gg/vAASV36A9p",
   discordReview: "https://discord.com/channels/942442247209779230/1296106331543175219",
   discordContact: "https://discord.com/channels/942442247209779230/1296102123418947634",
-  telegramContact: "https://t.me/as36701",
+  telegramContact: "https://t.me/tianshijin10",
 } as const;

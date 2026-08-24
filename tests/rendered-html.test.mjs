@@ -155,7 +155,7 @@ test("keeps the responsive flow and production assets intact", async () => {
   assert.match(packageJson, /"build": "vinext build"/);
   assert.doesNotMatch(packageJson, /static-export/);
   assert.match(links, /https:\/\/www\.bybit\.com\/zh-TW\/help-center\/article\/How-to-Transfer-Your-Identity-to-Another-Account/);
-  assert.match(links, /https:\/\/t\.me\/as36701/);
+  assert.match(links, /https:\/\/t\.me\/tianshijin10/);
   assert.match(page, /setSupportOpen\(true\)/);
 
   await Promise.all([
