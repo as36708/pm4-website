@@ -7,6 +7,9 @@ interface Env {
   PM4_ADMIN_INGEST_URL?: string;
   PM4_ADMIN_INGEST_SECRET?: string;
   PM4_ADMIN_SITES_BYPASS_TOKEN?: string;
+  APPLICATION_RATE_LIMITER?: {
+    limit(options: { key: string }): Promise<{ success: boolean }>;
+  };
   IMAGES: {
     input(stream: ReadableStream): {
       transform(options: Record<string, unknown>): {
@@ -25,6 +28,7 @@ const supportedExchanges = new Set(["Bybit", "Bitget", "BingX", "Gate", "OKX"]);
 const maximumRequestBytes = 2_048;
 const maximumEventBytes = 1_024;
 const expectedAdminOrigin = "https://pm4-rebate-admin.chexin1103.chatgpt.site";
+const privacyPolicyVersion = "2026-08-28";
 const recentEventKeys = new Map<string, number>();
 const maximumRecentEventKeys = 2_000;
 
@@ -286,7 +290,30 @@ async function handleIndicatorApplication(request: Request, env: Env) {
     }, 503);
   }
 
+  const applicationRateLimiter = env.APPLICATION_RATE_LIMITER;
+  if (!applicationRateLimiter) {
+    return jsonResponse({
+      code: "APPLICATION_RATE_LIMIT_NOT_CONFIGURED",
+      error: "网站资料提交限流正在配置，请稍后重试或使用 Discord 审核频道提交",
+    }, 503);
+  }
   try {
+    const { success } = await applicationRateLimiter.limit({ key: sourceKey });
+    if (!success) {
+      return jsonResponse({
+        code: "RATE_LIMITED",
+        error: "提交次数过多，请稍后再试或到 Discord 审核频道联系管理员",
+      }, 429);
+    }
+  } catch {
+    return jsonResponse({
+      code: "APPLICATION_RATE_LIMIT_UNAVAILABLE",
+      error: "网站资料提交限流暂时不可用，请稍后重试或使用 Discord 审核频道提交",
+    }, 503);
+  }
+
+  try {
+    const consentedAt = new Date().toISOString();
     const response = await fetch(adminUrl, {
       method: "POST",
       cache: "no-store",
@@ -304,6 +331,9 @@ async function handleIndicatorApplication(request: Request, env: Env) {
         tradingViewUser,
         discordUser,
         sourceKey,
+        consentAccepted: true,
+        consentedAt,
+        policyVersion: privacyPolicyVersion,
       }),
     });
     const payload = await response.json().catch(() => null) as {

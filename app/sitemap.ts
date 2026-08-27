@@ -1,7 +1,7 @@
 import type { MetadataRoute } from "next";
 
 export default function sitemap(): MetadataRoute.Sitemap {
-  const lastModified = new Date("2026-08-10T00:00:00.000Z");
+  const lastModified = new Date("2026-08-28T00:00:00.000Z");
   return [
     { url: "https://cpm4.com/", lastModified, changeFrequency: "weekly", priority: 1 },
     { url: "https://cpm4.com/review", lastModified, changeFrequency: "monthly", priority: 0.8 },

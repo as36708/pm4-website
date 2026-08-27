@@ -295,6 +295,62 @@ button:focus-visible, input:focus-visible, select:focus-visible { outline: 2px s
 .support-dialog-actions a:hover { transform: translateY(-2px); background: #ffb446; }
 .support-discord-join { display: inline-flex; gap: 7px; margin-top: 18px; color: #b7b9bd; font-size: 13px; text-decoration: none; }
 .support-discord-join:hover { color: var(--orange); }
+.okx-transfer-backdrop { position: fixed; inset: 0; z-index: 110; overflow-y: auto; padding: 30px; background: rgba(0,0,0,.82); backdrop-filter: blur(10px); }
+.okx-transfer-dialog { position: relative; width: min(1180px,100%); margin: auto; overflow: hidden; border: 1px solid rgba(255,255,255,.1); border-radius: 24px; background: #101113; color: #f5f5f5; box-shadow: 0 34px 100px rgba(0,0,0,.68); }
+.okx-transfer-close { position: absolute; z-index: 2; right: 22px; top: 20px; width: 40px; height: 40px; border: 1px solid rgba(255,255,255,.14); border-radius: 50%; background: #202226; color: #d7d8db; font-size: 27px; line-height: 1; cursor: pointer; transition: border-color .2s,color .2s,transform .2s; }
+.okx-transfer-close:hover { border-color: var(--orange); color: var(--orange); transform: rotate(5deg); }
+.okx-transfer-header { padding: 46px 76px 38px; border-bottom: 1px solid rgba(255,255,255,.1); text-align: center; }
+.okx-transfer-kicker { display: inline-flex; min-height: 34px; align-items: center; padding: 0 15px; border: 1px solid rgba(255,255,255,.14); border-radius: 20px; background: transparent; color: #e5e6e8; font: inherit; font-size: 12px; font-weight: 800; cursor: pointer; }
+.okx-transfer-header h2 { margin: 16px 0 0; color: #fff; font-size: 28px; letter-spacing: -.025em; }
+.okx-transfer-content { padding: 50px 76px 42px; }
+.okx-transfer-intro { text-align: center; }
+.okx-transfer-intro h3 { margin: 0; color: #fff; font-size: clamp(34px,4.1vw,52px); line-height: 1.25; letter-spacing: -.045em; }
+.okx-transfer-intro p { margin: 22px auto 30px; color: #b8b9bd; font-size: 16px; font-weight: 650; line-height: 1.6; }
+.okx-transfer-rules { max-width: 700px; margin: 0 auto; padding: 0; overflow: hidden; border: 1px solid rgba(255,255,255,.12); border-radius: 18px; background: #242629; list-style: none; }
+.okx-transfer-rules li { min-height: 82px; display: grid; grid-template-columns: 40px minmax(0,1fr); align-items: center; gap: 16px; padding: 0 20px; border-bottom: 1px solid rgba(255,255,255,.1); }
+.okx-transfer-rules li:last-child { border-bottom: 0; }
+.okx-transfer-rules li > b { width: 40px; height: 40px; display: grid; place-items: center; border-radius: 13px; background: rgba(247,166,41,.1); color: var(--orange); font-size: 16px; }
+.okx-transfer-rules li > span { display: grid; gap: 3px; }
+.okx-transfer-rules small { color: #b8b9bd; font-size: 12px; font-weight: 700; }
+.okx-transfer-rules strong { color: #fff; font-size: 17px; }
+.okx-transfer-decision { max-width: 700px; margin: 40px auto 0; padding: 30px; border: 1px solid rgba(255,255,255,.12); border-radius: 20px; background: #242629; }
+.okx-transfer-decision > h3 { margin: 0; color: #fff; font-size: 18px; text-align: center; }
+.okx-transfer-choice { margin-top: 24px; display: flex; justify-content: center; gap: 12px; }
+.okx-transfer-choice a,.okx-transfer-choice > button { min-width: 136px; height: 48px; display: inline-flex; align-items: center; justify-content: center; gap: 9px; padding: 0 22px; border-radius: 25px; font: inherit; font-size: 15px; font-weight: 800; text-decoration: none; cursor: pointer; }
+.okx-transfer-yes { border: 0; background: linear-gradient(135deg,#ff9c20,#f6a62a); color: #161616; box-shadow: 0 10px 22px rgba(247,166,41,.22); }
+.okx-transfer-choice > button:not(.okx-transfer-yes) { border: 1px solid rgba(255,255,255,.2); background: transparent; color: #f3f3f4; }
+.okx-transfer-how { margin-top: 24px; padding-top: 22px; border-top: 1px solid rgba(255,255,255,.1); }
+.okx-transfer-how h4 { margin: 0 0 15px; display: flex; align-items: center; gap: 8px; color: #fff; font-size: 16px; }
+.okx-transfer-how h4 > span { width: 18px; height: 18px; display: grid; place-items: center; border: 1px solid var(--orange); border-radius: 50%; color: var(--orange); font-size: 11px; }
+.okx-transfer-how > div { padding: 20px; border-radius: 15px; background: rgba(255,255,255,.035); text-align: center; }
+.okx-transfer-how p { margin: 0; color: #b9bbbf; font-size: 14px; line-height: 1.65; }
+.okx-transfer-how a { min-height: 42px; margin-top: 16px; display: inline-flex; align-items: center; gap: 7px; padding: 0 20px; border: 1px solid var(--orange); border-radius: 22px; color: var(--orange); font-size: 14px; font-weight: 800; text-decoration: none; }
+.okx-transfer-how ul { margin: 20px 0 0; padding: 18px 0 0; display: grid; gap: 13px; border-top: 1px solid rgba(255,255,255,.1); list-style: none; text-align: left; }
+.okx-transfer-how li { position: relative; padding-left: 23px; color: #c0c2c6; font-size: 13px; line-height: 1.65; }
+.okx-transfer-how li::before { content: "✓"; position: absolute; left: 0; top: 0; color: var(--orange); font-weight: 900; }
+.okx-transfer-how li:last-child::before { content: "→"; color: #d9dadc; }
+.okx-transfer-disclaimer { margin: 20px 0 0; color: #73757a; font-size: 12px; line-height: 1.6; text-align: center; }
+.okx-transfer-result { max-width: 820px; margin: 0 auto; }
+.okx-transfer-back { min-height: 40px; display: inline-flex; align-items: center; padding: 0 18px; border: 1px solid rgba(255,255,255,.15); border-radius: 22px; background: transparent; color: #dedfe2; font: inherit; font-size: 13px; font-weight: 750; cursor: pointer; }
+.okx-transfer-result-heading { margin: 28px 0 34px; text-align: center; }
+.okx-transfer-result-heading > span { width: 44px; height: 44px; display: grid; place-items: center; margin: 0 auto 18px; border-radius: 50%; background: rgba(247,166,41,.1); color: var(--orange); font-size: 20px; font-weight: 900; }
+.okx-transfer-result-heading h3 { margin: 0; color: #fff; font-size: 38px; line-height: 1.2; letter-spacing: -.04em; }
+.okx-transfer-result-heading p { margin: 22px 0 0; color: #b8b9bd; font-size: 16px; line-height: 1.6; }
+.okx-transfer-result-heading > strong { display: block; margin-top: 10px; color: #fff; font-size: 18px; line-height: 1.55; }
+.okx-transfer-result-steps { max-width: none; }
+.okx-transfer-result-steps li { grid-template-columns: 36px minmax(0,1fr); }
+.okx-transfer-result-steps li > b { width: 34px; height: 34px; }
+.okx-transfer-result-steps li > strong { font-size: 14px; line-height: 1.65; }
+.okx-transfer-code { min-height: 70px; margin-top: 30px; padding: 0 22px; display: flex; align-items: center; justify-content: space-between; gap: 20px; border: 1px solid rgba(247,166,41,.45); border-radius: 15px; background: rgba(247,166,41,.025); }
+.okx-transfer-code span { color: #b9bbbf; font-size: 13px; font-weight: 750; }
+.okx-transfer-code strong { color: var(--orange); font: 800 18px/1 var(--font-geist-mono),monospace; letter-spacing: .1em; }
+.okx-transfer-reason { margin-top: 30px; padding: 22px; border: 1px solid rgba(255,255,255,.12); border-radius: 17px; background: #242629; }
+.okx-transfer-reason > strong { color: #c8c9cc; font-size: 13px; }
+.okx-transfer-reason p { margin: 14px 0 12px; padding: 17px; border-radius: 11px; background: rgba(255,255,255,.04); color: #f1f2f3; font-size: 14px; line-height: 1.6; }
+.okx-transfer-reason button { min-height: 40px; padding: 0 18px; border: 1px solid rgba(255,255,255,.18); border-radius: 21px; background: transparent; color: #fff; font: inherit; font-size: 13px; font-weight: 750; cursor: pointer; }
+.okx-transfer-submit { min-height: 50px; margin-top: 30px; display: inline-flex; align-items: center; gap: 8px; padding: 0 24px; border: 0; border-radius: 25px; background: linear-gradient(135deg,#ff9c20,#f6a62a); color: #171717; font-size: 15px; font-weight: 850; text-decoration: none; cursor: pointer; box-shadow: 0 10px 22px rgba(247,166,41,.2); }
+.okx-transfer-result-note { margin: 24px 0 0; color: #a7a9ad; font-size: 13px; line-height: 1.65; }
+.okx-transfer-ineligible .okx-transfer-result-heading { margin-top: 34px; }
 .toast { position: fixed; left: 50%; bottom: 28px; z-index: 80; transform: translateX(-50%); padding: 13px 20px; border: 1px solid rgba(255,255,255,.12); border-radius: 12px; background: #1c1d20; color: #fff; font-size: 13px; box-shadow: 0 14px 40px rgba(0,0,0,.35); }
 .toast::before { margin-right: 9px; font-weight: 900; }
 .toast-success { border-color: rgba(26,198,137,.55); background: #112a22; color: #dffbef; }
@@ -421,6 +477,34 @@ button:focus-visible, input:focus-visible, select:focus-visible { outline: 2px s
   .support-dialog { padding: 30px 20px 24px; border-radius: 20px; }
   .support-dialog h2 { font-size: 25px; }
   .support-dialog-actions { grid-template-columns: 1fr; }
+  .okx-transfer-backdrop { padding: 10px; overflow: hidden; }
+  .okx-transfer-dialog { width: 100%; max-height: calc(100vh - 20px); max-height: calc(100dvh - 20px); margin: 0; overflow-x: hidden; overflow-y: auto; overscroll-behavior: contain; -webkit-overflow-scrolling: touch; border-radius: 18px; }
+  .okx-transfer-close { right: 10px; top: 10px; width: 36px; height: 36px; font-size: 24px; }
+  .okx-transfer-header { padding: 22px 50px 20px; }
+  .okx-transfer-kicker { min-height: 32px; padding: 0 11px; }
+  .okx-transfer-header h2 { margin-top: 12px; font-size: 23px; }
+  .okx-transfer-content { padding: 28px 14px 24px; }
+  .okx-transfer-intro h3 { font-size: clamp(26px,8.5vw,34px); }
+  .okx-transfer-intro h3 br { display: none; }
+  .okx-transfer-intro p { margin: 16px auto 22px; font-size: 14px; }
+  .okx-transfer-rules { border-radius: 14px; }
+  .okx-transfer-rules li { min-height: 0; grid-template-columns: 34px minmax(0,1fr); gap: 12px; padding: 14px 12px; }
+  .okx-transfer-rules li > b { width: 32px; height: 32px; border-radius: 10px; font-size: 14px; }
+  .okx-transfer-rules strong { font-size: 14px; line-height: 1.5; }
+  .okx-transfer-decision { margin-top: 24px; padding: 18px 12px; border-radius: 16px; }
+  .okx-transfer-choice { margin-top: 18px; display: grid; grid-template-columns: 1fr; gap: 10px; }
+  .okx-transfer-choice a,.okx-transfer-choice > button { width: 100%; min-width: 0; height: 46px; }
+  .okx-transfer-how > div { padding: 16px 12px; }
+  .okx-transfer-how a { width: 100%; justify-content: center; padding: 0 12px; }
+  .okx-transfer-result-heading { margin: 24px 0; }
+  .okx-transfer-result-heading h3 { font-size: 28px; }
+  .okx-transfer-result-heading p { margin-top: 14px; font-size: 14px; }
+  .okx-transfer-result-heading > strong { font-size: 15px; }
+  .okx-transfer-code { min-height: 0; margin-top: 22px; padding: 16px; align-items: flex-start; flex-direction: column; gap: 8px; }
+  .okx-transfer-reason { margin-top: 22px; padding: 16px; }
+  .okx-transfer-reason p { padding: 14px; overflow-wrap: anywhere; }
+  .okx-transfer-submit { width: 100%; justify-content: center; margin-top: 22px; padding: 12px 16px; text-align: center; }
+  .okx-transfer-result-note { margin-top: 18px; }
 }
 
 @media (prefers-reduced-motion: reduce) {

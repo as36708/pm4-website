@@ -188,6 +188,17 @@ test("publishes privacy, terms, robots, sitemap, and a useful 404", async () => 
   assert.match(await missing.text(), /页面不存在/);
 });
 
+test("builds the Cloudflare application rate limit binding", async () => {
+  const wranglerConfig = JSON.parse(await readFile(new URL("../dist/server/wrangler.json", import.meta.url), "utf8"));
+  assert.deepEqual(wranglerConfig.ratelimits, [
+    {
+      name: "APPLICATION_RATE_LIMITER",
+      namespace_id: "2026082801",
+      simple: { limit: 5, period: 60 },
+    },
+  ]);
+});
+
 test("forwards privacy-preserving visit and exchange events", async () => {
   const originalFetch = globalThis.fetch;
   const forwarded = [];
@@ -282,9 +293,10 @@ test("rejects unsafe or unconfigured frontend events", async () => {
   assert.equal((await unconfigured.json()).code, "FRONTEND_STATS_NOT_CONFIGURED");
 });
 
-test("forwards a validated indicator application without exposing server secrets", async () => {
+test("forwards a rate-limited indicator application with its consent record", async () => {
   const originalFetch = globalThis.fetch;
   let forwarded = null;
+  let rateLimitKey = null;
   globalThis.fetch = async (input, init) => {
     forwarded = { input: String(input), init };
     return Response.json({ submitted: true, duplicate: false, submittedAt: "2026-08-10T00:00:00.000Z" });
@@ -297,6 +309,12 @@ test("forwards a validated indicator application without exposing server secrets
         PM4_ADMIN_INGEST_URL: "https://pm4-rebate-admin.chexin1103.chatgpt.site/api/frontend-ingest",
         PM4_ADMIN_INGEST_SECRET: "test-ingest-secret",
         PM4_ADMIN_SITES_BYPASS_TOKEN: "test-sites-token",
+        APPLICATION_RATE_LIMITER: {
+          limit: async ({ key }) => {
+            rateLimitKey = key;
+            return { success: true };
+          },
+        },
       },
       {
         method: "POST",
@@ -334,14 +352,20 @@ test("forwards a validated indicator application without exposing server secrets
       uid: forwardedBody.uid,
       tradingViewUser: forwardedBody.tradingViewUser,
       discordUser: forwardedBody.discordUser,
+      consentAccepted: forwardedBody.consentAccepted,
+      policyVersion: forwardedBody.policyVersion,
     }, {
       action: "application",
       exchange: "Bybit",
       uid: "579533336",
       tradingViewUser: "pm4_test_user",
       discordUser: "pm4-discord",
+      consentAccepted: true,
+      policyVersion: "2026-08-28",
     });
     assert.match(forwardedBody.sourceKey, /^[a-f0-9]{32}$/);
+    assert.equal(rateLimitKey, forwardedBody.sourceKey);
+    assert.match(forwardedBody.consentedAt, /^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}\.\d{3}Z$/);
     assert.doesNotMatch(forwarded.init.body, /203\.0\.113\.7/);
   } finally {
     globalThis.fetch = originalFetch;
@@ -418,15 +442,40 @@ test("rejects unsafe or unconfigured public application submissions", async () =
   assert.equal(unconfigured.status, 503);
   assert.equal((await unconfigured.json()).code, "APPLICATION_SYNC_NOT_CONFIGURED");
 
+  const missingRateLimitBinding = await render(
+    "/api/indicator-applications",
+    {
+      PM4_ADMIN_INGEST_URL: "https://pm4-rebate-admin.chexin1103.chatgpt.site/api/frontend-ingest",
+      PM4_ADMIN_INGEST_SECRET: "test-ingest-secret",
+      PM4_ADMIN_SITES_BYPASS_TOKEN: "test-sites-token",
+    },
+    {
+      method: "POST",
+      headers: {
+        origin: "http://localhost",
+        "cf-connecting-ip": "203.0.113.8",
+        "content-type": "application/json",
+      },
+      body: JSON.stringify({ exchange: "Bybit", uid: "579533336", tradingViewUser: "pm4_test", discordUser: "pm4-discord", acceptedPrivacy: true }),
+    },
+  );
+  assert.equal(missingRateLimitBinding.status, 503);
+  assert.equal((await missingRateLimitBinding.json()).code, "APPLICATION_RATE_LIMIT_NOT_CONFIGURED");
+
   const originalFetch = globalThis.fetch;
-  globalThis.fetch = async () => Response.json({ code: "RATE_LIMITED" }, { status: 429 });
+  let forwardedRequests = 0;
+  globalThis.fetch = async () => {
+    forwardedRequests += 1;
+    return Response.json({ code: "RATE_LIMITED" }, { status: 429 });
+  };
   try {
-    const rateLimited = await render(
+    const locallyRateLimited = await render(
       "/api/indicator-applications",
       {
         PM4_ADMIN_INGEST_URL: "https://pm4-rebate-admin.chexin1103.chatgpt.site/api/frontend-ingest",
         PM4_ADMIN_INGEST_SECRET: "test-ingest-secret",
         PM4_ADMIN_SITES_BYPASS_TOKEN: "test-sites-token",
+        APPLICATION_RATE_LIMITER: { limit: async () => ({ success: false }) },
       },
       {
         method: "POST",
@@ -438,8 +487,31 @@ test("rejects unsafe or unconfigured public application submissions", async () =
         body: JSON.stringify({ exchange: "Bybit", uid: "579533336", tradingViewUser: "pm4_test", discordUser: "pm4-discord", acceptedPrivacy: true }),
       },
     );
-    assert.equal(rateLimited.status, 429);
-    assert.equal((await rateLimited.json()).code, "RATE_LIMITED");
+    assert.equal(locallyRateLimited.status, 429);
+    assert.equal((await locallyRateLimited.json()).code, "RATE_LIMITED");
+    assert.equal(forwardedRequests, 0);
+
+    const upstreamRateLimited = await render(
+      "/api/indicator-applications",
+      {
+        PM4_ADMIN_INGEST_URL: "https://pm4-rebate-admin.chexin1103.chatgpt.site/api/frontend-ingest",
+        PM4_ADMIN_INGEST_SECRET: "test-ingest-secret",
+        PM4_ADMIN_SITES_BYPASS_TOKEN: "test-sites-token",
+        APPLICATION_RATE_LIMITER: { limit: async () => ({ success: true }) },
+      },
+      {
+        method: "POST",
+        headers: {
+          origin: "http://localhost",
+          "cf-connecting-ip": "203.0.113.8",
+          "content-type": "application/json",
+        },
+        body: JSON.stringify({ exchange: "Bybit", uid: "579533336", tradingViewUser: "pm4_test", discordUser: "pm4-discord", acceptedPrivacy: true }),
+      },
+    );
+    assert.equal(upstreamRateLimited.status, 429);
+    assert.equal((await upstreamRateLimited.json()).code, "RATE_LIMITED");
+    assert.equal(forwardedRequests, 1);
   } finally {
     globalThis.fetch = originalFetch;
   }

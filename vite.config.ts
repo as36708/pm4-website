@@ -11,6 +11,13 @@ const localBindingConfig = {
   // Git-connected deploys must retain secrets configured in the Cloudflare
   // dashboard instead of replacing the bindings with an empty vars object.
   keep_vars: true,
+  ratelimits: [
+    {
+      name: "APPLICATION_RATE_LIMITER",
+      namespace_id: "2026082801",
+      simple: { limit: 5, period: 60 as const },
+    },
+  ],
 };
 
 export default defineConfig(async () => {
