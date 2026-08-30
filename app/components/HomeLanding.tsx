@@ -18,9 +18,9 @@ type Exchange = {
 
 const exchanges: Exchange[] = [
   { id: "bybit", name: "Bybit", rebate: "33%", maker: "0.02%", taker: "0.055%", logo: "/logos/bybit.svg", registerUrl: EXTERNAL_LINKS.bybitRegister },
-  { id: "okx", name: "OKX", rebate: "20%", maker: "0.02%", taker: "0.05%", logo: "/logos/okx.svg", registerUrl: EXTERNAL_LINKS.okxRegister },
   { id: "gate", name: "Gate", rebate: "65%", maker: "0.02%", taker: "0.05%", logo: "/logos/gate.svg", registerUrl: EXTERNAL_LINKS.gateRegister },
   { id: "bitget", name: "Bitget", rebate: "30%", maker: "0.02%", taker: "0.06%", logo: "/logos/bitget.svg", registerUrl: EXTERNAL_LINKS.bitgetRegister },
+  { id: "okx", name: "OKX", rebate: "20%", maker: "0.02%", taker: "0.05%", logo: "/logos/okx.svg", registerUrl: EXTERNAL_LINKS.okxRegister },
 ];
 
 const membershipTiers = [
@@ -70,9 +70,17 @@ const faqs = [
   ["机器人用不了怎么办？", "可使用备用表单提交资料，由人工处理；或在 Discord #客服与审核 开工单。"],
 ] as const;
 
+const processSteps = [
+  { number: 1, title: "用 PM4 专属链接注册交易所", description: "从下方四家里选一家，用专属链接注册。已有账号的可以换推荐人。", href: "#exchanges", link: "选交易所" },
+  { number: 2, title: "进 Discord 点「绑定」", description: "在 #从这里开始 频道点按钮，选交易所、填 UID，十秒填完。", href: EXTERNAL_LINKS.discordInvite, link: "绑定 UID", external: true },
+  { number: 3, title: "机器人自动开通", description: "自动核验后发 @实盘会员 身份组，TradingView 指标排队开通并私信通知。", href: "#faq", link: "看开通规则" },
+  { number: 4, title: "交易量达标自动升 VIP", description: "近一年交易量满 50 万 U 自动升 VIP，不用申请、不用等人工。", href: "#membership", link: "看会员权益" },
+] as const;
+
 export default function HomeLanding() {
   const [selectedExchange, setSelectedExchange] = useState<Exchange | null>(null);
   const [videoPaused, setVideoPaused] = useState(false);
+  const [activeStep, setActiveStep] = useState<1 | 2 | 3 | 4>(1);
   const dialogRef = useRef<HTMLDivElement>(null);
   const videoRef = useRef<HTMLVideoElement>(null);
   const returnFocusRef = useRef<HTMLElement | null>(null);
@@ -101,6 +109,21 @@ export default function HomeLanding() {
     sync();
     preference.addEventListener("change", sync);
     return () => preference.removeEventListener("change", sync);
+  }, []);
+
+  useEffect(() => {
+    const root = document.querySelector(`.${styles.site}`);
+    if (!root || window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
+    const nodes = [...root.querySelectorAll<HTMLElement>(`.${styles.reveal}`)];
+    const observer = new IntersectionObserver((entries) => {
+      entries.forEach((entry) => {
+        if (!entry.isIntersecting) return;
+        (entry.target as HTMLElement).classList.add(styles.revealIn);
+        observer.unobserve(entry.target);
+      });
+    }, { threshold: 0.12, rootMargin: "0px 0px -40px 0px" });
+    nodes.forEach((node) => observer.observe(node));
+    return () => observer.disconnect();
   }, []);
 
   useEffect(() => {
@@ -165,15 +188,23 @@ export default function HomeLanding() {
           </div>
         </section>
 
-        <section className={`${styles.section} ${styles.centered}`} aria-labelledby="steps-title">
-          <span className={styles.eyebrow}>三步领取</span>
-          <h2 id="steps-title">注册 → 绑定 → 自动开通</h2>
-          <p className={styles.subtitle}>全程机器人处理，最快 30 秒拿到身份组和指标资格。</p>
-          <ol className={styles.steps}>
-            <li><span>STEP 01</span><h3>专属链接注册交易所</h3><p>从下方卡片选一家，用 PM4 专属链接注册并完成交易。</p></li>
-            <li><span>STEP 02</span><h3>进 Discord 点「绑定」</h3><p>在 #从这里开始 频道点按钮，选交易所、填 UID，十秒填完。</p></li>
-            <li><span>STEP 03</span><h3>机器人自动开通</h3><p>自动核验、自动发身份组，TradingView 指标排队开通并私信通知。</p></li>
-          </ol>
+        <section className={`${styles.section} ${styles.centered} ${styles.reveal}`} aria-labelledby="steps-title">
+          <span className={styles.eyebrow}>使用流程</span>
+          <h2 id="steps-title">注册 → 绑定 → 开通 → <b className={styles.accentText}>升 VIP</b></h2>
+          <p className={styles.subtitle}>四步全程机器人处理，最快 30 秒拿到身份组和指标资格。</p>
+          <div className={styles.processFlow}>
+            <ol className={styles.timeline}>
+              {processSteps.map((step) => (
+                <li className={activeStep === step.number ? styles.timelineActive : ""} key={step.number} onClick={() => setActiveStep(step.number)} onMouseEnter={() => setActiveStep(step.number)}>
+                  <button type="button" aria-pressed={activeStep === step.number} onFocus={() => setActiveStep(step.number)}>
+                    <span>{String(step.number).padStart(2, "0")}</span><span><strong>{step.title}</strong><small>{step.description}</small></span>
+                  </button>
+                  <a href={step.href} target={step.external ? "_blank" : undefined} rel={step.external ? "noopener noreferrer" : undefined}>{step.link} <i>→</i></a>
+                </li>
+              ))}
+            </ol>
+            <ProcessPreview step={activeStep} />
+          </div>
         </section>
 
         <section id="exchanges" className={`${styles.section} ${styles.centered}`} aria-labelledby="exchange-title">
@@ -183,7 +214,7 @@ export default function HomeLanding() {
           <p className={styles.subtitle}>通过专属链接注册，返佣与指标一次解锁。</p>
           <div className={styles.exchangeGrid}>
             {exchanges.map((exchange) => (
-              <button className={styles.exchangeCard} type="button" key={exchange.id} onClick={() => openExchange(exchange)} data-pm4-exchange={exchange.name}>
+              <button className={`${styles.exchangeCard} ${styles.reveal}`} type="button" key={exchange.id} onClick={() => openExchange(exchange)} data-pm4-exchange={exchange.name}>
                 <span className={styles.logoWrap}><Image src={exchange.logo} alt={`${exchange.name} 官方标识`} width={48} height={48} sizes="48px" unoptimized /></span>
                 <strong>{exchange.name}</strong>
                 <small>返佣比例</small>
@@ -271,13 +302,36 @@ export default function HomeLanding() {
               <a className={styles.modalPrimary} href={selectedExchange.registerUrl} target="_blank" rel="noopener noreferrer" data-pm4-event="exchange_click" data-pm4-exchange={selectedExchange.name}>
                 <span>首次注册 {selectedExchange.name}</span><small>通过 PM4 专属链接开户并开始享受返佣。</small><b>→</b>
               </a>
-              <Link href={`/transfer/${selectedExchange.id}`} onClick={closeExchange} data-pm4-event="transfer_click" data-pm4-exchange={selectedExchange.name}>
+              {selectedExchange.id === "bybit" || selectedExchange.id === "okx" ? <Link href={`/transfer/${selectedExchange.id}`} onClick={closeExchange} data-pm4-event="transfer_click" data-pm4-exchange={selectedExchange.name}>
                 <span>更换 {selectedExchange.name} 推荐人</span><small>已有账户，查看推荐关系办理步骤。</small><b>→</b>
-              </Link>
+              </Link> : <div className={styles.modalDisabled} aria-disabled="true">
+                <span>更换 {selectedExchange.name} 推荐人</span><small>该交易所的更换指引还没做，请在 Discord 开工单。</small><b>→</b>
+              </div>}
             </div>
           </div>
         </div>
       ) : null}
     </div>
   );
+}
+
+function ProcessPreview({ step }: { step: 1 | 2 | 3 | 4 }) {
+  return <div className={styles.processPreview} aria-live="polite">
+    <div className={`${styles.processScreen} ${step === 1 ? "" : styles.discordScreen}`}>
+      {step === 1 ? <>
+        <div className={styles.previewHeader}>选一家交易所 · <b>用 PM4 专属链接注册</b></div>
+        <div className={styles.previewExchanges}>{exchanges.map((exchange) => <div key={exchange.id}><b>{exchange.name}</b><strong>{exchange.rebate}</strong><small>返佣比例</small></div>)}</div>
+        <div className={styles.previewOkay}><i>✓</i><span>注册完成 · 记住你的 <b>UID</b>，下一步要用</span></div>
+      </> : <>
+        <div className={styles.previewHeader}>{step === 2 ? <># <b>从这里开始</b></> : <>机器人私信 · <b>{step === 3 ? "自动开通" : "升级通知"}</b></>}</div>
+        <div className={styles.discordMessage}><div className={styles.botAvatar}>P4</div><div className={styles.messageBody}>
+          <div className={styles.botName}>PM4 机器人 <i>BOT</i><small>今天 21:05</small></div>
+          {step === 2 ? <div className={styles.discordEmbed}><b>绑定交易所 UID</b><p>选择你注册的交易所，填入 UID，机器人自动核验并开通权限。</p><div className={styles.discordChoices}><span>Bybit</span><span>Gate</span><span>Bitget</span><span>OKX</span></div></div> : null}
+          {step === 3 ? <><div className={`${styles.discordEmbed} ${styles.successEmbed}`}><b><mark>@实盘会员</mark> 已发放</b><div className={styles.embedFields}><span><small>交易所</small>Bybit</span><span><small>UID</small>1234****89</span><span><small>TradingView</small>PM4User</span></div><p>已经确认有非零交易量，指标已经进入开通队列。管理员完成开通后会私信告诉你。</p></div><span className={styles.discordAction}>我的权益</span></> : null}
+          {step === 4 ? <><div className={`${styles.discordEmbed} ${styles.successEmbed}`}><b>升 VIP 了</b><div className={styles.embedFields}><span><small>身份组</small><mark>@VIP</mark> 已发放</span><span><small>近一年交易量</small>Bybit 62.3 万 / 50 万 USDT</span></div><p>会员·交易思路、复盘资料库、会员交流三个频道现在都能进了。</p><footer>近一年交易量保持在 50 万 USDT 以上就一直保留，我这边每天自动核对，不用管。</footer></div><span className={styles.discordAction}>去会员·交易思路</span></> : null}
+        </div></div>
+        {step === 2 ? <div className={styles.uidField}><small>UID</small><span>1234****89</span><b>提交</b></div> : null}
+      </>}
+    </div>
+  </div>;
 }

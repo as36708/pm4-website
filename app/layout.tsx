@@ -11,7 +11,7 @@ export const metadata: Metadata = {
   title: { default: "PM4 指标返佣与审核", template: "%s | PM4" },
   description: "通过合作交易所专属链接完成注册与任务，享受手续费返佣并申请 PM4 TradingView 专属指标。",
   alternates: { canonical: "/" },
-  icons: { icon: "/favicon.svg", shortcut: "/favicon.svg" },
+  icons: { icon: "/favicon.ico", shortcut: "/favicon.ico" },
   openGraph: {
     type: "website",
     locale: "zh_CN",

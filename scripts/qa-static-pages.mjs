@@ -119,7 +119,7 @@ try {
   await navigate("http://localhost:3001/transfer-okx.html", 1280, 900);
   assert(!(await evaluate("document.documentElement.scrollWidth > innerWidth")), "OKX 桌面端出现横向滚动");
   const okxLinks = await evaluate(`(() => ({
-    eligibility: [...document.querySelectorAll('a')].find(a => a.textContent.includes('前往 Discord 开工单'))?.href,
+    eligibility: [...document.querySelectorAll('a')].find(a => a.textContent.includes('前往 Discord 领取申请入口'))?.href,
     hashCount: [...document.querySelectorAll('a')].filter(a => a.getAttribute('href') === '#').length,
     copyCount: [...document.querySelectorAll('button')].filter(b => b.textContent.includes('复制')).length
   }))()`);

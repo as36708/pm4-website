@@ -6,7 +6,7 @@
 <title>更换 Bybit 推荐人 · PM4</title>
 <meta name="description" content="用 Bybit 身份认证转移功能,把实名迁到 PM4 链接开的新号,从而更换推荐人。六步图文,含风险提示。">
 <meta name="theme-color" content="#0b0d10">
-<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='14' fill='%23f7943d'/%3E%3Ctext x='32' y='45' font-family='Helvetica,Arial,sans-serif' font-size='32' font-weight='700' text-anchor='middle' fill='%231d140d'%3EP4%3C/text%3E%3C/svg%3E">
+<link rel="icon" href="/favicon.ico" sizes="any">
 
 <!-- 分享到 Discord / Telegram / X 时的预览卡 -->
 <meta property="og:type" content="website">
@@ -22,11 +22,23 @@
 <meta name="twitter:title" content="更换 Bybit 推荐人 · PM4">
 <meta name="twitter:description" content="用 Bybit 身份认证转移功能,把实名迁到 PM4 链接开的新号,从而更换推荐人。六步图文,含风险提示。">
 <meta name="twitter:image" content="https://cpm4.com/og-cover.png">
-<style>@font-face{font-family:Geist;src:url('/geist-latin.woff2') format('woff2');font-weight:100 900;font-style:normal;font-display:swap}</style>
+<!-- Geist 走 Google Fonts,大陆访问不到。改成非阻塞加载:拉不到就直接用系统字体,不会卡住渲染。
+     上线时建议改成自托管字体文件,大陆用户也能拿到设计稿的字重 -->
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" media="print" onload="this.media='all';this.onload=null"
+      href="https://fonts.googleapis.com/css2?family=Geist:wght@400;500;700;900&family=Noto+Sans+SC:wght@400;500;700;900&display=swap">
+<noscript><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Geist:wght@400;500;700;900&family=Noto+Sans+SC:wght@400;500;700;900&display=swap"></noscript>
 <style>
 :root{--bg:oklch(0.158 0.0072 258.37);--ink:oklch(0.928 0.006 264.53);--muted:oklch(0.72 0.008 261);--dim:oklch(0.65 0.008 261);
 --card:rgb(255 255 255 / 0.078);--card2:rgb(255 255 255 / 0.045);--line:rgb(255 255 255 / 0.122);--acc:oklch(0.756 0.1542 57.99);--acc-ink:oklch(0.2 0.02 58)}
 *{box-sizing:border-box}
+html{scroll-behavior:smooth}
+@media (prefers-reduced-motion:reduce){html{scroll-behavior:auto}*{animation:none!important;transition:none!important}}
+a,button{transition:color .15s,background-color .15s,border-color .15s,opacity .15s,transform .15s}
+.nav-in a.item:hover{color:var(--ink)}
+.btn:hover{transform:translateY(-2px)}
+.back:hover{color:var(--acc)}
+
 body{margin:0;background:var(--bg);color:var(--ink);font-family:Geist,"Noto Sans SC",-apple-system,"PingFang SC","Microsoft YaHei",sans-serif;font-size:16px;line-height:1.6}
 a{color:var(--acc);text-decoration:none}
 .wrap{max-width:1120px;margin:0 auto;padding:0 24px}
@@ -47,8 +59,13 @@ nav{border-bottom:1px solid var(--line);background:oklch(0.158 0.0072 258.37 / .
 .ptop .pill{display:inline-block;border:1px solid var(--line);border-radius:999px;padding:5px 16px;font-size:13px;color:var(--muted);margin-bottom:14px}
 .ptop h2{font-size:26px;font-weight:700;margin:0}
 .body{display:flex;gap:48px}
-.steps{width:210px;flex-shrink:0}
-.st{display:flex;gap:14px;align-items:flex-start;padding-bottom:26px;position:relative}
+.steps{width:210px;flex-shrink:0;position:sticky;top:96px;align-self:flex-start}
+.st{display:flex;gap:14px;align-items:flex-start;padding-bottom:26px;position:relative;cursor:pointer}
+.st .n{transition:background .2s,border-color .2s,color .2s}
+.st .t{transition:color .2s}
+.st:hover .n{border-color:var(--acc);color:var(--acc)}
+.st:hover .t{color:var(--ink)}
+.st.on:hover .n{color:var(--acc-ink)}
 .st:not(:last-child)::after{content:"";position:absolute;left:15px;top:34px;bottom:6px;width:1px;background:var(--line)}
 .st .n{width:31px;height:31px;border-radius:50%;border:1px solid var(--line);display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:700;color:var(--dim);flex-shrink:0;background:var(--bg);z-index:1}
 .st.on .n{background:var(--acc);color:var(--acc-ink);border-color:var(--acc)}
@@ -72,9 +89,11 @@ nav{border-bottom:1px solid var(--line);background:oklch(0.158 0.0072 258.37 / .
 .copy .lb{font-size:13.5px;color:var(--muted)}
 .copy .code{font-family:Consolas,"Cascadia Mono","Segoe UI Mono",SFMono-Regular,"SF Mono",Menlo,"Roboto Mono","DejaVu Sans Mono","Liberation Mono","Courier New",monospace;font-size:17px;font-weight:700;letter-spacing:.5px;color:var(--acc)}
 .cbtn{border:1px solid var(--line);background:var(--card);color:var(--ink);font-size:13px;padding:7px 14px;border-radius:9px;cursor:pointer;font-family:inherit}
-.cbtn:hover{border-color:var(--acc)}
+.cbtn:hover{border-color:var(--acc);transform:translateY(-1px)}
 .en{background:var(--bg);border:1px solid var(--line);border-radius:14px;padding:16px 18px;font-size:14px;color:var(--muted);margin-bottom:12px}
+.gobtn:hover{border-color:var(--acc);transform:translateY(-2px)}
 .gobtn{display:inline-block;border:1px solid var(--acc);color:var(--acc);border-radius:999px;padding:11px 24px;font-size:14px;font-weight:700}
+.nx:hover{transform:translateY(-2px);background:oklch(0.756 0.1542 57.99 / .14)}
 .nx{background:oklch(0.756 0.1542 57.99 / .08);border:1px solid var(--acc);border-radius:14px;padding:20px 24px;color:var(--ink);text-decoration:none;display:flex;align-items:center;justify-content:space-between;margin-top:24px}
 .nx .k{font-size:12px;color:var(--dim);letter-spacing:1.4px}
 .nx .v{font-size:18px;font-weight:700;color:var(--acc);margin-top:2px}
@@ -83,6 +102,10 @@ nav{border-bottom:1px solid var(--line);background:oklch(0.158 0.0072 258.37 / .
 .shot img{display:block;width:100%;height:auto}
 @media(max-width:640px){.nav-in a.item{display:none}.nav-in{gap:0}.nav-in .btn{margin-left:auto}}
 @media(max-width:860px){.body{flex-direction:column;gap:30px}.steps{width:100%;display:flex;gap:8px;overflow-x:auto}.st{padding-bottom:0;flex-shrink:0}.st::after{display:none}.panel{padding:26px}}
+.rv{opacity:0;transform:translateY(16px);transition:opacity .5s ease,transform .5s ease}
+.rv.in{opacity:1;transform:none}
+@media (prefers-reduced-motion:reduce){.rv{opacity:1;transform:none}}
+@media(max-width:860px){.steps{position:static}}
 </style>
 </head>
 <body>
@@ -163,5 +186,37 @@ nav{border-bottom:1px solid var(--line);background:oklch(0.158 0.0072 258.37 / .
   </div>
 </div></div>
 
+
+<script>
+(function(){
+  var sts=[].slice.call(document.querySelectorAll('.steps .st'));
+  var blks=[].slice.call(document.querySelectorAll('.main .blk')).filter(function(b){return b.querySelector('.no')&&!b.parentElement.closest('.blk')});
+  if(sts.length&&blks.length===sts.length){
+    sts.forEach(function(st,i){
+      st.addEventListener('click',function(){
+        blks[i].scrollIntoView({behavior:'smooth',block:'start'});
+      });
+    });
+    blks.forEach(function(b){b.style.scrollMarginTop='96px'});
+    var cur=-1;
+    function mark(i){ if(i===cur)return; cur=i;
+      sts.forEach(function(st,j){st.classList.toggle('on',j===i)}); }
+    function spy(){
+      if(innerHeight+scrollY>=document.body.scrollHeight-80){mark(blks.length-1);return}
+      var vis=blks.map(function(b){var r=b.getBoundingClientRect();return r.top<innerHeight*0.45&&r.bottom>120});
+      var i=vis.lastIndexOf(true); if(i>-1)mark(i);
+    }
+    addEventListener('scroll',spy,{passive:true}); spy();
+  }
+  if(!matchMedia('(prefers-reduced-motion:reduce)').matches){
+    var els=document.querySelectorAll('.main > .blk,.head h1,.head .exlogo,.head .rate,.ptop');
+    els.forEach(function(el){el.classList.add('rv')});
+    var io2=new IntersectionObserver(function(es){
+      es.forEach(function(en){if(en.isIntersecting){en.target.classList.add('in');io2.unobserve(en.target)}});
+    },{threshold:.1,rootMargin:'0px 0px -30px 0px'});
+    els.forEach(function(el){io2.observe(el)});
+  }
+})();
+</script>
 </body>
 </html>

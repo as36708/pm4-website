@@ -6,7 +6,7 @@
 <title>PM4 · 交易所返佣与 TradingView 指标</title>
 <meta name="description" content="最高 65% 手续费返佣 + TradingView 专属指标。用 PM4 专属链接注册交易所,绑定 UID,机器人 30 秒自动开通身份组和指标。">
 <meta name="theme-color" content="#0b0d10">
-<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='14' fill='%23f7943d'/%3E%3Ctext x='32' y='45' font-family='Helvetica,Arial,sans-serif' font-size='32' font-weight='700' text-anchor='middle' fill='%231d140d'%3EP4%3C/text%3E%3C/svg%3E">
+<link rel="icon" href="/favicon.ico" sizes="any">
 
 <!-- 分享到 Discord / Telegram / X 时的预览卡 -->
 <meta property="og:type" content="website">
@@ -22,7 +22,12 @@
 <meta name="twitter:title" content="PM4 · 交易所返佣与 TradingView 指标">
 <meta name="twitter:description" content="最高 65% 手续费返佣 + TradingView 专属指标。用 PM4 专属链接注册交易所,绑定 UID,机器人 30 秒自动开通身份组和指标。">
 <meta name="twitter:image" content="https://cpm4.com/og-cover.png">
-<style>@font-face{font-family:Geist;src:url('/geist-latin.woff2') format('woff2');font-weight:100 900;font-style:normal;font-display:swap}</style>
+<!-- Geist 走 Google Fonts,大陆访问不到。改成非阻塞加载:拉不到就直接用系统字体,不会卡住渲染。
+     上线时建议改成自托管字体文件,大陆用户也能拿到设计稿的字重 -->
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" media="print" onload="this.media='all';this.onload=null"
+      href="https://fonts.googleapis.com/css2?family=Geist:wght@400;500;700;900&family=Noto+Sans+SC:wght@400;500;700;900&display=swap">
+<noscript><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Geist:wght@400;500;700;900&family=Noto+Sans+SC:wght@400;500;700;900&display=swap"></noscript>
 <style>
 :root{
   --bg:oklch(0.158 0.0072 258.37);
@@ -36,9 +41,16 @@
   --acc-ink:oklch(0.2 0.02 58);
 }
 *{box-sizing:border-box}
+html{scroll-behavior:smooth}
+@media (prefers-reduced-motion:reduce){html{scroll-behavior:auto}*{animation:none!important;transition:none!important}}
+[id]{scroll-margin-top:76px}
+.rv{opacity:0;transform:translateY(18px);transition:opacity .55s ease,transform .55s ease}
+.rv.in{opacity:1;transform:none}
+@media (prefers-reduced-motion:reduce){.rv{opacity:1;transform:none}}
 body{margin:0;color:var(--ink);font-family:Geist,"Noto Sans SC",-apple-system,"PingFang SC","Microsoft YaHei",sans-serif;font-size:16px;line-height:1.5;
   background:var(--bg)}
 a{color:var(--acc);text-decoration:none}
+a,button{transition:color .15s,background-color .15s,border-color .15s,opacity .15s,transform .15s,box-shadow .15s}
 .wrap{max-width:1120px;margin:0 auto;padding:0 24px}
 section.wrap{padding-top:220px;padding-bottom:0;position:relative}
 .glow{position:absolute;left:50%;transform:translateX(-50%);top:140px;width:480px;max-width:100%;height:200px;border-radius:999px;background:oklch(0.756 0.1542 57.99 / 0.3);filter:blur(112px);pointer-events:none}
@@ -52,13 +64,18 @@ h2{font-size:clamp(32px,4vw,48px);font-weight:700;line-height:1.4;margin:0 0 18p
 .sub{color:var(--muted);margin:0 0 72px;font-size:16px}
 .center{text-align:center}
 .btn{display:inline-block;background:var(--acc);color:var(--acc-ink);font-weight:700;padding:15px 38px;border-radius:999px;font-size:15px;letter-spacing:.5px;box-shadow:0 8px 30px oklch(0.756 0.1542 57.99 / 0.25)}
+.btn:hover{transform:translateY(-2px);box-shadow:0 12px 36px oklch(0.756 0.1542 57.99 / 0.38)}
+.btn:active{transform:translateY(0)}
 .tlink{color:var(--acc);font-size:14px;font-weight:500;letter-spacing:.5px}
+.tlink:hover{opacity:.75}
 .ghost{display:inline-block;color:var(--ink);border:1px solid var(--line);padding:14px 30px;border-radius:999px;font-size:15px;letter-spacing:.5px;margin-left:14px}
+.ghost:hover{border-color:var(--acc);color:var(--acc)}
 
 nav{position:sticky;top:0;background:oklch(0.158 0.0072 258.37 / 0.9);backdrop-filter:blur(10px);border-bottom:1px solid var(--line);z-index:9}
 .nav-in{max-width:1120px;margin:0 auto;padding:16px 24px;display:flex;align-items:center;gap:30px}
 .logo{font-weight:900;font-size:19px}.logo b{color:var(--acc)}
 .nav-in a.item{color:var(--muted);font-size:14px;font-weight:500;letter-spacing:1.4px}
+.nav-in a.item:hover{color:var(--ink)}
 .nav-in .btn{margin-left:auto;padding:10px 22px;font-size:14px}
 
 .hero{padding:170px 0 40px;text-align:center;position:relative;overflow:visible}
@@ -71,20 +88,60 @@ nav{position:sticky;top:0;background:oklch(0.158 0.0072 258.37 / 0.9);backdrop-f
 
 /* 三步领取 · 左时间线 + 右预览 */
 .flow{display:grid;grid-template-columns:minmax(0,42fr) minmax(0,53fr);gap:5%;align-items:center;text-align:left}
-.tl .it{position:relative;padding-left:80px;padding-bottom:34px}
+.tl .it{position:relative;padding-left:80px;padding-bottom:34px;cursor:pointer}
+.tl .it:hover .dot{border-color:var(--acc);color:var(--acc)}
+.tl .it.on:hover .dot{color:var(--acc-ink)}
+.tl .it h3{transition:color .15s}
+.tl .it:hover h3{color:var(--acc)}
 .tl .it:last-child{padding-bottom:0}
 .tl .it::before{content:"";position:absolute;left:26.5px;top:62px;bottom:6px;width:1px;background:var(--line)}
 .tl .it:last-child::before{display:none}
 .tl .it.on::before{background:var(--acc)}
-.tl .dot{position:absolute;left:0;top:0;width:54px;height:54px;border-radius:50%;background:var(--card2);border:1px solid var(--line);display:flex;align-items:center;justify-content:center;font-weight:700;font-size:15px;color:var(--muted);font-variant-numeric:tabular-nums}
+.tl .dot{position:absolute;left:0;top:0;width:54px;height:54px;border-radius:50%;background:var(--card2);border:1px solid var(--line);display:flex;align-items:center;justify-content:center;font-weight:700;font-size:15px;color:var(--muted);font-variant-numeric:tabular-nums;transition:background .2s,border-color .2s,color .2s}
 .tl .it.on .dot{background:var(--acc);border-color:var(--acc);color:var(--acc-ink)}
 .tl h3{margin:8px 0 10px;font-size:19px;font-weight:700}
 .tl p{margin:0;color:var(--muted);font-size:14px;line-height:1.7;max-width:400px}
 .tl .go{display:inline-block;margin-top:14px;color:var(--acc);font-size:14px;font-weight:500}
+.tl .go:hover{opacity:.75}
+.tl .go .ar{display:inline-block;transition:transform .15s}
+.tl .go:hover .ar{transform:translateX(4px)}
 
 .pv{border:1px solid var(--line);border-radius:26px;padding:34px 34px 0;overflow:hidden;
   background:linear-gradient(180deg,rgb(255 255 255/0.05) 0%,rgb(255 255 255/0.028) 38%,oklch(0.756 0.1542 57.99 / 0.30) 100%)}
-.pv-in{background:oklch(0.13 0.006 258);border:1px solid var(--line);border-radius:16px;padding:20px;margin-bottom:34px}
+.pv-in{background:oklch(0.13 0.006 258);border:1px solid var(--line);border-radius:16px;padding:20px;margin-bottom:34px;min-height:330px;display:flex;flex-direction:column;justify-content:flex-start}
+/* Discord 真实观感(场景 2/3/4) */
+.pv-in.dcbg{background:#313338;border-color:#26272b}
+.dcbg .pvhd{color:#949ba4;border-bottom-color:#3f4147}
+.dcbg .pvhd b{color:#dbdee1;font-weight:600}
+.dcbg .who{color:#f2f3f5}
+.pv-in.dcbg .msg .who i{background:#5865f2;color:#fff;vertical-align:2px}
+.dcbg .ts{color:#949ba4;font-size:11px;font-weight:400;margin-left:7px}
+.pv-in.dcbg .emb{background:#2b2d31;border-left:4px solid var(--acc);border-radius:4px 8px 8px 4px}
+.pv-in.dcbg .emb .et{color:#f2f3f5}
+.pv-in.dcbg .emb .ep{color:#dbdee1}
+.pv-in.dcbg .emb .b{background:#4e5058;border:none;color:#fff;border-radius:8px;font-weight:500}
+.pv-in.dcbg .emb .b.hot{background:#5865f2;border:none;color:#fff}
+.pv-in.dcbg .fld{background:#1e1f22;border-color:#1e1f22;border-radius:8px}
+.pv-in.dcbg .fld .fl{color:#949ba4}
+.pv-in.dcbg .fld .fv{color:#f2f3f5}
+.pv-in.dcbg .fld .fb{background:#5865f2;color:#fff;border-radius:6px;font-weight:500}
+.mention{background:rgba(247,148,61,.16);color:#f7943d;border-radius:4px;padding:0 4px;font-weight:600}
+.pv-in.dcbg .emb.g{border-left-color:#23a55a}
+.efs{display:flex;flex-wrap:wrap;gap:10px 22px;margin:10px 0 2px}
+.ef{min-width:0}
+.ef.w{flex-basis:100%}
+.ef .k{color:#b5bac1;font-size:11.5px;font-weight:700;margin-bottom:2px}
+.ef .v{color:#dbdee1;font-size:13px}
+.efoot{color:#949ba4;font-size:11.5px;margin-top:10px;line-height:1.6}
+.dcbtn{display:inline-block;background:#4e5058;color:#fff;font-size:13px;font-weight:500;padding:7px 14px;border-radius:8px;margin-top:10px;margin-right:8px}
+.scene{display:none}
+.scene.on{display:block;animation:fadeUp .35s ease both}
+@keyframes fadeUp{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:none}}
+.exmini{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.exmini .m{background:rgb(255 255 255/0.05);border:1px solid var(--line);border-radius:12px;padding:14px;text-align:center}
+.exmini .m b{display:block;font-size:14px;margin-bottom:2px}
+.exmini .m i{font-style:normal;color:var(--acc);font-weight:700;font-size:18px}
+.exmini .m u{text-decoration:none;display:block;color:var(--dim);font-size:11px;margin-top:2px}
 .pvhd{color:var(--dim);font-size:13px;letter-spacing:.3px;padding-bottom:14px;border-bottom:1px solid var(--line);margin-bottom:16px}
 .pvhd b{color:var(--muted);font-weight:500}
 .msg{display:flex;gap:12px}
@@ -120,6 +177,8 @@ td.ex{font-weight:700}
 .tier .d{color:var(--muted);font-size:13.5px;line-height:1.6;margin:0 0 18px}
 .tier .foot{border-top:1px solid var(--line);margin-top:18px;padding-top:12px;color:var(--dim);font-size:13px}
 .tier.hot{border-color:var(--acc)}
+.tiers .card{transition:border-color .15s,transform .15s}
+.tiers .card:hover{border-color:var(--acc);transform:translateY(-3px)}
 .tier ul{margin:0;padding:0;list-style:none}
 .tier li{color:var(--muted);font-size:14px;line-height:1.65;padding:5px 0 5px 20px;position:relative}
 .tier li::before{content:"";position:absolute;left:2px;top:13px;width:6px;height:6px;border-radius:50%;background:var(--acc)}
@@ -134,7 +193,8 @@ td.ex{font-weight:700}
 .fees .row.hi{color:var(--acc);font-weight:700;font-size:16px}
 
 details{background:var(--card);border:1px solid var(--line);border-radius:14px;margin-bottom:12px}
-summary{cursor:pointer;padding:18px 22px;font-weight:500;font-size:15px;list-style:none}
+summary{cursor:pointer;padding:18px 22px;font-weight:500;font-size:15px;list-style:none;transition:color .15s}
+summary:hover{color:var(--acc)}
 summary::-webkit-details-marker{display:none}
 summary::after{content:"+";float:right;color:var(--dim);font-size:18px}
 details[open] summary::after{content:"–"}
@@ -168,13 +228,14 @@ footer a{color:var(--muted);margin-right:20px}
 .exc .lbl{font-size:12px;color:var(--dim);letter-spacing:1.4px;margin-bottom:2px}
 .exc .pct2{color:var(--acc);font-weight:700;font-size:34px;line-height:1.15}
 .exc .fee{font-size:12px;color:var(--dim);margin-top:10px}
-.exc{cursor:pointer;transition:border-color .15s}
-.exc:hover{border-color:var(--acc)}
+.exc{cursor:pointer;transition:border-color .15s,transform .15s}
+.exc:hover{border-color:var(--acc);transform:translateY(-3px)}
 .exc .hint{color:var(--dim);font-size:12px;margin-top:14px;letter-spacing:.5px}
 .ovl{position:fixed;inset:0;background:rgb(0 0 0 / 0.6);backdrop-filter:blur(4px);display:none;align-items:center;justify-content:center;z-index:99;padding:24px}
 .ovl.on{display:flex}
 .opts{display:flex;gap:18px;max-width:780px;width:100%}
-.opt{flex:1;background:#141419;border:1px solid var(--line);border-radius:18px;padding:28px 26px;text-align:left;cursor:pointer;position:relative}
+.opt{flex:1;background:#141419;border:1px solid var(--line);border-radius:18px;padding:28px 26px;text-align:left;cursor:pointer;position:relative;transition:border-color .15s,transform .15s}
+.opt:hover{border-color:var(--acc);transform:translateY(-2px)}
 .opt.hot{border-color:var(--acc)}
 .opt .ic{width:44px;height:44px;border-radius:50%;background:var(--card);border:1px solid var(--line);display:flex;align-items:center;justify-content:center;font-size:18px;margin-bottom:22px}
 .opt .arr{position:absolute;top:28px;right:24px;color:var(--dim);font-size:18px}
@@ -204,57 +265,107 @@ footer a{color:var(--muted);margin-right:20px}
   <p class="lead">最高 <b>65%</b> 手续费返佣 + TradingView 专属指标</p>
   <a class="btn" href="#ex">选交易所注册 →</a><a class="ghost" href="https://discord.gg/vAASV36A9p" target="_blank" rel="noopener">已注册?去 Discord 绑定</a>
   <div class="note"><b>30 秒自动开通</b> · 机器人自动核验 · 交易量达标<b>自动升 VIP</b></div>
-  <div class="demo"><video autoplay muted loop playsinline preload="metadata" poster="/media/market-panel-poster.jpg" aria-label="PM4 指标演示 · 自动识别关键支撑与阻力" style="display:block;width:100%;height:100%;object-fit:cover;border-radius:inherit"><source src="/media/market-panel.mp4" type="video/mp4"></video></div>
+  <!-- 视频与线上一致;poster 用仓库里现有的封面图,部署时不要回退成占位框 -->
+  <div class="demo" style="padding:0;overflow:hidden"><video src="/media/market-panel.mp4" autoplay muted loop playsinline preload="metadata" poster="/media/market-panel-poster.jpg" style="width:100%;height:100%;object-fit:cover;display:block"></video></div>
 </div>
 
 <section class="wrap center">
   <div class="glow"></div>
   <span class="eyebrow">使用流程</span>
-  <h2>注册 → 绑定 → 自动开通</h2>
-  <p class="sub">全程机器人处理,最快 30 秒拿到身份组和指标资格。</p>
+  <h2>注册 → 绑定 → 开通 → <b style="color:var(--acc)">升 VIP</b></h2>
+  <p class="sub">四步全程机器人处理,最快 30 秒拿到身份组和指标资格。</p>
   <div class="flow">
-    <div class="tl">
-      <div class="it on">
+    <div class="tl" id="tl">
+      <div class="it on" data-step="1">
         <div class="dot">01</div>
         <h3>用 PM4 专属链接注册交易所</h3>
         <p>从下方四家里选一家,用专属链接注册。已有账号的可以换推荐人。</p>
-        <a class="go" href="#ex">选交易所 →</a>
+        <a class="go" href="#ex">选交易所 <span class="ar">→</span></a>
       </div>
-      <div class="it">
+      <div class="it" data-step="2">
         <div class="dot">02</div>
         <h3>进 Discord 点「绑定」</h3>
         <p>在 #从这里开始 频道点按钮,选交易所、填 UID,十秒填完。</p>
-        <a class="go" href="https://discord.gg/vAASV36A9p" target="_blank" rel="noopener">绑定 UID →</a>
+        <a class="go" href="https://discord.gg/vAASV36A9p" target="_blank" rel="noopener">绑定 UID <span class="ar">→</span></a>
       </div>
-      <div class="it">
+      <div class="it" data-step="3">
         <div class="dot">03</div>
         <h3>机器人自动开通</h3>
         <p>自动核验后发 @实盘会员 身份组,TradingView 指标排队开通并私信通知。</p>
-        <a class="go" href="#faq">看开通规则 →</a>
+        <a class="go" href="#faq">看开通规则 <span class="ar">→</span></a>
       </div>
-      <div class="it">
+      <div class="it" data-step="4">
         <div class="dot">04</div>
         <h3>交易量达标自动升 VIP</h3>
         <p>近一年交易量满 50 万 U 自动升 VIP,不用申请、不用等人工。</p>
-        <a class="go" href="#tier">看会员权益 →</a>
+        <a class="go" href="#tier">看会员权益 <span class="ar">→</span></a>
       </div>
     </div>
     <div class="pv">
-      <div class="pv-in">
-        <div class="pvhd"># <b>从这里开始</b></div>
-        <div class="msg">
-          <div class="av">P4</div>
-          <div style="flex:1;min-width:0">
-            <div class="who">PM4 机器人 <i>BOT</i></div>
-            <div class="emb">
-              <div class="et">绑定交易所 UID</div>
-              <div class="ep">选择你注册的交易所,填入 UID,机器人自动核验并开通权限。</div>
-              <div class="bs"><span class="b hot">Bybit</span><span class="b">Gate</span><span class="b">Bitget</span><span class="b">OKX</span></div>
+      <div class="pv-in dcbg" id="pv">
+        <div class="scene" data-scene="1">
+          <div class="pvhd">选一家交易所 · <b>用 PM4 专属链接注册</b></div>
+          <div class="exmini">
+            <div class="m"><b>Bybit</b><i>33%</i><u>返佣比例</u></div>
+            <div class="m"><b>Gate</b><i>65%</i><u>返佣比例</u></div>
+            <div class="m"><b>Bitget</b><i>30%</i><u>返佣比例</u></div>
+            <div class="m"><b>OKX</b><i>20%</i><u>返佣比例</u></div>
+          </div>
+          <div class="ok" style="margin-top:16px"><span class="tick">✓</span><span>注册完成 · 记住你的 <b>UID</b>,下一步要用</span></div>
+        </div>
+        <div class="scene on" data-scene="2">
+          <div class="pvhd"># <b>从这里开始</b></div>
+          <div class="msg">
+            <div class="av">P4</div>
+            <div style="flex:1;min-width:0">
+              <div class="who">PM4 机器人 <i>BOT</i><span class="ts">今天 21:04</span></div>
+              <div class="emb">
+                <div class="et">绑定交易所 UID</div>
+                <div class="ep">选择你注册的交易所,填入 UID,机器人自动核验并开通权限。</div>
+                <div class="bs"><span class="b hot">Bybit</span><span class="b">Gate</span><span class="b">Bitget</span><span class="b">OKX</span></div>
+              </div>
+            </div>
+          </div>
+          <div class="fld"><span class="fl">UID</span><span class="fv">1234****89</span><span class="fb">提交</span></div>
+        </div>
+        <div class="scene" data-scene="3">
+          <div class="pvhd">机器人私信 · <b>自动开通</b></div>
+          <div class="msg">
+            <div class="av">P4</div>
+            <div style="flex:1;min-width:0">
+              <div class="who">PM4 机器人 <i>BOT</i><span class="ts">今天 21:05</span></div>
+              <div class="emb g">
+                <div class="et"><span class="mention">@实盘会员</span> 已发放</div>
+                <div class="efs">
+                  <div class="ef"><div class="k">交易所</div><div class="v">Bybit</div></div>
+                  <div class="ef"><div class="k">UID</div><div class="v">1234****89</div></div>
+                  <div class="ef"><div class="k">TradingView</div><div class="v">PM4User</div></div>
+                </div>
+                <div class="ep" style="margin-bottom:0">已经确认有非零交易量,指标已经进入开通队列。管理员完成开通后会私信告诉你。</div>
+              </div>
+              <span class="dcbtn">我的权益</span>
             </div>
           </div>
         </div>
-        <div class="fld"><span class="fl">UID</span><span class="fv">1234****89</span><span class="fb">提交</span></div>
-        <div class="ok"><span class="tick">✓</span><span>核验通过 · 已发放 <b>@实盘会员</b> · 指标排队开通中</span></div>
+        <div class="scene" data-scene="4">
+          <div class="pvhd">机器人私信 · <b>升级通知</b></div>
+          <div class="msg">
+            <div class="av">P4</div>
+            <div style="flex:1;min-width:0">
+              <div class="who">PM4 机器人 <i>BOT</i><span class="ts">今天 21:05</span></div>
+              <div class="emb g">
+                <div class="et">升 VIP 了</div>
+                <div class="efs">
+                  <div class="ef"><div class="k">身份组</div><div class="v"><span class="mention">@VIP</span> 已发放</div></div>
+                  <div class="ef"><div class="k">近一年交易量</div><div class="v">Bybit 62.3 万 / 50 万 USDT</div></div>
+                </div>
+                <div class="ep">会员·交易思路、复盘资料库、会员交流三个频道现在都能进了。</div>
+                <div class="efoot">近一年交易量保持在 50 万 USDT 以上就一直保留,我这边每天自动核对,不用管。</div>
+              </div>
+              <span class="dcbtn">去会员·交易思路</span>
+            </div>
+          </div>
+        </div>
       </div>
     </div>
   </div>
@@ -351,6 +462,35 @@ footer a{color:var(--muted);margin-right:20px}
   </div>
 </div>
 <script>
+/* ===== 使用流程:点步骤切换右侧画面 ===== */
+(function(){
+  var tl=document.getElementById('tl'); if(!tl)return;
+  var items=tl.querySelectorAll('.it');
+  function act(n){
+    items.forEach(function(it){it.classList.toggle('on',it.dataset.step===n)});
+    document.querySelectorAll('#pv .scene').forEach(function(sc){sc.classList.toggle('on',sc.dataset.scene===n)});
+    document.getElementById('pv').classList.toggle('dcbg', n!=='1');
+  }
+  items.forEach(function(it){
+    it.addEventListener('click',function(e){
+      if(e.target.closest('a.go'))return; // 橙色链接照常跳转
+      act(it.dataset.step);
+    });
+    it.querySelector('a.go').addEventListener('mouseenter',function(){act(it.dataset.step)});
+  });
+})();
+
+/* ===== 进场动画:滚到哪淡入哪(一次性) ===== */
+(function(){
+  if(matchMedia('(prefers-reduced-motion:reduce)').matches)return;
+  var els=document.querySelectorAll('.hero .eyebrow,.hero h1,.hero .lead,.hero .btn,.hero .ghost,.hero .note,.demo,section.wrap .eyebrow,section.wrap h2,section.wrap .sub,.tl .it,.pv,.exc,.card,.tier,.mx,details,.fallback');
+  els.forEach(function(el){el.classList.add('rv')});
+  var io=new IntersectionObserver(function(es){
+    es.forEach(function(en){if(en.isIntersecting){en.target.classList.add('in');io.unobserve(en.target)}});
+  },{threshold:.12,rootMargin:'0px 0px -40px 0px'});
+  els.forEach(function(el){io.observe(el)});
+})();
+
 /* ===== 交易所链接表:上线时把 REG 换成四家专属注册链接 =====
    MV 是「更换推荐人」指引页;Gate / Bitget 的指引页还没做,留空即不跳转 */
 var EX={

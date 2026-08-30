@@ -13,7 +13,7 @@ const organizationJsonLd = JSON.stringify({
   "@type": "Organization",
   name: "PM4",
   url: "https://cpm4.com",
-  logo: "https://cpm4.com/favicon.svg",
+  logo: "https://cpm4.com/favicon.ico",
   sameAs: [EXTERNAL_LINKS.discordInvite, EXTERNAL_LINKS.telegramContact],
 }).replace(/</g, "\\u003c");
 

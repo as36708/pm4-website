@@ -2,7 +2,7 @@
 
 import Image from "next/image";
 import Link from "next/link";
-import { useState, type ReactNode } from "react";
+import { useEffect, useRef, useState, type ReactNode } from "react";
 import { EXTERNAL_LINKS } from "../links";
 import styles from "./transfer.module.css";
 
@@ -60,16 +60,55 @@ export default function TransferExperience({ exchange }: { exchange: TransferExc
 }
 
 function GuideFrame({ exchangeName, steps, children }: { exchangeName: string; steps: string[]; children: ReactNode }) {
-  return <div className={styles.guideWrap}><section className={styles.guidePanel} aria-label={`更换 ${exchangeName} 推荐人`}>
+  const [activeStep, setActiveStep] = useState(0);
+  const panelRef = useRef<HTMLElement>(null);
+
+  useEffect(() => {
+    const panel = panelRef.current;
+    if (!panel) return;
+    const blocks = [...panel.querySelectorAll<HTMLElement>("[data-guide-step]")];
+    const reducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+    let revealObserver: IntersectionObserver | null = null;
+    if (reducedMotion) blocks.forEach((block) => block.classList.add(styles.revealIn));
+    else {
+      revealObserver = new IntersectionObserver((entries) => entries.forEach((entry) => {
+        if (!entry.isIntersecting) return;
+        (entry.target as HTMLElement).classList.add(styles.revealIn);
+        revealObserver?.unobserve(entry.target);
+      }), { threshold: 0.12, rootMargin: "0px 0px -40px 0px" });
+      blocks.forEach((block) => revealObserver?.observe(block));
+    }
+    const updateActiveStep = () => {
+      let next = 0;
+      if (window.scrollY + window.innerHeight >= document.documentElement.scrollHeight - 24) next = blocks.length - 1;
+      else blocks.forEach((block, index) => { if (block.getBoundingClientRect().top <= window.innerHeight * 0.36) next = index; });
+      setActiveStep(Math.max(0, next));
+    };
+    updateActiveStep();
+    window.addEventListener("scroll", updateActiveStep, { passive: true });
+    window.addEventListener("resize", updateActiveStep);
+    return () => {
+      revealObserver?.disconnect();
+      window.removeEventListener("scroll", updateActiveStep);
+      window.removeEventListener("resize", updateActiveStep);
+    };
+  }, [steps.length]);
+
+  function jumpToStep(index: number) {
+    setActiveStep(index);
+    document.getElementById(`guide-step-${String(index + 1).padStart(2, "0")}`)?.scrollIntoView({ behavior: window.matchMedia("(prefers-reduced-motion: reduce)").matches ? "auto" : "smooth", block: "start" });
+  }
+
+  return <div className={styles.guideWrap}><section ref={panelRef} className={styles.guidePanel} aria-label={`更换 ${exchangeName} 推荐人`}>
     <div className={styles.panelTop}><Link href="/#exchanges">← 选择其他情况</Link><h2>更换 {exchangeName} 推荐人</h2></div>
     <div className={styles.guideBody}><ol className={styles.stepRail} aria-label="办理步骤">
-      {steps.map((step, index) => <li className={index === 0 ? styles.activeStep : ""} key={step}><span>{String(index + 1).padStart(2, "0")}</span><b>{step}</b></li>)}
+      {steps.map((step, index) => <li className={index === activeStep ? styles.activeStep : ""} key={step}><button type="button" onClick={() => jumpToStep(index)} aria-current={index === activeStep ? "step" : undefined}><span>{String(index + 1).padStart(2, "0")}</span><b>{step}</b></button></li>)}
     </ol><div className={styles.guideMain}>{children}</div></div>
   </section></div>;
 }
 
 function GuideBlock({ number, title, description, children, warning = false }: { number?: string; title?: string; description?: ReactNode; children?: ReactNode; warning?: boolean }) {
-  return <section className={`${styles.guideBlock} ${warning ? styles.warningBlock : ""}`}>
+  return <section id={number ? `guide-step-${number}` : undefined} data-guide-step={number || undefined} className={`${styles.guideBlock} ${number ? styles.revealBlock : ""} ${warning ? styles.warningBlock : ""}`}>
     {number && <span className={styles.blockNumber}>{number}</span>}{title && <h4>{title}</h4>}{description && <div className={styles.blockDescription}>{description}</div>}{children}
   </section>;
 }

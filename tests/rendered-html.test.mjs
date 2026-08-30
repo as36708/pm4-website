@@ -31,7 +31,8 @@ test("server-renders the complete PM4 landing page", async () => {
   assert.match(html, /一次注册，返佣指标/);
   assert.match(html, /选交易所注册/);
   assert.match(html, /已注册？去 Discord 绑定/);
-  assert.match(html, /注册 → 绑定 → 自动开通/);
+  assert.match(html, /注册 → 绑定 → 开通 →/);
+  assert.match(html, /升 VIP/);
   assert.match(html, /选择您的交易所/);
   assert.match(html, /三档会员，交易量说话/);
   assert.match(html, /近一年交易量 50 万 USDT/);
@@ -44,7 +45,7 @@ test("server-renders the complete PM4 landing page", async () => {
   assert.match(html, /\/logos\/okx\.svg/);
   assert.match(html, /\/logos\/gate\.svg/);
   assert.match(html, /\/logos\/bitget\.svg/);
-  assert.match(html, /\bBybit\b[\s\S]*?\bOKX\b[\s\S]*?\bGate\b[\s\S]*?\bBitget\b/i);
+  assert.match(html, /\bBybit\b[\s\S]*?\bGate\b[\s\S]*?\bBitget\b[\s\S]*?\bOKX\b/i);
   assert.doesNotMatch(html, /\bBingX\b/);
   assert.match(html, /Maker[\s\S]{0,40}0\.02%/);
   assert.match(html, /Taker[\s\S]{0,40}0\.055%/);
@@ -538,28 +539,36 @@ test("packages the approved static redesign at the exact production paths", asyn
   assert.match(home, /Bitget:\{reg:'https:\/\/partner\.bitget\.com\/bg\/r1ky845p', mv:''\}/);
   assert.match(home, /OKX\s*:\{reg:'https:\/\/www\.topzhjdgxcb\.com\/join\/PPMM44', mv:'\/transfer-okx\.html'\}/);
   assert.match(home, /<video[\s\S]*\/media\/market-panel\.mp4/);
+  assert.match(home, /poster="\/media\/market-panel-poster\.jpg"/);
+  assert.match(home, /scroll-behavior:smooth/);
+  assert.match(home, /data-step="1"[\s\S]*data-step="4"/);
+  assert.match(home, /IntersectionObserver/);
   assert.match(home, /<meta property="og:url" content="https:\/\/cpm4\.com\/">/);
   assert.match(home, /https:\/\/cpm4\.com\/og-cover\.png/);
+  assert.match(home, /<link rel="icon" href="\/favicon\.ico"/);
   assert.match(home, /<!--\s*<a href="\/privacy\.html">隐私政策<\/a><a href="\/terms\.html">服务条款与风险说明<\/a>\s*-->/);
 
-  assert.match(okx, /href="https:\/\/discord\.gg\/vAASV36A9p"[^>]*>前往 Discord 开工单/);
+  assert.match(okx, /href="https:\/\/discord\.gg\/vAASV36A9p"[^>]*>前往 Discord 领取申请入口/);
   assert.doesNotMatch(okx, /oyidl\.co|J6l2R5/);
+  assert.match(okx, /确认变更条件[\s\S]*查看 OKX 申请表[\s\S]*准备推荐码和理由[\s\S]*提交 OKX 申请[\s\S]*确认结果和下一步/);
+  assert.match(okx, /position:sticky/);
+  assert.match(okx, /IntersectionObserver/);
   assert.match(okx, /复制推荐码/);
   assert.match(okx, /复制中文理由/);
   assert.match(okx, /复制英文理由/);
   assert.match(okx, /navigator\.clipboard/);
   assert.match(bybit, /href="https:\/\/partner\.bybit\.com\/b\/PPMM44"/);
   assert.match(bybit, /href="https:\/\/www\.bybit\.com\/user\/accounts\/auth\/personal"/);
+  assert.match(bybit, /position:sticky/);
+  assert.match(bybit, /IntersectionObserver/);
 
   const hashLinkCount = [home, okx, bybit].reduce((total, html) => total + (html.match(/href="#"/g)?.length ?? 0), 0);
   assert.equal(hashLinkCount, 1);
   assert.match(okx, /href="#">没看到输入框\?查看注销后重新注册指南/);
-  for (const html of [home, okx, bybit]) {
-    assert.match(html, /\/geist-latin\.woff2/);
-    assert.doesNotMatch(html, /fonts\.googleapis\.com/);
-  }
+  for (const html of [home, okx, bybit]) assert.match(html, /<link rel="icon" href="\/favicon\.ico"/);
 
   await Promise.all([
+    access(new URL("../public/favicon.ico", import.meta.url)),
     access(new URL("../public/og-cover.png", import.meta.url)),
     access(new URL("../public/geist-latin.woff2", import.meta.url)),
     access(new URL("../public/media/market-panel.mp4", import.meta.url)),
