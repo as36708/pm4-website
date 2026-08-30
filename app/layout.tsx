@@ -1,8 +1,10 @@
 import type { Metadata } from "next";
+import localFont from "next/font/local";
 import FrontendAnalytics from "./components/FrontendAnalytics";
 import "./globals.css";
 
 const siteOrigin = new URL("https://cpm4.com");
+const geist = localFont({ src: "./fonts/geist-latin.woff2", variable: "--font-geist", display: "swap" });
 
 export const metadata: Metadata = {
   metadataBase: siteOrigin,
@@ -29,7 +31,7 @@ export const metadata: Metadata = {
 
 export default function RootLayout({ children }: Readonly<{ children: React.ReactNode }>) {
   return (
-    <html lang="zh-CN">
+    <html lang="zh-CN" className={geist.variable}>
       <body>
         <a className="skip-link" href="#main-content">跳到主要内容</a>
         <FrontendAnalytics />

@@ -588,6 +588,51 @@ button:focus-visible, input:focus-visible, select:focus-visible { outline: 2px s
 .review-warning b { width: 24px; height: 24px; display: grid; place-items: center; border: 1px solid #ff625c; border-radius: 50%; color: #ff625c; }
 .review-warning p { margin: 0; font-size: 13px; line-height: 1.55; }
 
+/* Local PC preview for the Discord-first binding landing page. The live
+   ReviewSection remains mounted until outstanding website applications clear. */
+.binding-preview-page { min-width: 1120px; }
+.binding-landing { --binding-panel: #15171b; --binding-border: rgba(255,255,255,.1); position: relative; overflow: hidden; min-height: calc(100vh - 54px); padding: 76px max(5vw,48px) 84px; isolation: isolate; background: radial-gradient(circle at 50% 0,rgba(247,166,41,.11),transparent 31%),#050505; color: #f7f7f7; }
+.binding-landing-glow { position: absolute; z-index: -1; inset: 90px auto auto 50%; width: 740px; height: 280px; border-radius: 50%; background: rgba(247,166,41,.08); filter: blur(90px); transform: translateX(-50%); pointer-events: none; }
+.binding-landing-hero { max-width: 920px; margin: 0 auto 72px; text-align: center; }
+.binding-landing-kicker { display: inline-flex; align-items: center; gap: 9px; min-height: 34px; padding: 0 15px; border: 1px solid rgba(247,166,41,.56); border-radius: 999px; background: rgba(247,166,41,.07); color: var(--orange); font-size: 12px; font-weight: 800; letter-spacing: .08em; }
+.binding-landing-kicker i { width: 6px; height: 6px; border-radius: 50%; background: var(--orange); box-shadow: 0 0 13px rgba(247,166,41,.8); }
+.binding-landing-hero h1 { margin: 28px 0 15px; color: #fff; font-size: clamp(48px,5vw,72px); line-height: 1.03; letter-spacing: -.055em; }
+.binding-landing-hero h1 em { color: var(--orange); font-style: normal; }
+.binding-landing-hero > p { max-width: 670px; margin: 0 auto; color: #aaadb2; font-size: 15px; line-height: 1.7; }
+.binding-landing-actions { display: flex; align-items: center; justify-content: center; gap: 14px; margin: 32px 0 16px; }
+.binding-landing-actions a { min-height: 54px; padding: 0 25px; display: inline-flex; align-items: center; justify-content: center; gap: 9px; border-radius: 14px; font-size: 14px; font-weight: 820; text-decoration: none; transition: transform .2s,background .2s,border-color .2s; }
+.binding-landing-actions a:hover { transform: translateY(-2px); }
+.binding-landing-primary { border: 1px solid var(--orange); background: var(--orange); color: #111; box-shadow: 0 14px 34px rgba(247,166,41,.2); }
+.binding-landing-primary:hover { background: #ffb444; }
+.binding-landing-secondary { border: 1px solid rgba(255,255,255,.18); background: rgba(255,255,255,.035); color: #f5f5f5; }
+.binding-landing-secondary:hover { border-color: rgba(247,166,41,.65); background: rgba(247,166,41,.07); }
+.binding-landing-hero > small { color: #85888e; font-size: 12px; }
+.binding-landing-section { max-width: 1240px; margin: 0 auto 34px; padding: 34px; border: 1px solid var(--binding-border); border-radius: 24px; background: linear-gradient(145deg,rgba(23,25,29,.96),rgba(12,13,15,.96)); box-shadow: 0 26px 80px rgba(0,0,0,.28); }
+.binding-section-heading { margin-bottom: 25px; text-align: center; }
+.binding-section-heading > span { color: var(--orange); font-size: 11px; font-weight: 850; letter-spacing: .16em; }
+.binding-section-heading h2 { margin: 8px 0 0; color: #fff; font-size: 28px; letter-spacing: -.035em; }
+.binding-section-heading p { margin: 8px 0 0; color: #8f9298; font-size: 13px; }
+.binding-steps { margin: 0; padding: 0; display: grid; grid-template-columns: repeat(4,minmax(0,1fr)); gap: 14px; list-style: none; }
+.binding-steps li { position: relative; min-width: 0; min-height: 132px; padding: 20px; display: flex; flex-direction: column; justify-content: space-between; border: 1px solid rgba(255,255,255,.09); border-radius: 16px; background: rgba(255,255,255,.025); }
+.binding-steps li > b { color: rgba(247,166,41,.78); font: 800 12px/1 var(--font-geist-mono),monospace; }
+.binding-steps li > span { display: grid; gap: 7px; }
+.binding-steps li strong { color: #f5f5f5; font-size: 16px; }
+.binding-steps li small { color: #85888e; font-size: 12px; line-height: 1.55; }
+.binding-steps li > i { position: absolute; top: 50%; right: -22px; z-index: 2; width: 30px; height: 30px; display: grid; place-items: center; border: 1px solid rgba(247,166,41,.32); border-radius: 50%; background: #111214; color: var(--orange); font-style: normal; transform: translateY(-50%); }
+.binding-tiers { display: grid; grid-template-columns: repeat(3,minmax(0,1fr)); gap: 16px; }
+.binding-tier { min-height: 214px; padding: 24px; display: flex; flex-direction: column; border: 1px solid rgba(255,255,255,.1); border-radius: 18px; background: rgba(255,255,255,.025); }
+.binding-tier-featured { border-color: rgba(247,166,41,.65); background: linear-gradient(145deg,rgba(247,166,41,.11),rgba(255,255,255,.025)); box-shadow: 0 18px 42px rgba(247,166,41,.09); }
+.binding-tier-premium { background: linear-gradient(145deg,rgba(255,255,255,.07),rgba(255,255,255,.02)); }
+.binding-tier-topline { display: flex; align-items: center; justify-content: space-between; color: #b6b8bd; font-size: 13px; font-weight: 780; }
+.binding-tier-topline b { padding: 5px 9px; border-radius: 999px; background: var(--orange); color: #111; font-size: 10px; }
+.binding-tier > strong { max-width: 290px; margin-top: 21px; color: #fff; font-size: 24px; line-height: 1.25; letter-spacing: -.035em; }
+.binding-tier-reference-note { margin-top: auto; padding-top: 22px; display: flex; align-items: center; gap: 9px; border-top: 1px solid rgba(255,255,255,.08); color: #777a80; font-size: 12px; }
+.binding-tier-reference-note i { color: rgba(247,166,41,.7); font-size: 8px; font-style: normal; }
+.binding-security { max-width: 1240px; margin: 0 auto; padding: 20px 24px; display: grid; grid-template-columns: 36px 1fr; align-items: center; gap: 15px; border: 1px solid rgba(247,166,41,.58); border-radius: 18px; background: rgba(247,166,41,.065); }
+.binding-security > span { width: 34px; height: 34px; display: grid; place-items: center; border: 1px solid var(--orange); border-radius: 50%; color: var(--orange); font-weight: 900; }
+.binding-security p { margin: 0; color: #b6b8bd; font-size: 13px; line-height: 1.65; }
+.binding-security strong { margin-right: 10px; color: #fff; font-size: 14px; }
+
 .legal-page { box-sizing: border-box; min-height: 100vh; max-width: 900px; margin: 0 auto; padding: 80px 28px 96px; color: #e5e6e8; }
 .legal-page h1 { margin: 10px 0 8px; color: #fff; font-size: clamp(38px,7vw,64px); letter-spacing: -.045em; }
 .legal-page h2 { margin: 0 0 10px; color: #fff; font-size: 22px; }

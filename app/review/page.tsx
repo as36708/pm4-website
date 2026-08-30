@@ -1,20 +1,20 @@
 import Link from "next/link";
 import type { Metadata } from "next";
-import ReviewSection from "../components/ReviewSection";
+import DiscordBindingLanding from "../components/DiscordBindingLanding";
 
 export const metadata: Metadata = {
-  title: "提交指标审核资料",
-  description: "提交交易所 UID、TradingView 用户名和审核必填的 Discord 用户名，并同步到 PM4 管理后台。",
+  title: "Discord 自动绑定",
+  description: "加入 PM4 Discord，绑定交易所 UID 与 TradingView 用户名，自动核对资格并进入指标队列。",
   alternates: { canonical: "/review" },
   openGraph: {
     url: "/review",
-    title: "提交指标审核资料 | PM4",
-    description: "安全提交交易所 UID、TradingView 用户名和审核必填的 Discord 用户名，进入 PM4 人工审核流程。",
+    title: "Discord 自动绑定 | PM4",
+    description: "加入 PM4 Discord，绑定交易所账号并自动进入指标队列。",
   },
   twitter: {
     card: "summary_large_image",
-    title: "提交指标审核资料 | PM4",
-    description: "安全提交交易所 UID、TradingView 用户名和审核必填的 Discord 用户名，进入 PM4 人工审核流程。",
+    title: "Discord 自动绑定 | PM4",
+    description: "加入 PM4 Discord，绑定交易所账号并自动进入指标队列。",
   },
 };
 
@@ -26,13 +26,13 @@ export default function ReviewPage() {
           <span className="pm4-mark" aria-hidden="true" />
           <span className="pm4-word"><b>PM</b><em>4</em></span>
         </Link>
-        <nav className="review-nav" aria-label="审核页导航">
+        <nav className="review-nav" aria-label="Discord 绑定页导航">
           <Link href="/">返回首页</Link>
-          <span>指标审核 · Discord 必填</span>
+          <span>Discord 自动绑定 · 30 秒拿指标</span>
         </nav>
       </header>
 
-      <ReviewSection standalone />
+      <DiscordBindingLanding />
     </main>
   );
 }
