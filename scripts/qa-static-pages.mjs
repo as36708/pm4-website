@@ -106,7 +106,8 @@ try {
   assert(home.title === "PM4 · 交易所返佣与 TradingView 指标", "首页标题不正确");
   assert(home.video === "/media/market-panel.mp4", "首页视频未替换");
   assert(!home.overflow, "首页桌面端出现横向滚动");
-  assert(home.ex.Bybit.mv === "/transfer-bybit.html" && home.ex.OKX.mv === "/transfer-okx.html", "转移页路径错误");
+  assert(home.ex.Bybit.mv === "/transfer-bybit.html", "Bybit 转移页路径错误");
+  assert(home.ex.OKX.mv === "https://oyidl.co/ul/J6l2R5" && home.ex.OKX.mvTitle === "在 OKX 确认资格", "OKX 资格确认链接错误");
   assert(home.ex.Gate.mv === "" && home.ex.Bitget.mv === "", "Gate 或 Bitget 被填入了假转移地址");
   const downgrade = await evaluate(`(() => { showEx('Gate'); const item=document.querySelector('#opt-mv'); return {pointer:getComputedStyle(item).pointerEvents, text:document.querySelector('#d2x').textContent}; })()`);
   assert(downgrade.pointer === "none" && downgrade.text.includes("还没做"), "Gate 降级卡没有正确禁用");
@@ -120,12 +121,14 @@ try {
   assert(!(await evaluate("document.documentElement.scrollWidth > innerWidth")), "OKX 桌面端出现横向滚动");
   const okxLinks = await evaluate(`(() => ({
     eligibility: [...document.querySelectorAll('a')].find(a => a.textContent.includes('前往 Discord 领取申请入口'))?.href,
+    application: [...document.querySelectorAll('a')].find(a => a.textContent.includes('打开 OKX 申请页'))?.href,
     hashCount: [...document.querySelectorAll('a')].filter(a => a.getAttribute('href') === '#').length,
     copyCount: [...document.querySelectorAll('button')].filter(b => b.textContent.includes('复制')).length
   }))()`);
   assert(okxLinks.eligibility === "https://discord.gg/vAASV36A9p", "OKX 开工单链接错误");
+  assert(okxLinks.application === "https://oyidl.co/ul/J6l2R5", "OKX 申请页链接错误");
   assert(okxLinks.hashCount === 1, "OKX 保留按钮之外还有空链接");
-  assert(okxLinks.copyCount === 3, "OKX 复制按钮数量不是 3");
+  assert(okxLinks.copyCount === 2, "OKX 复制按钮数量不是 2");
   await send("Browser.grantPermissions", { origin: "http://localhost:3001", permissions: ["clipboardReadWrite", "clipboardSanitizedWrite"] });
   const copiedValues = await evaluate(`(async () => {
     const result=[];
@@ -136,7 +139,6 @@ try {
   })()`, true);
   assert(copiedValues[0] === "PPMM44", "推荐码复制失败");
   assert(copiedValues[1].includes("PM4") && copiedValues[1].includes("返佣"), "中文理由复制失败");
-  assert(copiedValues[2] === "I would like to change my referrer to PPMM44 to receive trading fee rebates.", "英文理由复制失败");
   await screenshot("okx-desktop.png");
   await navigate("http://localhost:3001/transfer-okx.html", 390, 844);
   assert(!(await evaluate("document.documentElement.scrollWidth > innerWidth")), "OKX 手机宽度出现横向滚动");

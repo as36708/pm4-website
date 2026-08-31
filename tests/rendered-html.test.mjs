@@ -79,7 +79,11 @@ test("server-renders all transfer routes and the manual fallback form", async ()
   ]);
   for (const response of [bybit, okx, gate, bitget, manual]) assert.equal(response.status, 200);
   assert.match(await bybit.text(), /Bybit[^<]*<b>推荐人变更指南/);
-  assert.match(await okx.text(), /OKX[^<]*<b>推荐人变更指南/);
+  const okxHtml = await okx.text();
+  assert.match(okxHtml, /OKX[^<]*<b>推荐人变更指南/);
+  assert.match(okxHtml, /打开 OKX 申请页 ↗/);
+  assert.match(okxHtml, /https:\/\/oyidl\.co\/ul\/J6l2R5/);
+  assert.doesNotMatch(okxHtml, /I would like to change my referrer|英文文本|复制英文理由/);
   assert.match(await gate.text(), /联系 PM4 客服/);
   assert.match(await bitget.text(), /联系 PM4 客服/);
   const manualHtml = await manual.text();
@@ -109,6 +113,8 @@ test("keeps the responsive redesign and production assets intact", async () => {
   assert.match(home, /data-pm4-event="exchange_click"/);
   assert.match(home, /data-pm4-event="transfer_click"/);
   assert.match(home, /\/transfer\/\$\{selectedExchange\.id\}/);
+  assert.match(home, /在 OKX 确认资格/);
+  assert.match(home, /EXTERNAL_LINKS\.okxEligibility/);
   assert.match(home, /解锁 Gate VIP10 体验卡/);
   assert.match(home, /普通用户[\s\S]{0,200}0\.02% \/ 0\.05%/);
   assert.match(home, /VIP10 体验[\s\S]{0,200}0\.01% \/ 0\.03%/);
@@ -119,7 +125,6 @@ test("keeps the responsive redesign and production assets intact", async () => {
   assert.doesNotMatch(home, /BingX/);
 
   assert.match(transfer, /PPMM44/);
-  assert.match(transfer, /前往 Discord 开工单/);
   assert.match(transfer, /Bybit <b>推荐人变更指南/);
   assert.match(transfer, /180 天内不能再转/);
   assert.match(transfer, /旧号发起身份转移/);
@@ -129,7 +134,11 @@ test("keeps the responsive redesign and production assets intact", async () => {
   assert.match(transfer, /\/guide\/bybit-step-05\.png/);
   assert.match(transfer, /\/guide\/okx-step-02\.png/);
   assert.match(transfer, /\/guide\/okx-step-04\.png/);
-  assert.match(transfer, /I would like to change my referrer to PPMM44 to receive trading fee rebates\./);
+  assert.match(transfer, /我想将推荐人更改为 PM4,以获得交易手续费返佣。/);
+  assert.match(transfer, /打开 OKX 申请页 ↗/);
+  assert.match(transfer, /EXTERNAL_LINKS\.okxEligibility/);
+  assert.match(links, /okxEligibility: "https:\/\/oyidl\.co\/ul\/J6l2R5"/);
+  assert.doesNotMatch(transfer, /I would like to change my referrer|英文文本|复制英文理由/);
   assert.match(transfer, /公开推荐人变更指南尚未配置/);
   assert.match(transfer, /永远不会索取密码、验证码、API 密钥、私钥或助记词/);
 
@@ -537,7 +546,7 @@ test("packages the approved static redesign at the exact production paths", asyn
   assert.match(home, /Bybit\s*:\{reg:'https:\/\/partner\.bybit\.com\/b\/PPMM44', mv:'\/transfer-bybit\.html'\}/);
   assert.match(home, /Gate\s*:\{reg:'https:\/\/www\.gateport\.biz\/zh\/share\/VFLEAAPBAQ', mv:''\}/);
   assert.match(home, /Bitget:\{reg:'https:\/\/partner\.bitget\.com\/bg\/r1ky845p', mv:''\}/);
-  assert.match(home, /OKX\s*:\{reg:'https:\/\/www\.topzhjdgxcb\.com\/join\/PPMM44', mv:'\/transfer-okx\.html'\}/);
+  assert.match(home, /OKX\s*:\{reg:'https:\/\/www\.topzhjdgxcb\.com\/join\/PPMM44', mv:'https:\/\/oyidl\.co\/ul\/J6l2R5', mvTitle:'在 OKX 确认资格'\}/);
   assert.match(home, /<video[\s\S]*\/media\/market-panel\.mp4/);
   assert.match(home, /poster="\/media\/market-panel-poster\.jpg"/);
   assert.match(home, /scroll-behavior:smooth/);
@@ -549,13 +558,13 @@ test("packages the approved static redesign at the exact production paths", asyn
   assert.match(home, /<!--\s*<a href="\/privacy\.html">隐私政策<\/a><a href="\/terms\.html">服务条款与风险说明<\/a>\s*-->/);
 
   assert.match(okx, /href="https:\/\/discord\.gg\/vAASV36A9p"[^>]*>前往 Discord 领取申请入口/);
-  assert.doesNotMatch(okx, /oyidl\.co|J6l2R5/);
+  assert.match(okx, /href="https:\/\/oyidl\.co\/ul\/J6l2R5"[^>]*>打开 OKX 申请页 ↗<\/a>/);
   assert.match(okx, /确认变更条件[\s\S]*查看 OKX 申请表[\s\S]*准备推荐码和理由[\s\S]*提交 OKX 申请[\s\S]*确认结果和下一步/);
   assert.match(okx, /position:sticky/);
   assert.match(okx, /IntersectionObserver/);
   assert.match(okx, /复制推荐码/);
   assert.match(okx, /复制中文理由/);
-  assert.match(okx, /复制英文理由/);
+  assert.doesNotMatch(okx, /英文界面请填|复制英文理由|I would like to change my referrer/);
   assert.match(okx, /navigator\.clipboard/);
   assert.match(bybit, /href="https:\/\/partner\.bybit\.com\/b\/PPMM44"/);
   assert.match(bybit, /href="https:\/\/www\.bybit\.com\/user\/accounts\/auth\/personal"/);

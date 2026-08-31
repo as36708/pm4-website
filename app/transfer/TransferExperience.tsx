@@ -15,8 +15,8 @@ export type TransferExchange = {
   officialUrl?: string;
 };
 
-const OKX_ELIGIBILITY_URL = EXTERNAL_LINKS.discordInvite;
-const OKX_CHANGE_REASON = "I would like to change my referrer to PPMM44 to receive trading fee rebates.";
+const OKX_ELIGIBILITY_URL = EXTERNAL_LINKS.okxEligibility;
+const OKX_CHANGE_REASON = "我想将推荐人更改为 PM4,以获得交易手续费返佣。";
 
 const guideSteps = {
   bybit: ["用 PM4 链接开新号", "旧号发起身份转移", "完成人脸识别", "同意转移声明", "填新号信息完成", "回 Discord 绑定"],
@@ -145,11 +145,11 @@ function OkxGuide({ copied, copyText }: { copied: "code" | "reason" | null; copy
       <li><b>1</b><span><small>注册后 7 天内</small><strong>无要求</strong></span></li><li><b>2</b><span><small>注册后 7 至 30 天</small><strong>累计交易量不超过 400,000 USD</strong></span></li><li><b>3</b><span><small>注册后 30 至 90 天</small><strong>累计交易量不超过 500,000 USD</strong></span></li><li><b>4</b><span><small>注册超过 90 天</small><strong>近 90 天交易量不超过 5,000,000 USD</strong></span></li>
     </ol></GuideBlock>
     <GuideBlock number="02" title="查看 OKX 申请表" description="无需自己计算注册日期或交易量。请先登录 OKX，按下方顺序复制邀请码和理由，然后通过橙色按钮打开页面。"><GuideScreenshot src="/guide/okx-step-02.png" alt="OKX 邀请码申请表空白界面" width={780} height={583} /><p className={styles.tip}>点击按钮后会出现申请界面。如果能看到这个界面（含邀请码输入框），说明您符合条件。</p></GuideBlock>
-    <GuideBlock number="03" title="准备推荐码和变更理由" description="变更理由（前往之前，请先复制下方英文文本）">
+    <GuideBlock number="03" title="准备推荐码和变更理由" description="变更理由（前往之前，请先复制下方中文理由）">
       <div className={styles.copyRow}><span>需填写的推荐码</span><strong>PPMM44</strong><button type="button" onClick={() => copyText("code", "PPMM44")}>{copied === "code" ? "✓ 已复制" : "⧉ 复制推荐码"}</button></div>
-      <div className={styles.englishReason}>{OKX_CHANGE_REASON}</div><button className={styles.copyButton} type="button" onClick={() => copyText("reason", OKX_CHANGE_REASON)}>{copied === "reason" ? "✓ 已复制" : "⧉ 复制原因"}</button>
+      <div className={styles.englishReason}>{OKX_CHANGE_REASON}</div><button className={styles.copyButton} type="button" onClick={() => copyText("reason", OKX_CHANGE_REASON)}>{copied === "reason" ? "✓ 已复制" : "⧉ 复制中文理由"}</button>
     </GuideBlock>
-    <GuideBlock number="04" title="提交 OKX 申请" description="当前暂未提供 PM4 已确认的资格申请页"><a className={styles.outlineButton} href={OKX_ELIGIBILITY_URL} target="_blank" rel="noopener noreferrer">前往 Discord 开工单 ↗</a><GuideScreenshot src="/guide/okx-step-04.png" alt="OKX 填写推荐码和申请理由后的提交界面" width={795} height={618} /><p className={styles.tip}>请由客服发送确认过的官方入口。填写并点击 Submit 后，仍需等待 OKX 审核批准。</p></GuideBlock>
+    <GuideBlock number="04" title="提交 OKX 申请" description="回到申请页，把刚才复制的推荐码和理由粘贴进去，点「提交」。"><a className={styles.outlineButton} href={OKX_ELIGIBILITY_URL} target="_blank" rel="noopener noreferrer">打开 OKX 申请页 ↗</a><GuideScreenshot src="/guide/okx-step-04.png" alt="OKX 填写推荐码和申请理由后的提交界面" width={795} height={618} /><p className={styles.tip}>填写并点击 Submit 后，仍需等待 OKX 审核批准。</p></GuideBlock>
     <GuideBlock number="05" title="确认结果和下一步" description={<>如果能看到邀请码输入框，说明您符合条件。按上面的步骤输入邀请码和理由并提交，即完成申请。<br />如果看不到邀请码输入框，说明您不符合条件，可以联系客服确认当前可用方案。</>}>
       <a className={styles.outlineButton} href={EXTERNAL_LINKS.telegramContact} target="_blank" rel="noopener noreferrer">没看到输入框？联系客服确认</a><a className={styles.nextStep} href={EXTERNAL_LINKS.discordInvite} target="_blank" rel="noopener noreferrer"><span><small>下一步</small><b>前往 Discord 绑定 UID</b></span><i>→</i></a>
     </GuideBlock>

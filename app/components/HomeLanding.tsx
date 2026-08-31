@@ -302,7 +302,9 @@ export default function HomeLanding() {
               <a className={styles.modalPrimary} href={selectedExchange.registerUrl} target="_blank" rel="noopener noreferrer" data-pm4-event="exchange_click" data-pm4-exchange={selectedExchange.name}>
                 <span>首次注册 {selectedExchange.name}</span><small>通过 PM4 专属链接开户并开始享受返佣。</small><b>→</b>
               </a>
-              {selectedExchange.id === "bybit" || selectedExchange.id === "okx" ? <Link href={`/transfer/${selectedExchange.id}`} onClick={closeExchange} data-pm4-event="transfer_click" data-pm4-exchange={selectedExchange.name}>
+              {selectedExchange.id === "okx" ? <a href={EXTERNAL_LINKS.okxEligibility} target="_blank" rel="noopener noreferrer" onClick={closeExchange} data-pm4-event="transfer_click" data-pm4-exchange={selectedExchange.name}>
+                <span>在 OKX 确认资格</span><small>已有账户，查看推荐关系办理步骤。</small><b>→</b>
+              </a> : selectedExchange.id === "bybit" ? <Link href={`/transfer/${selectedExchange.id}`} onClick={closeExchange} data-pm4-event="transfer_click" data-pm4-exchange={selectedExchange.name}>
                 <span>更换 {selectedExchange.name} 推荐人</span><small>已有账户，查看推荐关系办理步骤。</small><b>→</b>
               </Link> : <div className={styles.modalDisabled} aria-disabled="true">
                 <span>更换 {selectedExchange.name} 推荐人</span><small>该交易所的更换指引还没做，请在 Discord 开工单。</small><b>→</b>

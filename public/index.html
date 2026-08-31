@@ -497,7 +497,7 @@ var EX={
   Bybit :{reg:'https://partner.bybit.com/b/PPMM44', mv:'/transfer-bybit.html'},
   Gate  :{reg:'https://www.gateport.biz/zh/share/VFLEAAPBAQ', mv:''},
   Bitget:{reg:'https://partner.bitget.com/bg/r1ky845p', mv:''},
-  OKX   :{reg:'https://www.topzhjdgxcb.com/join/PPMM44', mv:'/transfer-okx.html'}
+  OKX   :{reg:'https://www.topzhjdgxcb.com/join/PPMM44', mv:'https://oyidl.co/ul/J6l2R5', mvTitle:'在 OKX 确认资格'}
 };
 var cur='';
 function go(k){
@@ -513,7 +513,7 @@ function showEx(n){
   document.getElementById('d2x').textContent=has?'':'(该交易所的更换指引还没做,请在 Discord 开工单)';
   document.getElementById('t1').textContent='首次注册 '+n;
   document.getElementById('d1').textContent='首次注册 '+n+' 并开始使用 PM4 返佣。';
-  document.getElementById('t2').textContent='更换 '+n+' 推荐人';
+  document.getElementById('t2').textContent=(EX[n]&&EX[n].mvTitle)||('更换 '+n+' 推荐人');
   document.getElementById('d2').textContent='我已有 '+n+' 账户,想将推荐人更换为 PM4。';
   document.getElementById('ovl').classList.add('on');
 }
