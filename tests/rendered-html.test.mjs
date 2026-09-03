@@ -70,17 +70,20 @@ test("server-renders the Discord review destination", async () => {
 });
 
 test("server-renders all transfer routes and the manual fallback form", async () => {
-  const [bybit, okx, gate, bitget, manual] = await Promise.all([
+  const [bybit, okx, okxLegacyPath, gate, bitget, manual] = await Promise.all([
     render("/transfer/bybit"),
     render("/transfer/okx"),
+    render("/transfer-okx"),
     render("/transfer/gate"),
     render("/transfer/bitget"),
     render("/review/manual"),
   ]);
-  for (const response of [bybit, okx, gate, bitget, manual]) assert.equal(response.status, 200);
+  for (const response of [bybit, okx, okxLegacyPath, gate, bitget, manual]) assert.equal(response.status, 200);
   assert.match(await bybit.text(), /Bybit[^<]*<b>推荐人变更指南/);
   const okxHtml = await okx.text();
+  const okxLegacyHtml = await okxLegacyPath.text();
   assert.match(okxHtml, /OKX[^<]*<b>推荐人变更指南/);
+  assert.match(okxLegacyHtml, /OKX[^<]*<b>推荐人变更指南/);
   assert.match(okxHtml, /打开 OKX 申请页 ↗/);
   assert.match(okxHtml, /https:\/\/oyidl\.co\/ul\/J6l2R5/);
   assert.doesNotMatch(okxHtml, /I would like to change my referrer|英文文本|复制英文理由/);
@@ -114,7 +117,9 @@ test("keeps the responsive redesign and production assets intact", async () => {
   assert.match(home, /data-pm4-event="transfer_click"/);
   assert.match(home, /\/transfer\/\$\{selectedExchange\.id\}/);
   assert.match(home, /在 OKX 确认资格/);
-  assert.match(home, /EXTERNAL_LINKS\.okxEligibility/);
+  assert.match(home, /href="\/transfer-okx"/);
+  assert.match(home, /该交易所的更换指引还没做，请在 Discord 开工单。/);
+  assert.match(home, /href=\{EXTERNAL_LINKS\.discordInvite\}/);
   assert.match(home, /解锁 Gate VIP10 体验卡/);
   assert.match(home, /普通用户[\s\S]{0,200}0\.02% \/ 0\.05%/);
   assert.match(home, /VIP10 体验[\s\S]{0,200}0\.01% \/ 0\.03%/);
@@ -163,6 +168,7 @@ test("keeps the responsive redesign and production assets intact", async () => {
   assert.match(layout, /<html lang="zh-CN" className=\{geist\.variable\}>/);
   assert.match(layout, /<FrontendAnalytics \/>/);
   assert.match(packageJson, /"build": "vinext build"/);
+  assert.match(packageJson, /"version": "0\.2\.3"/);
   assert.match(links, /https:\/\/www\.bybit\.com\/zh-TW\/help-center\/article\/How-to-Transfer-Your-Identity-to-Another-Account/);
   assert.match(links, /https:\/\/t\.me\/tianshijin10/);
   assert.match(sitemap, /transfer\/bybit/);
@@ -544,9 +550,10 @@ test("packages the approved static redesign at the exact production paths", asyn
   ]);
 
   assert.match(home, /Bybit\s*:\{reg:'https:\/\/partner\.bybit\.com\/b\/PPMM44', mv:'\/transfer-bybit\.html'\}/);
-  assert.match(home, /Gate\s*:\{reg:'https:\/\/www\.gateport\.biz\/zh\/share\/VFLEAAPBAQ', mv:''\}/);
-  assert.match(home, /Bitget:\{reg:'https:\/\/partner\.bitget\.com\/bg\/r1ky845p', mv:''\}/);
-  assert.match(home, /OKX\s*:\{reg:'https:\/\/www\.topzhjdgxcb\.com\/join\/PPMM44', mv:'https:\/\/oyidl\.co\/ul\/J6l2R5', mvTitle:'在 OKX 确认资格'\}/);
+  assert.match(home, /Gate\s*:\{reg:'https:\/\/www\.gateport\.biz\/zh\/share\/VFLEAAPBAQ', mv:'https:\/\/discord\.gg\/vAASV36A9p'\}/);
+  assert.match(home, /Bitget:\{reg:'https:\/\/partner\.bitget\.com\/bg\/r1ky845p', mv:'https:\/\/discord\.gg\/vAASV36A9p'\}/);
+  assert.match(home, /OKX\s*:\{reg:'https:\/\/www\.topzhjdgxcb\.com\/join\/PPMM44', mv:'\/transfer-okx', mvTitle:'在 OKX 确认资格'\}/);
+  assert.match(home, /该交易所的更换指引还没做,请在 Discord 开工单/);
   assert.match(home, /<video[\s\S]*\/media\/market-panel\.mp4/);
   assert.match(home, /poster="\/media\/market-panel-poster\.jpg"/);
   assert.match(home, /scroll-behavior:smooth/);

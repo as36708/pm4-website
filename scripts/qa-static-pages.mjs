@@ -107,10 +107,10 @@ try {
   assert(home.video === "/media/market-panel.mp4", "首页视频未替换");
   assert(!home.overflow, "首页桌面端出现横向滚动");
   assert(home.ex.Bybit.mv === "/transfer-bybit.html", "Bybit 转移页路径错误");
-  assert(home.ex.OKX.mv === "https://oyidl.co/ul/J6l2R5" && home.ex.OKX.mvTitle === "在 OKX 确认资格", "OKX 资格确认链接错误");
-  assert(home.ex.Gate.mv === "" && home.ex.Bitget.mv === "", "Gate 或 Bitget 被填入了假转移地址");
-  const downgrade = await evaluate(`(() => { showEx('Gate'); const item=document.querySelector('#opt-mv'); return {pointer:getComputedStyle(item).pointerEvents, text:document.querySelector('#d2x').textContent}; })()`);
-  assert(downgrade.pointer === "none" && downgrade.text.includes("还没做"), "Gate 降级卡没有正确禁用");
+  assert(home.ex.OKX.mv === "/transfer-okx" && home.ex.OKX.mvTitle === "在 OKX 确认资格", "OKX 步骤页链接错误");
+  assert(home.ex.Gate.mv === "https://discord.gg/vAASV36A9p" && home.ex.Bitget.mv === "https://discord.gg/vAASV36A9p", "Gate 或 Bitget 工单链接错误");
+  const gateFallback = await evaluate(`(() => { showEx('Gate'); const item=document.querySelector('#opt-mv'); return {pointer:getComputedStyle(item).pointerEvents}; })()`);
+  assert(gateFallback.pointer !== "none", "Gate Discord 工单入口不可点击");
   await screenshot("home-desktop.png");
   await navigate("http://localhost:3001/", 390, 844);
   assert(!(await evaluate("document.documentElement.scrollWidth > innerWidth")), "首页手机宽度出现横向滚动");
