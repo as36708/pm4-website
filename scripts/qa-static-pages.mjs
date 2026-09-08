@@ -146,7 +146,7 @@ try {
     hashCount: [...document.querySelectorAll('a')].filter(a => a.getAttribute('href') === '#').length,
     copyCount: [...document.querySelectorAll('button')].filter(b => b.textContent.includes('复制')).length
   }))()`);
-  assert(okxLinks.eligibility === "https://discord.gg/vAASV36A9p", "OKX 开工单链接错误");
+  assert(okxLinks.eligibility === undefined, "OKX 第二步仍有旧的 Discord 申请入口");
   assert(okxLinks.application === "https://oyidl.co/ul/J6l2R5", "OKX 申请页链接错误");
   assert(okxLinks.hashCount === 1, "OKX 保留按钮之外还有空链接");
   assert(okxLinks.copyCount === 2, "OKX 复制按钮数量不是 2");

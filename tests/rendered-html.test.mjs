@@ -582,7 +582,7 @@ test("packages the approved static redesign at the exact production paths", asyn
   assert.match(home, /<script src="\/pm4-support\.js"><\/script>/);
   assert.match(home, /<!--\s*<a href="\/privacy\.html">隐私政策<\/a><a href="\/terms\.html">服务条款与风险说明<\/a>\s*-->/);
 
-  assert.match(okx, /href="https:\/\/discord\.gg\/vAASV36A9p"[^>]*>前往 Discord 领取申请入口/);
+  assert.doesNotMatch(okx, /前往 Discord 领取申请入口/);
   assert.match(okx, /href="https:\/\/oyidl\.co\/ul\/J6l2R5"[^>]*>打开 OKX 申请页 ↗<\/a>/);
   assert.match(okx, /确认变更条件[\s\S]*查看 OKX 申请表[\s\S]*准备推荐码和理由[\s\S]*提交 OKX 申请[\s\S]*确认结果和下一步/);
   assert.match(okx, /position:sticky/);
