@@ -1,9 +1,14 @@
 import { spawn } from "node:child_process";
+import { existsSync } from "node:fs";
 import { mkdir, mkdtemp, rm, writeFile } from "node:fs/promises";
 import os from "node:os";
 import path from "node:path";
 
-const chromePath = "C:\\Program Files\\Google\\Chrome\\Application\\chrome.exe";
+const chromePath = [
+  "C:\\Program Files\\Google\\Chrome\\Application\\chrome.exe",
+  "C:\\Program Files (x86)\\Microsoft\\Edge\\Application\\msedge.exe",
+].find(existsSync);
+if (!chromePath) throw new Error("未找到可用于验收的 Chrome 或 Edge");
 const debugPort = 9333;
 const profilePath = await mkdtemp(path.join(os.tmpdir(), "pm4-chrome-qa-"));
 const artifactDir = path.resolve("artifacts", "static-qa");
@@ -84,7 +89,8 @@ try {
       const waiter = pending.get(message.id);
       if (!waiter) return;
       pending.delete(message.id);
-      message.error ? waiter.reject(new Error(message.error.message)) : waiter.resolve(message.result);
+      if (message.error) waiter.reject(new Error(message.error.message));
+      else waiter.resolve(message.result);
       return;
     }
     if (message.method === "Runtime.exceptionThrown") errors.push(message.params.exceptionDetails?.text || "Runtime exception");
@@ -93,12 +99,14 @@ try {
   await send("Runtime.enable");
   await send("Page.enable");
   await send("Log.enable");
+  await send("Network.enable");
+  await send("Network.setCacheDisabled", { cacheDisabled: true });
 
   await navigate("http://localhost:3001/", 1280, 900);
   const home = await evaluate(`(() => ({
     title: document.title,
     h1: document.querySelector('h1')?.textContent.trim(),
-    video: document.querySelector('video source')?.getAttribute('src'),
+    video: document.querySelector('video')?.getAttribute('src'),
     overflow: document.documentElement.scrollWidth > innerWidth,
     ex: window.EX,
     og: document.querySelector('meta[property="og:url"]')?.content
@@ -109,9 +117,22 @@ try {
   assert(home.ex.Bybit.mv === "/transfer-bybit.html", "Bybit 转移页路径错误");
   assert(home.ex.OKX.mv === "/transfer-okx" && home.ex.OKX.mvTitle === "在 OKX 确认资格", "OKX 步骤页链接错误");
   assert(home.ex.Gate.mv === "https://discord.gg/vAASV36A9p" && home.ex.Bitget.mv === "https://discord.gg/vAASV36A9p", "Gate 或 Bitget 工单链接错误");
+  const homeSupport = await evaluate("(() => { const button=document.querySelector('.pm4-support-trigger'); const panel=document.querySelector('.pm4-support-panel'); return {button:button?.textContent.trim(),expanded:button?.getAttribute('aria-expanded'),hidden:panel?.hidden}; })()");
+  assert(homeSupport.button === "客服" && homeSupport.expanded === "false" && homeSupport.hidden, "首页客服按钮初始状态错误");
   const gateFallback = await evaluate(`(() => { showEx('Gate'); const item=document.querySelector('#opt-mv'); return {pointer:getComputedStyle(item).pointerEvents}; })()`);
   assert(gateFallback.pointer !== "none", "Gate Discord 工单入口不可点击");
-  await screenshot("home-desktop.png");
+  await evaluate("document.querySelector('#ovl').classList.remove('on')");
+  await screenshot("v0.2.4-home-desktop-closed.png");
+  const homeSupportOpen = await evaluate("(() => { document.querySelector('.pm4-support-trigger').click(); const button=document.querySelector('.pm4-support-trigger'); const panel=document.querySelector('.pm4-support-panel'); const links=[...panel.querySelectorAll('a')].map(a => ({label:a.textContent.trim(),href:a.href,target:a.target,rel:a.rel})); return {expanded:button.getAttribute('aria-expanded'),hidden:panel.hidden,links}; })()");
+  assert(homeSupportOpen.expanded === "true" && !homeSupportOpen.hidden, "首页客服面板未展开");
+  assert(homeSupportOpen.links[0].href === "https://discord.gg/zb8mmuWdEs" && homeSupportOpen.links[1].href === "https://t.me/tianshijin10", "客服链接错误");
+  assert(homeSupportOpen.links.every(link => link.target === "_blank" && link.rel.includes("noopener") && link.rel.includes("noreferrer")), "客服链接安全属性错误");
+  await screenshot("v0.2.4-home-desktop-open.png");
+  await evaluate("document.querySelector('.pm4-support-trigger').click()");
+  assert(await evaluate("document.querySelector('.pm4-support-panel').hidden"), "再次点击客服按钮未收起");
+  await evaluate("document.querySelector('.pm4-support-trigger').click()");
+  await evaluate("document.body.dispatchEvent(new PointerEvent('pointerdown',{bubbles:true}))");
+  assert(await evaluate("document.querySelector('.pm4-support-panel').hidden"), "点击面板外未收起");
   await navigate("http://localhost:3001/", 390, 844);
   assert(!(await evaluate("document.documentElement.scrollWidth > innerWidth")), "首页手机宽度出现横向滚动");
   await navigate("http://localhost:3001/", 768, 1024);
@@ -139,9 +160,16 @@ try {
   })()`, true);
   assert(copiedValues[0] === "PPMM44", "推荐码复制失败");
   assert(copiedValues[1].includes("PM4") && copiedValues[1].includes("返佣"), "中文理由复制失败");
-  await screenshot("okx-desktop.png");
   await navigate("http://localhost:3001/transfer-okx.html", 390, 844);
   assert(!(await evaluate("document.documentElement.scrollWidth > innerWidth")), "OKX 手机宽度出现横向滚动");
+  const mobileSupport = await evaluate("(() => { const button=document.querySelector('.pm4-support-trigger'); const rect=button.getBoundingClientRect(); return {width:rect.width,height:rect.height,right:innerWidth-rect.right,bottom:innerHeight-rect.bottom,paddingBottom:parseFloat(getComputedStyle(document.body).paddingBottom)}; })()");
+  assert(mobileSupport.width >= 48 && mobileSupport.width <= 56 && mobileSupport.height >= 48 && mobileSupport.height <= 56, "手机客服按钮尺寸不合规");
+  assert(mobileSupport.right >= 15 && mobileSupport.bottom >= 15, "手机客服按钮安全边距不足");
+  assert(mobileSupport.paddingBottom >= 88, "手机页面底部未给客服按钮留出空间");
+  await screenshot("v0.2.4-okx-mobile-closed.png");
+  await evaluate("document.querySelector('.pm4-support-trigger').click()");
+  assert(!(await evaluate("document.querySelector('.pm4-support-panel').hidden")), "OKX 手机客服面板未展开");
+  await screenshot("v0.2.4-okx-mobile-open.png");
 
   await navigate("http://localhost:3001/transfer-bybit.html", 1280, 900);
   const bybit = await evaluate(`(() => ({
@@ -152,7 +180,6 @@ try {
   assert(bybit.register === "https://partner.bybit.com/b/PPMM44", "Bybit 注册链接错误");
   assert(bybit.identity === "https://www.bybit.com/user/accounts/auth/personal", "Bybit 身份认证链接错误");
   assert(!bybit.overflow, "Bybit 桌面端出现横向滚动");
-  await screenshot("bybit-desktop.png");
   await navigate("http://localhost:3001/transfer-bybit.html", 390, 844);
   assert(!(await evaluate("document.documentElement.scrollWidth > innerWidth")), "Bybit 手机宽度出现横向滚动");
 

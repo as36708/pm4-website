@@ -461,6 +461,8 @@ footer a{color:var(--muted);margin-right:20px}
     <div class="opt" id="opt-mv" onclick="go('mv')"><div class="ic">🔄</div><span class="arr">→</span><h4 id="t2">更换推荐人</h4><p id="d2"></p><p id="d2x" style="margin:8px 0 0;color:var(--dim);font-size:12.5px"></p></div>
   </div>
 </div>
+<div data-pm4-support></div>
+<script src="/pm4-support.js"></script>
 <script>
 /* ===== 使用流程:点步骤切换右侧画面 ===== */
 (function(){
@@ -493,12 +495,7 @@ footer a{color:var(--muted);margin-right:20px}
 
 /* ===== 交易所链接表:上线时把 REG 换成四家专属注册链接 =====
    MV 是「更换推荐人」入口;Gate / Bitget 指引未完成时转 Discord 工单 */
-var EX={
-  Bybit :{reg:'https://partner.bybit.com/b/PPMM44', mv:'/transfer-bybit.html'},
-  Gate  :{reg:'https://www.gateport.biz/zh/share/VFLEAAPBAQ', mv:'https://discord.gg/vAASV36A9p'},
-  Bitget:{reg:'https://partner.bitget.com/bg/r1ky845p', mv:'https://discord.gg/vAASV36A9p'},
-  OKX   :{reg:'https://www.topzhjdgxcb.com/join/PPMM44', mv:'/transfer-okx', mvTitle:'在 OKX 确认资格'}
-};
+var EX=window.PM4_SITE_CONFIG.EX;
 var cur='';
 function go(k){
   var u=(EX[cur]||{})[k];

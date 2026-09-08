@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import localFont from "next/font/local";
+import Script from "next/script";
 import FrontendAnalytics from "./components/FrontendAnalytics";
 import "./globals.css";
 
@@ -36,6 +37,8 @@ export default function RootLayout({ children }: Readonly<{ children: React.Reac
         <a className="skip-link" href="#main-content">跳到主要内容</a>
         <FrontendAnalytics />
         {children}
+        <div data-pm4-support />
+        <Script src="/pm4-support.js" strategy="afterInteractive" />
       </body>
     </html>
   );

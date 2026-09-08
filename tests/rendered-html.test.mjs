@@ -52,6 +52,8 @@ test("server-renders the complete PM4 landing page", async () => {
   assert.match(html, /id="main-content"/);
   assert.match(html, /跳到主要内容/);
   assert.match(html, /application\/ld\+json/);
+  assert.match(html, /data-pm4-support/);
+  assert.match(html, /\/pm4-support\.js/);
   assert.equal(response.headers.get("x-frame-options"), "DENY");
   assert.match(response.headers.get("content-security-policy") ?? "", /frame-ancestors 'none'/);
 });
@@ -84,6 +86,8 @@ test("server-renders all transfer routes and the manual fallback form", async ()
   const okxLegacyHtml = await okxLegacyPath.text();
   assert.match(okxHtml, /OKX[^<]*<b>推荐人变更指南/);
   assert.match(okxLegacyHtml, /OKX[^<]*<b>推荐人变更指南/);
+  assert.match(okxLegacyHtml, /data-pm4-support/);
+  assert.match(okxLegacyHtml, /\/pm4-support\.js/);
   assert.match(okxHtml, /打开 OKX 申请页 ↗/);
   assert.match(okxHtml, /https:\/\/oyidl\.co\/ul\/J6l2R5/);
   assert.doesNotMatch(okxHtml, /I would like to change my referrer|英文文本|复制英文理由/);
@@ -95,7 +99,7 @@ test("server-renders all transfer routes and the manual fallback form", async ()
 });
 
 test("keeps the responsive redesign and production assets intact", async () => {
-  const [home, review, analytics, css, layout, packageJson, links, transfer, sitemap] = await Promise.all([
+  const [home, review, analytics, css, layout, packageJson, links, transfer, sitemap, support] = await Promise.all([
     readFile(new URL("../app/components/HomeLanding.tsx", import.meta.url), "utf8"),
     readFile(new URL("../app/components/ReviewSection.tsx", import.meta.url), "utf8"),
     readFile(new URL("../app/components/FrontendAnalytics.tsx", import.meta.url), "utf8"),
@@ -105,6 +109,7 @@ test("keeps the responsive redesign and production assets intact", async () => {
     readFile(new URL("../app/links.ts", import.meta.url), "utf8"),
     readFile(new URL("../app/transfer/TransferExperience.tsx", import.meta.url), "utf8"),
     readFile(new URL("../app/sitemap.ts", import.meta.url), "utf8"),
+    readFile(new URL("../public/pm4-support.js", import.meta.url), "utf8"),
   ]);
 
   assert.match(home, /一次注册，返佣指标/);
@@ -167,13 +172,22 @@ test("keeps the responsive redesign and production assets intact", async () => {
   assert.match(layout, /--font-geist/);
   assert.match(layout, /<html lang="zh-CN" className=\{geist\.variable\}>/);
   assert.match(layout, /<FrontendAnalytics \/>/);
+  assert.match(layout, /data-pm4-support/);
+  assert.match(layout, /<Script src="\/pm4-support\.js" strategy="afterInteractive" \/>/);
   assert.match(packageJson, /"build": "vinext build"/);
-  assert.match(packageJson, /"version": "0\.2\.3"/);
+  assert.match(packageJson, /"version": "0\.2\.4"/);
   assert.match(links, /https:\/\/www\.bybit\.com\/zh-TW\/help-center\/article\/How-to-Transfer-Your-Identity-to-Another-Account/);
   assert.match(links, /https:\/\/t\.me\/tianshijin10/);
   assert.match(sitemap, /transfer\/bybit/);
   assert.match(sitemap, /transfer\/okx/);
   assert.match(sitemap, /review\/manual/);
+  assert.match(support, /SUPPORT: Object\.freeze/);
+  assert.match(support, /discord: "https:\/\/discord\.gg\/zb8mmuWdEs"/);
+  assert.match(support, /telegram: "https:\/\/t\.me\/tianshijin10"/);
+  assert.match(support, /rel="noopener noreferrer"/);
+  assert.match(support, /width:54px;height:54px/);
+  assert.match(support, /env\(safe-area-inset-bottom\)/);
+  assert.match(support, /document\.addEventListener\("pointerdown"/);
 
   await Promise.all([
     access(new URL("../public/media/market-panel.mp4", import.meta.url)),
@@ -543,16 +557,18 @@ test("rejects unsafe or unconfigured public application submissions", async () =
 });
 
 test("packages the approved static redesign at the exact production paths", async () => {
-  const [home, okx, bybit] = await Promise.all([
+  const [home, okx, bybit, support] = await Promise.all([
     readFile(new URL("../public/index.html", import.meta.url), "utf8"),
     readFile(new URL("../public/transfer-okx.html", import.meta.url), "utf8"),
     readFile(new URL("../public/transfer-bybit.html", import.meta.url), "utf8"),
+    readFile(new URL("../public/pm4-support.js", import.meta.url), "utf8"),
   ]);
 
-  assert.match(home, /Bybit\s*:\{reg:'https:\/\/partner\.bybit\.com\/b\/PPMM44', mv:'\/transfer-bybit\.html'\}/);
-  assert.match(home, /Gate\s*:\{reg:'https:\/\/www\.gateport\.biz\/zh\/share\/VFLEAAPBAQ', mv:'https:\/\/discord\.gg\/vAASV36A9p'\}/);
-  assert.match(home, /Bitget:\{reg:'https:\/\/partner\.bitget\.com\/bg\/r1ky845p', mv:'https:\/\/discord\.gg\/vAASV36A9p'\}/);
-  assert.match(home, /OKX\s*:\{reg:'https:\/\/www\.topzhjdgxcb\.com\/join\/PPMM44', mv:'\/transfer-okx', mvTitle:'在 OKX 确认资格'\}/);
+  assert.match(home, /var EX=window\.PM4_SITE_CONFIG\.EX/);
+  assert.match(support, /Bybit: Object\.freeze\(\{ reg: "https:\/\/partner\.bybit\.com\/b\/PPMM44", mv: "\/transfer-bybit\.html" \}\)/);
+  assert.match(support, /Gate: Object\.freeze\(\{ reg: "https:\/\/www\.gateport\.biz\/zh\/share\/VFLEAAPBAQ", mv: "https:\/\/discord\.gg\/vAASV36A9p" \}\)/);
+  assert.match(support, /Bitget: Object\.freeze\(\{ reg: "https:\/\/partner\.bitget\.com\/bg\/r1ky845p", mv: "https:\/\/discord\.gg\/vAASV36A9p" \}\)/);
+  assert.match(support, /OKX: Object\.freeze\(\{ reg: "https:\/\/www\.topzhjdgxcb\.com\/join\/PPMM44", mv: "\/transfer-okx", mvTitle: "在 OKX 确认资格" \}\)/);
   assert.match(home, /该交易所的更换指引还没做,请在 Discord 开工单/);
   assert.match(home, /<video[\s\S]*\/media\/market-panel\.mp4/);
   assert.match(home, /poster="\/media\/market-panel-poster\.jpg"/);
@@ -562,6 +578,8 @@ test("packages the approved static redesign at the exact production paths", asyn
   assert.match(home, /<meta property="og:url" content="https:\/\/cpm4\.com\/">/);
   assert.match(home, /https:\/\/cpm4\.com\/og-cover\.png/);
   assert.match(home, /<link rel="icon" href="\/favicon\.ico"/);
+  assert.match(home, /data-pm4-support/);
+  assert.match(home, /<script src="\/pm4-support\.js"><\/script>/);
   assert.match(home, /<!--\s*<a href="\/privacy\.html">隐私政策<\/a><a href="\/terms\.html">服务条款与风险说明<\/a>\s*-->/);
 
   assert.match(okx, /href="https:\/\/discord\.gg\/vAASV36A9p"[^>]*>前往 Discord 领取申请入口/);
@@ -573,6 +591,8 @@ test("packages the approved static redesign at the exact production paths", asyn
   assert.match(okx, /复制中文理由/);
   assert.doesNotMatch(okx, /英文界面请填|复制英文理由|I would like to change my referrer/);
   assert.match(okx, /navigator\.clipboard/);
+  assert.match(okx, /data-pm4-support/);
+  assert.match(okx, /<script src="\/pm4-support\.js"><\/script>/);
   assert.match(bybit, /href="https:\/\/partner\.bybit\.com\/b\/PPMM44"/);
   assert.match(bybit, /href="https:\/\/www\.bybit\.com\/user\/accounts\/auth\/personal"/);
   assert.match(bybit, /position:sticky/);

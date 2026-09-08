@@ -288,8 +288,6 @@ export default function HomeLanding() {
         <p>数字资产价格波动较大，可能损失全部本金。本页不构成投资建议。 · 规则更新：2026-08-30</p>
       </footer>
 
-      <a className={styles.supportFab} href={EXTERNAL_LINKS.telegramContact} target="_blank" rel="noopener noreferrer" aria-label="联系 PM4 客服">联系客服</a>
-
       {selectedExchange ? (
         <div className={styles.modalBackdrop} role="presentation" onMouseDown={(event) => { if (event.currentTarget === event.target) closeExchange(); }}>
           <div className={styles.modal} ref={dialogRef} role="dialog" aria-modal="true" aria-labelledby="exchange-modal-title">
