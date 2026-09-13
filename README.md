@@ -12,11 +12,11 @@ PM4 的正式网站源代码。生产域名为 [cpm4.com](https://cpm4.com)，�
 
 ## Cloudflare 生产配置
 
-正式 Worker 使用以下服务端环境绑定（两个必填，一个可选）：
+正式 Worker 需要在 Cloudflare 中配置以下三项服务端环境绑定：
 
-- `PM4_ADMIN_INGEST_URL`：必填普通环境变量，值为管理后台的完整 `/api/frontend-ingest` HTTPS 地址；无默认值，缺失或非法会明确报错。
-- `PM4_ADMIN_INGEST_SECRET`：必填 Worker secret，用于 Bearer 认证；必须与后台 `PM4_FRONTEND_INGEST_SECRET` 同值。**改一边必须同时改另一边。**
-- `PM4_ADMIN_SITES_BYPASS_TOKEN`：可选 Worker secret；有非空值才带 Sites 授权头，无值照常转发。旧后台过渡期保留，新后台切换成功后删除。
+- `PM4_ADMIN_INGEST_URL`：普通环境变量，值为 PM4 管理后台的 `/api/frontend-ingest` HTTPS 接口。
+- `PM4_ADMIN_INGEST_SECRET`：Worker secret，用于管理后台 Bearer 认证。
+- `PM4_ADMIN_SITES_BYPASS_TOKEN`：Worker secret，用于访问 Sites 上的管理后台。
 
 真实 secret 只保存在 Cloudflare Worker 运行环境，不写入前端代码、`.env.example` 或 Git。`vite.config.ts` 中的 `keep_vars: true` 只会保留已配置的值，首次部署前仍需在 Cloudflare 中手动建立它们。
 
@@ -24,13 +24,11 @@ PM4 的正式网站源代码。生产域名为 [cpm4.com](https://cpm4.com)，�
 
 ## 发布前检查
 
-1. 确认必填 URL、ingest secret 与 `APPLICATION_RATE_LIMITER` 已设置且名称匹配；bypass token 为可选，旧 Sites 访问要求另行核实。
+1. 在 Cloudflare 中确认上述一个普通环境变量、两个 secret 与 `APPLICATION_RATE_LIMITER` binding 均已存在，且名称完全匹配。
 2. 运行 `npm test`，确认构建产物包含 5 次/60 秒的 Rate Limiting binding，且后端代理测试通过。
 3. 使用专用测试 UID 通过正式网站提交一次申请，确认前端收到 `submitted: true`。
 4. 在 PM4 管理后台查询该记录，核对交易所、UID、TradingView、Discord，以及 `consentAccepted: true`、ISO 格式的 `consentedAt` 和 `policyVersion: "2026-08-28"`。
 5. 删除测试记录，并在发布记录中保留烟测时间与结果；不要在日志或截图中暴露 secret。
-
-兼容接口：`POST /api/track` 与 `POST /api/applications`，分别共用现有 `/api/frontend-events` 和 `/api/indicator-applications` 的处理器。所有上报禁止跟随重定向。详见 [Worker 切换、密钥配套与回滚清单](docs/card11-production-cutover-checklist.md)。生产分支推送会自动发布；本次兼容修复必须等 PM4 明确授权后才能推送。
 
 ## 本地开发
 
