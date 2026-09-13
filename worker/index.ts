@@ -27,7 +27,6 @@ interface ExecutionContext {
 const supportedExchanges = new Set(["Bybit", "Bitget", "BingX", "Gate", "OKX"]);
 const maximumRequestBytes = 2_048;
 const maximumEventBytes = 1_024;
-const expectedAdminOrigin = "https://pm4-rebate-admin.chexin1103.chatgpt.site";
 const privacyPolicyVersion = "2026-08-28";
 const recentEventKeys = new Map<string, number>();
 const maximumRecentEventKeys = 2_000;
@@ -57,7 +56,7 @@ function configuredAdminUrl(value: string | undefined) {
   if (!raw) return null;
   try {
     const url = new URL(raw);
-    const isExpectedEndpoint = url.origin === expectedAdminOrigin &&
+    const isExpectedEndpoint = url.protocol === "https:" &&
       url.pathname === "/api/frontend-ingest" &&
       !url.username &&
       !url.password &&
@@ -67,6 +66,23 @@ function configuredAdminUrl(value: string | undefined) {
   } catch {
     return null;
   }
+}
+
+function ingestConfigurationError(env: Env, adminUrl: string | null) {
+  if (!env.PM4_ADMIN_INGEST_URL?.trim()) return "PM4_ADMIN_INGEST_URL_MISSING";
+  if (!adminUrl) return "PM4_ADMIN_INGEST_URL_INVALID";
+  return "PM4_ADMIN_INGEST_SECRET_MISSING";
+}
+
+function ingestHeaders(secret: string, sitesBypassToken: string) {
+  const headers = new Headers({
+    accept: "application/json",
+    authorization: `Bearer ${secret}`,
+    "content-type": "application/json",
+  });
+  // Transitional Sites access is optional; the destination always comes from env.
+  if (sitesBypassToken) headers.set("OAI-Sites-Authorization", `Bearer ${sitesBypassToken}`);
+  return headers;
 }
 
 async function anonymousSourceKey(request: Request, secret: string) {
@@ -184,8 +200,12 @@ async function handleFrontendEvent(request: Request, env: Env) {
   const adminUrl = configuredAdminUrl(env.PM4_ADMIN_INGEST_URL);
   const ingestSecret = env.PM4_ADMIN_INGEST_SECRET?.trim() ?? "";
   const sitesBypassToken = env.PM4_ADMIN_SITES_BYPASS_TOKEN?.trim() ?? "";
-  if (!adminUrl || !ingestSecret || !sitesBypassToken) {
-    return jsonResponse({ code: "FRONTEND_STATS_NOT_CONFIGURED", error: "网站统计正在配置" }, 503);
+  if (!adminUrl || !ingestSecret) {
+    return jsonResponse({
+      code: "FRONTEND_STATS_NOT_CONFIGURED",
+      configurationError: ingestConfigurationError(env, adminUrl),
+      error: "网站统计配置无效：请检查 PM4_ADMIN_INGEST_URL 和 PM4_ADMIN_INGEST_SECRET",
+    }, 503);
   }
 
   const sourceKey = await anonymousSourceKey(request, ingestSecret);
@@ -198,12 +218,8 @@ async function handleFrontendEvent(request: Request, env: Env) {
       method: "POST",
       cache: "no-store",
       signal: AbortSignal.timeout(5_000),
-      headers: {
-        accept: "application/json",
-        authorization: `Bearer ${ingestSecret}`,
-        "content-type": "application/json",
-        "OAI-Sites-Authorization": `Bearer ${sitesBypassToken}`,
-      },
+      redirect: "manual",
+      headers: ingestHeaders(ingestSecret, sitesBypassToken),
       body: JSON.stringify({ action: "track", eventType, exchange, sourceKey, eventKey }),
     });
     const payload = await response.json().catch(() => null) as { tracked?: boolean } | null;
@@ -276,10 +292,11 @@ async function handleIndicatorApplication(request: Request, env: Env) {
   const adminUrl = configuredAdminUrl(env.PM4_ADMIN_INGEST_URL);
   const ingestSecret = env.PM4_ADMIN_INGEST_SECRET?.trim() ?? "";
   const sitesBypassToken = env.PM4_ADMIN_SITES_BYPASS_TOKEN?.trim() ?? "";
-  if (!adminUrl || !ingestSecret || !sitesBypassToken) {
+  if (!adminUrl || !ingestSecret) {
     return jsonResponse({
       code: "APPLICATION_SYNC_NOT_CONFIGURED",
-      error: "网站资料提交正在配置，请先使用 Discord 审核频道提交",
+      configurationError: ingestConfigurationError(env, adminUrl),
+      error: "网站申请配置无效：请检查 PM4_ADMIN_INGEST_URL 和 PM4_ADMIN_INGEST_SECRET",
     }, 503);
   }
   const sourceKey = await anonymousSourceKey(request, ingestSecret);
@@ -318,12 +335,8 @@ async function handleIndicatorApplication(request: Request, env: Env) {
       method: "POST",
       cache: "no-store",
       signal: AbortSignal.timeout(8_000),
-      headers: {
-        accept: "application/json",
-        authorization: `Bearer ${ingestSecret}`,
-        "content-type": "application/json",
-        "OAI-Sites-Authorization": `Bearer ${sitesBypassToken}`,
-      },
+      redirect: "manual",
+      headers: ingestHeaders(ingestSecret, sitesBypassToken),
       body: JSON.stringify({
         action: "application",
         exchange,
@@ -380,11 +393,11 @@ const worker = {
   async fetch(request: Request, env: Env, ctx: ExecutionContext): Promise<Response> {
     const url = new URL(request.url);
 
-    if (url.pathname === "/api/indicator-applications") {
+    if (url.pathname === "/api/indicator-applications" || url.pathname === "/api/applications") {
       return withSecurityHeaders(await handleIndicatorApplication(request, env), request);
     }
 
-    if (url.pathname === "/api/frontend-events") {
+    if (url.pathname === "/api/frontend-events" || url.pathname === "/api/track") {
       return withSecurityHeaders(await handleFrontendEvent(request, env), request);
     }
 
