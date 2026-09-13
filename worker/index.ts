@@ -85,6 +85,34 @@ function ingestHeaders(secret: string, sitesBypassToken: string) {
   return headers;
 }
 
+
+function logIngestFailure(action: "track" | "application", response: Response | null, payload: unknown, failure?: unknown) {
+  const body = payload && typeof payload === "object" && !Array.isArray(payload)
+    ? payload as Record<string, unknown> : null;
+  const safeErrors = new Set(["Unauthorized", "请求数据格式无效", "统计来源无效", "统计事件无效", "交易所无效", "管理员数据库尚未配置"]);
+  const safeCodes = new Set(["DATABASE_NOT_CONFIGURED", "RATE_LIMITED", "WRITE_FROZEN", "DATABASE_WRITE_LOCKED"]);
+  const mediaType = response?.headers.get("content-type")?.split(";")[0]?.trim().toLowerCase();
+  const failureName = failure instanceof Error && ["TimeoutError", "AbortError", "TypeError"].includes(failure.name)
+    ? failure.name : failure ? "Error" : null;
+  // Never log credentials, request bodies, identifiers, raw error messages, or redirect URLs.
+  console.error("PM4_INGEST_UPSTREAM_FAILURE", JSON.stringify({
+    action,
+    timestamp: new Date().toISOString(),
+    upstreamStatus: response?.status ?? null,
+    contentType: ["application/json", "text/html", "text/plain"].includes(mediaType ?? "") ? mediaType : "other",
+    redirected: response?.redirected ?? false,
+    locationPresent: response?.headers.has("location") ?? false,
+    body: {
+      kind: body ? "json-object" : "non-object-or-unparseable",
+      tracked: typeof body?.tracked === "boolean" ? body.tracked : null,
+      submitted: typeof body?.submitted === "boolean" ? body.submitted : null,
+      error: typeof body?.error === "string" ? (safeErrors.has(body.error) ? body.error : "[redacted]") : null,
+      code: typeof body?.code === "string" ? (safeCodes.has(body.code) ? body.code : "[redacted]") : null,
+    },
+    failureName,
+  }));
+}
+
 async function anonymousSourceKey(request: Request, secret: string) {
   const forwardedAddress = request.headers.get("x-forwarded-for")?.split(",")[0]?.trim() ?? "";
   const clientAddress = request.headers.get("cf-connecting-ip")?.trim() || forwardedAddress;
@@ -224,11 +252,13 @@ async function handleFrontendEvent(request: Request, env: Env) {
     });
     const payload = await response.json().catch(() => null) as { tracked?: boolean } | null;
     if (!response.ok || !payload?.tracked) {
+      logIngestFailure("track", response, payload);
       return jsonResponse({ code: "FRONTEND_STATS_FAILED", error: "网站统计暂时不可用" }, 503);
     }
     rememberEvent(eventKey);
     return jsonResponse({ tracked: true });
-  } catch {
+  } catch (failure) {
+    logIngestFailure("track", null, null, failure);
     return jsonResponse({ code: "FRONTEND_STATS_FAILED", error: "网站统计暂时不可用" }, 503);
   }
 }
@@ -369,6 +399,7 @@ async function handleIndicatorApplication(request: Request, env: Env) {
       }, 429);
     }
     if (!response.ok || !payload?.submitted) {
+      logIngestFailure("application", response, payload);
       return jsonResponse({
         code: "APPLICATION_SYNC_FAILED",
         error: "资料暂时未进入后台，请稍后重试或使用 Discord 审核频道提交",
@@ -381,7 +412,8 @@ async function handleIndicatorApplication(request: Request, env: Env) {
       uid,
       submittedAt: payload.submittedAt ?? new Date().toISOString(),
     });
-  } catch {
+  } catch (failure) {
+    logIngestFailure("application", null, null, failure);
     return jsonResponse({
       code: "APPLICATION_SYNC_FAILED",
       error: "资料暂时未进入后台，请稍后重试或使用 Discord 审核频道提交",

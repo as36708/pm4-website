@@ -159,3 +159,44 @@ test("production build preserves dashboard variables and does not supply an inge
   assert.equal(config.keep_vars, true);
   assert.equal(config.vars?.PM4_ADMIN_INGEST_URL, undefined);
 });
+
+test("upstream diagnostics expose only allowlisted fields, never raw upstream data", async () => {
+  const originalError = console.error;
+  const logs = [];
+  console.error = (...args) => logs.push(args);
+  try {
+    for (const route of ["/api/track", "/api/applications"]) {
+      await withUpstream(async () => Response.json({
+        error: "synthetic-private-error", code: "synthetic-private-code",
+        uid: "synthetic-private-uid", token: "synthetic-private-token",
+      }, { status: 401 }), async () => {
+        assert.equal((await invoke(route)).status, 503);
+      });
+      const entry = JSON.parse(logs.at(-1)[1]);
+      assert.equal(entry.upstreamStatus, 401);
+      assert.equal(entry.contentType, "application/json");
+      assert.equal(entry.body.error, "[redacted]");
+      assert.equal(entry.body.code, "[redacted]");
+      assert.equal(JSON.stringify(logs).includes("synthetic-private"), false);
+    }
+    await withUpstream(async () => Response.json({ error: "Unauthorized" }, { status: 401 }), async () => {
+      assert.equal((await invoke("/api/track")).status, 503);
+      assert.equal(JSON.parse(logs.at(-1)[1]).body.error, "Unauthorized");
+    });
+  } finally { console.error = originalError; }
+});
+
+test("fetch exceptions are classified without exposing the exception message", async () => {
+  const originalError = console.error;
+  const logs = [];
+  console.error = (...args) => logs.push(args);
+  try {
+    await withUpstream(async () => { throw new TypeError("synthetic-secret-in-network-error"); }, async () => {
+      assert.equal((await invoke("/api/track")).status, 503);
+      const entry = JSON.parse(logs.at(-1)[1]);
+      assert.equal(entry.upstreamStatus, null);
+      assert.equal(entry.failureName, "TypeError");
+      assert.equal(JSON.stringify(logs).includes("synthetic-secret"), false);
+    });
+  } finally { console.error = originalError; }
+});
