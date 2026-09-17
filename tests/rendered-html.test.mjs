@@ -175,7 +175,7 @@ test("keeps the responsive redesign and production assets intact", async () => {
   assert.match(layout, /data-pm4-support/);
   assert.match(layout, /<Script src="\/pm4-support\.js" strategy="afterInteractive" \/>/);
   assert.match(packageJson, /"build": "vinext build"/);
-  assert.match(packageJson, /"version": "0\.2\.4"/);
+  assert.match(packageJson, /"version": "0\.2\.6"/);
   assert.match(links, /https:\/\/www\.bybit\.com\/zh-TW\/help-center\/article\/How-to-Transfer-Your-Identity-to-Another-Account/);
   assert.match(links, /https:\/\/t\.me\/tianshijin10/);
   assert.match(sitemap, /transfer\/bybit/);
