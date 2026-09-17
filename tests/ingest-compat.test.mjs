@@ -159,3 +159,29 @@ test("production build preserves dashboard variables and does not supply an inge
   assert.equal(config.keep_vars, true);
   assert.equal(config.vars?.PM4_ADMIN_INGEST_URL, undefined);
 });
+
+
+test("frontend event deduplication remains closed through 64999ms and reopens at 65000ms", async (t) => {
+  t.mock.timers.enable({ apis: ["Date"], now: new Date("2026-09-17T12:00:00Z") });
+  const forwarded = [];
+  const { default: worker } = await workerPromise;
+  const send = (route) => worker.fetch(new Request("https://cpm4.com" + route, {
+    method: "POST", headers: { origin: "https://cpm4.com", "content-type": "application/json", "cf-connecting-ip": "198.51.100.239" },
+    body: JSON.stringify({ eventType: "visit", exchange: "" }),
+  }), frontendEnv, { waitUntil() {}, passThroughOnException() {} });
+  await withUpstream(async (_url, options) => {
+    forwarded.push(JSON.parse(options.body)); return Response.json({ tracked: true });
+  }, async () => {
+    assert.equal((await send("/api/frontend-events")).status, 200);
+    t.mock.timers.tick(64999);
+    assert.equal((await (await send("/api/track")).json()).duplicate, true);
+    assert.equal(forwarded.length, 1);
+    t.mock.timers.tick(1);
+    const response = await send("/api/frontend-events");
+    assert.equal(response.status, 200);
+    assert.equal((await response.json()).tracked, true);
+    assert.equal(forwarded.length, 2);
+    assert.equal(forwarded[0].eventKey, forwarded[1].eventKey);
+    assert.equal(forwarded[0].sourceKey, forwarded[1].sourceKey);
+  });
+});

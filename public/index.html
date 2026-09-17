@@ -463,6 +463,7 @@ footer a{color:var(--muted);margin-right:20px}
 </div>
 <div data-pm4-support></div>
 <script src="/pm4-support.js"></script>
+<script src="/pm4-frontend-analytics.js"></script>
 <script>
 /* ===== 使用流程:点步骤切换右侧画面 ===== */
 (function(){
@@ -500,6 +501,9 @@ var cur='';
 function go(k){
   var u=(EX[cur]||{})[k];
   if(!u){return}
+  if(window.PM4FrontendAnalytics&&(k==='reg'||k==='mv')){
+    void window.PM4FrontendAnalytics.track(k==='reg'?'exchange_click':'transfer_click',cur);
+  }
   if(/^https?:/.test(u)){window.open(u,'_blank','noopener')}else{location.href=u}
 }
 function showEx(n){
