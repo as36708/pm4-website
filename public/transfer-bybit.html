@@ -154,7 +154,7 @@ nav{border-bottom:1px solid var(--line);background:oklch(0.158 0.0072 258.37 / .
 
       <div class="blk"><span class="no">01</span><h3>用 PM4 链接创建新账户</h3>
         <div class="sub">先用 PM4 推荐链接开一个新的 Bybit 账户,这个账户暂时不用做实名。通过此链接创建,PM4 会被记录为你的推荐人。</div>
-        <a class="gobtn" href="https://partner.bybit.com/b/PPMM44" target="_blank" rel="noopener">通过 PM4 链接注册 ↗</a>
+        <a class="gobtn" href="https://partner.bybit.com/b/PPMM44" onclick="if(window.PM4FrontendAnalytics){void window.PM4FrontendAnalytics.track('exchange_click','Bybit')}" target="_blank" rel="noopener">通过 PM4 链接注册 ↗</a>
       </div>
 
       <div class="blk"><span class="no">02</span><h3>在旧账户上发起身份转移</h3>
@@ -187,6 +187,7 @@ nav{border-bottom:1px solid var(--line);background:oklch(0.158 0.0072 258.37 / .
 </div></div>
 
 
+<script src="/pm4-frontend-analytics.js"></script>
 <script>
 (function(){
   var sts=[].slice.call(document.querySelectorAll('.steps .st'));

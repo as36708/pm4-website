@@ -104,9 +104,9 @@ test("loading the static adapter twice does not send a duplicate visit", async (
   const b = browser(); vm.runInContext(analytics, b.context); await flush(); assert.equal(b.calls.length, 1);
 });
 
-test("other static pages do not acquire the homepage adapter", async () => {
+test("approved transfer pages load the shared analytics adapter exactly once", async () => {
   for (const page of ["transfer-bybit.html", "transfer-okx.html"]) {
     const body = await readFile(new URL("../public/" + page, import.meta.url), "utf8");
-    assert.doesNotMatch(body, /pm4-frontend-analytics\.js/);
+    assert.equal((body.match(/src="\/pm4-frontend-analytics\.js"/g) ?? []).length, 1);
   }
 });

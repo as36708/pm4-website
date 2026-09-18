@@ -185,3 +185,26 @@ test("frontend event deduplication remains closed through 64999ms and reopens at
     assert.equal(forwarded[0].sourceKey, forwarded[1].sourceKey);
   });
 });
+
+test("OKX homepage transfer and guide exchange click in the same minute have distinct keys and independently deduplicate", async (t) => {
+  t.mock.timers.enable({ apis: ["Date"], now: new Date("2026-09-18T05:00:00Z") });
+  const forwarded = [];
+  const { default: worker } = await workerPromise;
+  const send = eventType => worker.fetch(new Request("https://cpm4.com/api/frontend-events", {
+    method: "POST", headers: { origin: "https://cpm4.com", "content-type": "application/json", "cf-connecting-ip": "198.51.100.238" },
+    body: JSON.stringify({ eventType, exchange: "OKX" }),
+  }), frontendEnv, { waitUntil() {}, passThroughOnException() {} });
+  await withUpstream(async (_url, options) => {
+    forwarded.push(JSON.parse(options.body)); return Response.json({ tracked: true });
+  }, async () => {
+    for (const event of ["transfer_click", "exchange_click"]) {
+      const response = await send(event); assert.equal(response.status, 200); assert.equal((await response.json()).tracked, true);
+    }
+    assert.equal(forwarded.length, 2);
+    assert.deepEqual(forwarded.map(event => event.eventType), ["transfer_click", "exchange_click"]);
+    assert.equal(forwarded[0].sourceKey, forwarded[1].sourceKey);
+    assert.notEqual(forwarded[0].eventKey, forwarded[1].eventKey);
+    for (const event of ["transfer_click", "exchange_click"]) assert.equal((await (await send(event)).json()).duplicate, true);
+    assert.equal(forwarded.length, 2);
+  });
+});
