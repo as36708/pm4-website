@@ -247,6 +247,16 @@ footer a{color:var(--muted);margin-right:20px}
 @media(max-width:640px){.nav-in a.item{display:none}.nav-in{gap:0}.nav-in .btn{margin-left:auto}}
 @media(max-width:900px){.flow{grid-template-columns:1fr;gap:56px}.pv{padding:20px 20px 0;border-radius:20px}.pv-in{margin-bottom:20px;padding:16px}}
 @media(max-width:760px){.tiers{grid-template-columns:1fr}section.wrap{padding-top:120px}.hero{padding:110px 0 40px}}
+/* Discord registration entry: the normal homepage remains unchanged. */
+.join-dialog{box-sizing:border-box;width:min(640px,calc(100% - 32px));max-height:calc(100% - 32px);padding:28px;background:#141419;color:var(--ink);border:1px solid var(--line);border-radius:20px}
+.join-dialog::backdrop{background:rgb(0 0 0 / .6);backdrop-filter:blur(4px)}
+.join-dialog h2{margin:0 36px 10px 0;font-size:24px}
+.join-dialog p{color:var(--muted);margin:0 0 24px}
+.join-dialog form{position:absolute;top:14px;right:14px}
+.join-close{border:0;background:transparent;color:var(--muted);font-size:26px;cursor:pointer}
+.join-choices{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:14px}
+.join-choice{font:inherit;color:var(--ink);font-weight:700;font-size:18px;padding:22px}
+.join-choice:focus-visible,.join-close:focus-visible{outline:2px solid var(--acc);outline-offset:3px}
 </style>
 </head>
 <body>
@@ -455,6 +465,17 @@ footer a{color:var(--muted);margin-right:20px}
   <div class="fallback" style="max-width:760px;margin:30px auto 0">绑定遇到问题?到 Discord <a class="tlink" href="https://discord.gg/vAASV36A9p" target="_blank" rel="noopener">#客服与审核 开工单 →</a></div>
 </section>
 
+<dialog class="join-dialog" id="pm4-join-dialog" aria-labelledby="pm4-join-title" aria-describedby="pm4-join-hint">
+  <form method="dialog"><button class="join-close" aria-label="关闭交易所选择器">×</button></form>
+  <h2 id="pm4-join-title">选择交易所</h2>
+  <p id="pm4-join-hint">选择交易所后，点击「首次注册」。</p>
+  <div class="join-choices">
+    <button class="opt join-choice" type="button" data-join-exchange="Bybit">Bybit</button>
+    <button class="opt join-choice" type="button" data-join-exchange="Gate">Gate</button>
+    <button class="opt join-choice" type="button" data-join-exchange="Bitget">Bitget</button>
+    <button class="opt join-choice" type="button" data-join-exchange="OKX">OKX</button>
+  </div>
+</dialog>
 <div class="ovl" id="ovl" onclick="this.classList.remove('on')">
   <div class="opts" onclick="event.stopPropagation()">
     <div class="opt hot" onclick="go('reg')"><div class="ic">👤</div><span class="arr">→</span><h4 id="t1">首次注册</h4><p id="d1"></p></div>
@@ -524,5 +545,6 @@ function showEx(n){
   <div style="margin-top:12px">数字资产价格波动较大,可能损失全部本金。本页不构成投资建议。 · 规则更新:2026-08-30</div>
 </div></footer>
 
+<script src="/pm4-join.js"></script>
 </body>
 </html>

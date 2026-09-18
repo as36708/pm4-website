@@ -393,6 +393,17 @@ const worker = {
   async fetch(request: Request, env: Env, ctx: ExecutionContext): Promise<Response> {
     const url = new URL(request.url);
 
+    if (url.pathname === "/join" || url.pathname === "/join/") {
+      if (request.method !== "GET" && request.method !== "HEAD") {
+        return withSecurityHeaders(new Response(null, { status: 405, headers: { allow: "GET, HEAD" } }), request);
+      }
+      // Redirect to the asset-served homepage so only its existing visit tracker runs.
+      return withSecurityHeaders(new Response(null, {
+        status: 302,
+        headers: { location: new URL("/?join=1", url).href, "cache-control": "no-store" },
+      }), request);
+    }
+
     if (url.pathname === "/api/indicator-applications" || url.pathname === "/api/applications") {
       return withSecurityHeaders(await handleIndicatorApplication(request, env), request);
     }
