@@ -67,7 +67,7 @@ test("server-renders the Discord review destination", async () => {
   assert.match(html, /四步完成自动绑定/);
   assert.match(html, /三档会员权益/);
   assert.match(html, /永远不会索取密码、验证码、API 密钥、私钥、助记词/);
-  assert.match(html, /https:\/\/discord\.gg\/vAASV36A9p/);
+  assert.match(html, /https:\/\/discord\.gg\/a6czfQ2Bhp/);
   assert.doesNotMatch(html, /<form\b/i);
 });
 
@@ -175,14 +175,14 @@ test("keeps the responsive redesign and production assets intact", async () => {
   assert.match(layout, /data-pm4-support/);
   assert.match(layout, /<Script src="\/pm4-support\.js" strategy="afterInteractive" \/>/);
   assert.match(packageJson, /"build": "vinext build"/);
-  assert.match(packageJson, /"version": "0\.2\.7"/);
+  assert.match(packageJson, /"version": "0\.2\.8"/);
   assert.match(links, /https:\/\/www\.bybit\.com\/zh-TW\/help-center\/article\/How-to-Transfer-Your-Identity-to-Another-Account/);
   assert.match(links, /https:\/\/t\.me\/tianshijin10/);
   assert.match(sitemap, /transfer\/bybit/);
   assert.match(sitemap, /transfer\/okx/);
   assert.match(sitemap, /review\/manual/);
   assert.match(support, /SUPPORT: Object\.freeze/);
-  assert.match(support, /discord: "https:\/\/discord\.gg\/zb8mmuWdEs"/);
+  assert.match(support, /discord: "https:\/\/discord\.gg\/a6czfQ2Bhp"/);
   assert.match(support, /telegram: "https:\/\/t\.me\/tianshijin10"/);
   assert.match(support, /rel="noopener noreferrer"/);
   assert.match(support, /width:54px;height:54px/);
@@ -566,8 +566,8 @@ test("packages the approved static redesign at the exact production paths", asyn
 
   assert.match(home, /var EX=window\.PM4_SITE_CONFIG\.EX/);
   assert.match(support, /Bybit: Object\.freeze\(\{ reg: "https:\/\/partner\.bybit\.com\/b\/PPMM44", mv: "\/transfer-bybit\.html" \}\)/);
-  assert.match(support, /Gate: Object\.freeze\(\{ reg: "https:\/\/www\.gateport\.biz\/zh\/share\/VFLEAAPBAQ", mv: "https:\/\/discord\.gg\/vAASV36A9p" \}\)/);
-  assert.match(support, /Bitget: Object\.freeze\(\{ reg: "https:\/\/partner\.bitget\.com\/bg\/r1ky845p", mv: "https:\/\/discord\.gg\/vAASV36A9p" \}\)/);
+  assert.match(support, /Gate: Object\.freeze\(\{ reg: "https:\/\/www\.gateport\.biz\/zh\/share\/VFLEAAPBAQ", mv: "https:\/\/discord\.gg\/a6czfQ2Bhp" \}\)/);
+  assert.match(support, /Bitget: Object\.freeze\(\{ reg: "https:\/\/partner\.bitget\.com\/bg\/r1ky845p", mv: "https:\/\/discord\.gg\/a6czfQ2Bhp" \}\)/);
   assert.match(support, /OKX: Object\.freeze\(\{ reg: "https:\/\/www\.topzhjdgxcb\.com\/join\/PPMM44", mv: "\/transfer-okx", mvTitle: "在 OKX 确认资格" \}\)/);
   assert.match(home, /该交易所的更换指引还没做,请在 Discord 开工单/);
   assert.match(home, /<video[\s\S]*\/media\/market-panel\.mp4/);

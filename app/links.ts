@@ -6,7 +6,7 @@ export const EXTERNAL_LINKS = {
   gateRegister: "https://www.gateport.biz/zh/share/VFLEAAPBAQ",
   okxRegister: "https://www.topzhjdgxcb.com/join/PPMM44",
   okxEligibility: "https://oyidl.co/ul/J6l2R5",
-  discordInvite: "https://discord.gg/vAASV36A9p",
+  discordInvite: "https://discord.gg/a6czfQ2Bhp",
   discordReview: "https://discord.com/channels/942442247209779230/1296106331543175219",
   discordContact: "https://discord.com/channels/942442247209779230/1296102123418947634",
   telegramContact: "https://t.me/tianshijin10",

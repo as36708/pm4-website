@@ -4,11 +4,11 @@
   var PM4_SITE_CONFIG = Object.freeze({
     EX: Object.freeze({
       Bybit: Object.freeze({ reg: "https://partner.bybit.com/b/PPMM44", mv: "/transfer-bybit.html" }),
-      Gate: Object.freeze({ reg: "https://www.gateport.biz/zh/share/VFLEAAPBAQ", mv: "https://discord.gg/vAASV36A9p" }),
-      Bitget: Object.freeze({ reg: "https://partner.bitget.com/bg/r1ky845p", mv: "https://discord.gg/vAASV36A9p" }),
+      Gate: Object.freeze({ reg: "https://www.gateport.biz/zh/share/VFLEAAPBAQ", mv: "https://discord.gg/a6czfQ2Bhp" }),
+      Bitget: Object.freeze({ reg: "https://partner.bitget.com/bg/r1ky845p", mv: "https://discord.gg/a6czfQ2Bhp" }),
       OKX: Object.freeze({ reg: "https://www.topzhjdgxcb.com/join/PPMM44", mv: "/transfer-okx", mvTitle: "在 OKX 确认资格" }),
       SUPPORT: Object.freeze({
-        discord: "https://discord.gg/zb8mmuWdEs",
+        discord: "https://discord.gg/a6czfQ2Bhp",
         telegram: "https://t.me/tianshijin10",
       }),
     }),

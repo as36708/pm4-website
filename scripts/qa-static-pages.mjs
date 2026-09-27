@@ -116,7 +116,7 @@ try {
   assert(!home.overflow, "首页桌面端出现横向滚动");
   assert(home.ex.Bybit.mv === "/transfer-bybit.html", "Bybit 转移页路径错误");
   assert(home.ex.OKX.mv === "/transfer-okx" && home.ex.OKX.mvTitle === "在 OKX 确认资格", "OKX 步骤页链接错误");
-  assert(home.ex.Gate.mv === "https://discord.gg/vAASV36A9p" && home.ex.Bitget.mv === "https://discord.gg/vAASV36A9p", "Gate 或 Bitget 工单链接错误");
+  assert(home.ex.Gate.mv === "https://discord.gg/a6czfQ2Bhp" && home.ex.Bitget.mv === "https://discord.gg/a6czfQ2Bhp", "Gate 或 Bitget 工单链接错误");
   const homeSupport = await evaluate("(() => { const button=document.querySelector('.pm4-support-trigger'); const panel=document.querySelector('.pm4-support-panel'); return {button:button?.textContent.trim(),expanded:button?.getAttribute('aria-expanded'),hidden:panel?.hidden}; })()");
   assert(homeSupport.button === "客服" && homeSupport.expanded === "false" && homeSupport.hidden, "首页客服按钮初始状态错误");
   const gateFallback = await evaluate(`(() => { showEx('Gate'); const item=document.querySelector('#opt-mv'); return {pointer:getComputedStyle(item).pointerEvents}; })()`);
@@ -125,7 +125,7 @@ try {
   await screenshot("v0.2.4-home-desktop-closed.png");
   const homeSupportOpen = await evaluate("(() => { document.querySelector('.pm4-support-trigger').click(); const button=document.querySelector('.pm4-support-trigger'); const panel=document.querySelector('.pm4-support-panel'); const links=[...panel.querySelectorAll('a')].map(a => ({label:a.textContent.trim(),href:a.href,target:a.target,rel:a.rel})); return {expanded:button.getAttribute('aria-expanded'),hidden:panel.hidden,links}; })()");
   assert(homeSupportOpen.expanded === "true" && !homeSupportOpen.hidden, "首页客服面板未展开");
-  assert(homeSupportOpen.links[0].href === "https://discord.gg/zb8mmuWdEs" && homeSupportOpen.links[1].href === "https://t.me/tianshijin10", "客服链接错误");
+  assert(homeSupportOpen.links[0].href === "https://discord.gg/a6czfQ2Bhp" && homeSupportOpen.links[1].href === "https://t.me/tianshijin10", "客服链接错误");
   assert(homeSupportOpen.links.every(link => link.target === "_blank" && link.rel.includes("noopener") && link.rel.includes("noreferrer")), "客服链接安全属性错误");
   await screenshot("v0.2.4-home-desktop-open.png");
   await evaluate("document.querySelector('.pm4-support-trigger').click()");
