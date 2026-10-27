@@ -10,7 +10,7 @@ const bindingSteps = [
 
 const membershipTiers = [
   { name: "实盘会员", qualification: "免费", tone: "standard" },
-  { name: "VIP", qualification: "近一年交易量 50 万 USDT 或 499 U", tone: "featured" },
+  { name: "VIP", qualification: "单家交易所近 30 天交易量 50 万 USDT 或付费 888 U / 2999 U", tone: "featured" },
   { name: "SVIP", qualification: "4999 U", tone: "premium" },
 ] as const;
 

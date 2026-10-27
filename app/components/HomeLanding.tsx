@@ -27,17 +27,19 @@ const membershipTiers = [
   {
     name: "实盘会员",
     price: "入门 · 免费",
-    label: "怎么拿 · 二选一",
-    qualification: <>用返佣链接注册，<br />实名+入金 或 有交易</>,
-    description: "满足其一即可，入金不限金额。绑定后机器人 30 秒自动核对、自动发。",
+    label: "怎么拿",
+    qualification: <>用返佣链接注册<br />+ 实名 + 入金</>,
+    description: "入金不限金额。绑定后机器人自动核对、自动发。",
+    detail: "指标权限：近 30 天交易量 ≥ 1 万 USDT，达标自动进开通名单。",
     footnote: "入口：进 Discord 点「绑定账号」",
   },
   {
     name: "VIP",
     price: "达标或付费",
     label: "怎么拿 · 二选一",
-    qualification: <>近一年交易量 50 万 USDT<br />或直接付费 499 U</>,
-    description: "交易量达标自动升，不用申请；付费开通找客服。",
+    qualification: <>单家交易所近 30 天交易量 ≥ 50 万 USDT<br />或付费开通：已绑定交易所 888 U · 未绑定 2999 U</>,
+    description: "交易量达标自动升，每天核对，不用申请；付费开通找客服。",
+    detail: "保级：近 30 天掉到 50 万以下先提醒，7 天内回来没事；再达标自动恢复。",
     footnote: "交易量到了自动升（每天核对） · 付费找 #客服与审核",
     featured: true,
   },
@@ -53,14 +55,18 @@ const membershipTiers = [
 
 const matrixRows = [
   { section: "免费内容" },
-  { name: "Discord 社区与挑战实盘", detail: "公告、大厅与 US$10,000 挑战每笔开平仓节点", free: "✓ 免费开放", vip: "✓ 免费开放", svip: "✓ 免费开放" },
-  { name: "PM4 专属指标工具", detail: "实盘会员资格开通，使用说明以领取页为准", free: "— 需实盘会员", vip: "✓ 自动开通", svip: "✓ 自动开通" },
+  { name: "Discord 社区与挑战实盘", detail: "公告、大厅与 US$10,000 挑战每笔开平仓节点", free: "✓ 免费开放", member: "✓ 免费开放", vip: "✓ 免费开放", svip: "✓ 免费开放" },
+  { section: "实盘会员" },
+  { name: "PM4 专属指标工具", detail: "近 30 天交易量 ≥ 1 万 USDT，达标后开通", free: "— 需实盘会员", member: "✓ 达标后开通", vip: "✓ 达标后开通", svip: "✓ 直接开通" },
   { section: "VIP · 达标或付费解锁" },
-  { name: "会员·交易思路", detail: "会员频道内的市场分析、执行逻辑与风险边界", free: "— 不包含", vip: "✓ VIP 专属", svip: "✓ 全部 VIP 权益" },
-  { name: "复盘资料库", detail: "交易复盘、规则模板与历史资料完整访问", free: "— 不包含", vip: "✓ 完整访问", svip: "✓ 全部 VIP 权益" },
+  { name: "会员·交易思路", detail: "会员频道内的市场分析、执行逻辑与风险边界", free: "— 不包含", member: "— 不包含", vip: "✓ VIP 专属", svip: "✓ 全部 VIP 权益" },
+  { name: "实时交易分析", detail: "会员频道内的实时行情与仓位思路", free: "— 不包含", member: "— 不包含", vip: "✓", svip: "✓" },
+  { name: "K 线教学", detail: "不定期", free: "— 不包含", member: "— 不包含", vip: "✓ 不定期", svip: "✓" },
+  { name: "复盘资料库", detail: "交易复盘、规则模板与历史资料完整访问", free: "— 不包含", member: "— 不包含", vip: "✓ 完整访问", svip: "✓" },
+  { name: "会员交流", detail: "会员频道交流", free: "— 不包含", member: "— 不包含", vip: "✓", svip: "✓" },
   { section: "SVIP · 付费申请制" },
-  { name: "K 线与价格行为系统课", detail: "有效期内系统学习 K 线、关键位置与价格行为", free: "— 不包含", vip: "— 不包含", svip: "✓ 有效期内" },
-  { name: "一对一交流", detail: "围绕交易方法、策略理解与复盘问题预约交流", free: "— 不包含", vip: "— 不包含", svip: "◇ 预约制" },
+  { name: "K 线与价格行为系统课", detail: "定制，有效期内", free: "— 不包含", member: "— 不包含", vip: "— 不包含", svip: "✓ 有效期内" },
+  { name: "一对一交流", detail: "围绕交易方法、策略理解与复盘问题预约交流", free: "— 不包含", member: "— 不包含", vip: "— 不包含", svip: "◇ 预约制" },
 ] as const;
 
 const faqs = [
@@ -73,8 +79,8 @@ const faqs = [
 const processSteps = [
   { number: 1, title: "用 PM4 专属链接注册交易所", description: "从下方四家里选一家，用专属链接注册。已有账号的可以换推荐人。", href: "#exchanges", link: "选交易所" },
   { number: 2, title: "进 Discord 点「绑定」", description: "在 #从这里开始 频道点按钮，选交易所、填 UID，十秒填完。", href: EXTERNAL_LINKS.discordInvite, link: "绑定 UID", external: true },
-  { number: 3, title: "机器人自动开通", description: "自动核验后发 @实盘会员 身份组，TradingView 指标排队开通并私信通知。", href: "#faq", link: "看开通规则" },
-  { number: 4, title: "交易量达标自动升 VIP", description: "近一年交易量满 50 万 U 自动升 VIP，不用申请、不用等人工。", href: "#membership", link: "看会员权益" },
+  { number: 3, title: "机器人自动开通", description: "自动核验后发 @实盘会员 身份组；TradingView 指标交易量达标后开通并私信通知。", href: "#faq", link: "看开通规则" },
+  { number: 4, title: "交易量达标自动升 VIP", description: "单家交易所近 30 天交易量满 50 万 U 自动升 VIP，不用申请、不用等人工。", href: "#membership", link: "看会员权益" },
 ] as const;
 
 export default function HomeLanding() {
@@ -254,6 +260,7 @@ export default function HomeLanding() {
                 <small>{tier.label}</small>
                 <h3>{tier.qualification}</h3>
                 <p>{tier.description}</p>
+                {"detail" in tier ? <p>{tier.detail}</p> : null}
                 <footer>{tier.footnote}</footer>
               </article>
             ))}
@@ -261,17 +268,17 @@ export default function HomeLanding() {
 
           <div className={styles.matrixWrap}>
             <table className={styles.matrix}>
-              <thead><tr><th>每个等级可以做什么</th><th><b>免费</b><small>加入 Discord 即可</small></th><th><b>实盘会员 / VIP</b><small>绑定后自动判定</small></th><th><b>SVIP</b><small>4,999 USDT · 申请制</small></th></tr></thead>
+              <thead><tr><th>每个等级可以做什么</th><th><b>免费</b><small>加入 Discord 即可</small></th><th><b>实盘会员</b><small>绑定后自动判定</small></th><th><b>VIP</b><small>达标或付费</small></th><th><b>SVIP</b><small>4,999 USDT · 申请制</small></th></tr></thead>
               <tbody>
                 {matrixRows.map((row, index) => row.section ? (
-                  <tr className={styles.matrixSection} key={`section-${index}`}><th colSpan={4}>{row.section}</th></tr>
+                  <tr className={styles.matrixSection} key={`section-${index}`}><th colSpan={5}>{row.section}</th></tr>
                 ) : (
-                  <tr key={row.name}><th><b>{row.name}</b><small>{row.detail}</small></th><td>{row.free}</td><td>{row.vip}</td><td>{row.svip}</td></tr>
+                  <tr key={row.name}><th><b>{row.name}</b><small>{row.detail}</small></th><td>{row.free}</td><td>{row.member}</td><td>{row.vip}</td><td>{row.svip}</td></tr>
                 ))}
               </tbody>
             </table>
           </div>
-          <p className={styles.matrixNote}>交易量以交易所后台统计为准 · VIP = 近一年交易量 50 万 USDT 自动升，或付费 499 U</p>
+          <p className={styles.matrixNote}>交易量以交易所后台统计为准 · VIP = 单家交易所近 30 天交易量 ≥ 50 万 USDT 自动升，或付费 888 U（已绑定交易所）/ 2999 U（未绑定）</p>
         </section>
 
         <section id="faq" className={`${styles.section} ${styles.faq}`} aria-labelledby="faq-title">
@@ -327,8 +334,8 @@ function ProcessPreview({ step }: { step: 1 | 2 | 3 | 4 }) {
         <div className={styles.discordMessage}><div className={styles.botAvatar}>P4</div><div className={styles.messageBody}>
           <div className={styles.botName}>PM4 机器人 <i>BOT</i><small>今天 21:05</small></div>
           {step === 2 ? <div className={styles.discordEmbed}><b>绑定交易所 UID</b><p>选择你注册的交易所，填入 UID，机器人自动核验并开通权限。</p><div className={styles.discordChoices}><span>Bybit</span><span>Gate</span><span>Bitget</span><span>OKX</span></div></div> : null}
-          {step === 3 ? <><div className={`${styles.discordEmbed} ${styles.successEmbed}`}><b><mark>@实盘会员</mark> 已发放</b><div className={styles.embedFields}><span><small>交易所</small>Bybit</span><span><small>UID</small>1234****89</span><span><small>TradingView</small>PM4User</span></div><p>已经确认有非零交易量，指标已经进入开通队列。管理员完成开通后会私信告诉你。</p></div><span className={styles.discordAction}>我的权益</span></> : null}
-          {step === 4 ? <><div className={`${styles.discordEmbed} ${styles.successEmbed}`}><b>升 VIP 了</b><div className={styles.embedFields}><span><small>身份组</small><mark>@VIP</mark> 已发放</span><span><small>近一年交易量</small>Bybit 62.3 万 / 50 万 USDT</span></div><p>会员·交易思路、复盘资料库、会员交流三个频道现在都能进了。</p><footer>近一年交易量保持在 50 万 USDT 以上就一直保留，我这边每天自动核对，不用管。</footer></div><span className={styles.discordAction}>去会员·交易思路</span></> : null}
+          {step === 3 ? <><div className={`${styles.discordEmbed} ${styles.successEmbed}`}><b><mark>@实盘会员</mark> 已发放</b><div className={styles.embedFields}><span><small>交易所</small>Bybit</span><span><small>UID</small>1234****89</span><span><small>TradingView</small>PM4User</span></div><p>近 30 天交易量已达 1 万 USDT，指标已进入开通名单。管理员完成开通后会私信告诉你。</p></div><span className={styles.discordAction}>我的权益</span></> : null}
+          {step === 4 ? <><div className={`${styles.discordEmbed} ${styles.successEmbed}`}><b>升 VIP 了</b><div className={styles.embedFields}><span><small>身份组</small><mark>@VIP</mark> 已发放</span><span><small>近 30 天交易量</small>Bybit 62.3 万 / 50 万 USDT</span></div><p>会员·交易思路、复盘资料库、会员交流三个频道现在都能进了。</p><footer>近 30 天交易量保持在 50 万 USDT 以上就一直保留，我这边每天自动核对；掉到 50 万以下先提醒，7 天内回来没事。</footer></div><span className={styles.discordAction}>去会员·交易思路</span></> : null}
         </div></div>
         {step === 2 ? <div className={styles.uidField}><small>UID</small><span>1234****89</span><b>提交</b></div> : null}
       </>}

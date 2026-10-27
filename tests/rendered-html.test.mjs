@@ -35,7 +35,10 @@ test("server-renders the complete PM4 landing page", async () => {
   assert.match(html, /升 VIP/);
   assert.match(html, /选择您的交易所/);
   assert.match(html, /三档会员，交易量说话/);
-  assert.match(html, /近一年交易量 50 万 USDT/);
+  assert.match(html, /单家交易所近 30 天交易量 ≥ 50 万 USDT/);
+  assert.match(html, /已绑定交易所 888 U · 未绑定 2999 U/);
+  assert.match(html, /近 30 天交易量 ≥ 1 万 USDT，达标自动进开通名单/);
+  assert.doesNotMatch(html, /近一年|499 U|实盘会员 \/ VIP|或 有交易|非零交易量/);
   assert.match(html, /付费 4999 U/);
   assert.match(html, /常见问题/);
   assert.match(html, /提交表单人工处理/);
@@ -128,7 +131,10 @@ test("keeps the responsive redesign and production assets intact", async () => {
   assert.match(home, /解锁 Gate VIP10 体验卡/);
   assert.match(home, /普通用户[\s\S]{0,200}0\.02% \/ 0\.05%/);
   assert.match(home, /VIP10 体验[\s\S]{0,200}0\.01% \/ 0\.03%/);
-  assert.match(home, /近一年交易量 50 万 USDT/);
+  assert.match(home, /单家交易所近 30 天交易量 ≥ 50 万 USDT/);
+  assert.match(home, /已绑定交易所 888 U · 未绑定 2999 U/);
+  assert.match(home, /近 30 天交易量 ≥ 1 万 USDT，达标自动进开通名单/);
+  assert.doesNotMatch(home, /近一年|499 U|实盘会员 \/ VIP|或 有交易|非零交易量/);
   assert.match(home, /付费 4999 U/);
   assert.match(home, /\/review\/manual/);
   assert.match(home, /https:\/\/t\.me\/tianshijin10|EXTERNAL_LINKS\.telegramContact/);
@@ -175,7 +181,7 @@ test("keeps the responsive redesign and production assets intact", async () => {
   assert.match(layout, /data-pm4-support/);
   assert.match(layout, /<Script src="\/pm4-support\.js" strategy="afterInteractive" \/>/);
   assert.match(packageJson, /"build": "vinext build"/);
-  assert.match(packageJson, /"version": "0\.2\.8"/);
+  assert.match(packageJson, /"version": "0\.2\.9"/);
   assert.match(links, /https:\/\/www\.bybit\.com\/zh-TW\/help-center\/article\/How-to-Transfer-Your-Identity-to-Another-Account/);
   assert.match(links, /https:\/\/t\.me\/tianshijin10/);
   assert.match(sitemap, /transfer\/bybit/);
@@ -580,6 +586,19 @@ test("packages the approved static redesign at the exact production paths", asyn
   assert.match(home, /<link rel="icon" href="\/favicon\.ico"/);
   assert.match(home, /data-pm4-support/);
   assert.match(home, /<script src="\/pm4-support\.js"><\/script>/);
+  assert.match(home, /用返佣链接注册<br>\+ 实名 \+ 入金/);
+  assert.match(home, /指标权限:近 30 天交易量 ≥ 1 万 USDT,达标自动进开通名单。/);
+  assert.match(home, /单家交易所近 30 天交易量 ≥ 50 万 USDT<br>或付费开通:已绑定交易所 888 U · 未绑定 2999 U/);
+  assert.match(home, /交易量达标自动升,每天核对,不用申请;付费开通找客服。/);
+  assert.match(home, /保级:近 30 天掉到 50 万以下先提醒,7 天内回来没事;再达标自动恢复。/);
+  assert.match(home, /交易量到了自动升\(每天核对\) · 付费找 #客服与审核/);
+  assert.match(home, /<b>免费<\/b><i>加入 Discord 即可<\/i>[\s\S]*<b>实盘会员<\/b><i>绑定后自动判定<\/i>[\s\S]*<b>VIP<\/b><i>达标或付费<\/i>[\s\S]*<b>SVIP<\/b><i>4,999 USDT · 申请制<\/i>/);
+  assert.match(home, /近 30 天交易量 ≥ 1 万 USDT,达标后开通<\/span><\/td>\s*<td class="n">— 需实盘会员<\/td><td class="y">✓ 达标后开通<\/td><td class="y vipcol">✓ 达标后开通<\/td><td class="y">✓ 直接开通<\/td>/);
+  assert.match(home, /<b>实时交易分析<\/b>[\s\S]*<b>K 线教学<\/b><span>不定期[\s\S]*✓ 不定期[\s\S]*<b>复盘资料库<\/b>[\s\S]*<b>会员交流<\/b>[\s\S]*<b>K 线与价格行为系统课<\/b><span>定制,有效期内/);
+  assert.equal(home.match(/colspan="5"/g)?.length, 4);
+  assert.doesNotMatch(home, /colspan="4"|近一年|499 U|实盘会员 \/ VIP|或 有交易|非零交易量/);
+  assert.doesNotMatch(home, /指标[^<。]{0,12}自动开通/);
+  assert.match(home, /VIP = 单家交易所近 30 天交易量 ≥ 50 万 USDT 自动升,或付费 888 U\(已绑定交易所\)\/ 2999 U\(未绑定\)/);
   assert.match(home, /<!--\s*<a href="\/privacy\.html">隐私政策<\/a><a href="\/terms\.html">服务条款与风险说明<\/a>\s*-->/);
 
   assert.doesNotMatch(okx, /前往 Discord 领取申请入口/);

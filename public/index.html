@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <title>PM4 · 交易所返佣与 TradingView 指标</title>
-<meta name="description" content="最高 65% 手续费返佣 + TradingView 专属指标。用 PM4 专属链接注册交易所,绑定 UID,机器人 30 秒自动开通身份组和指标。">
+<meta name="description" content="最高 65% 手续费返佣 + TradingView 专属指标。用 PM4 专属链接注册交易所,绑定 UID,机器人 30 秒自动开通身份组,指标交易量达标后开通。">
 <meta name="theme-color" content="#0b0d10">
 <link rel="icon" href="/favicon.ico" sizes="any">
 
@@ -13,14 +13,14 @@
 <meta property="og:site_name" content="PM4">
 <meta property="og:locale" content="zh_CN">
 <meta property="og:title" content="PM4 · 交易所返佣与 TradingView 指标">
-<meta property="og:description" content="最高 65% 手续费返佣 + TradingView 专属指标。用 PM4 专属链接注册交易所,绑定 UID,机器人 30 秒自动开通身份组和指标。">
+<meta property="og:description" content="最高 65% 手续费返佣 + TradingView 专属指标。用 PM4 专属链接注册交易所,绑定 UID,机器人 30 秒自动开通身份组,指标交易量达标后开通。">
 <meta property="og:url" content="https://cpm4.com/">
 <meta property="og:image" content="https://cpm4.com/og-cover.png">
 <meta property="og:image:width" content="1200">
 <meta property="og:image:height" content="630">
 <meta name="twitter:card" content="summary_large_image">
 <meta name="twitter:title" content="PM4 · 交易所返佣与 TradingView 指标">
-<meta name="twitter:description" content="最高 65% 手续费返佣 + TradingView 专属指标。用 PM4 专属链接注册交易所,绑定 UID,机器人 30 秒自动开通身份组和指标。">
+<meta name="twitter:description" content="最高 65% 手续费返佣 + TradingView 专属指标。用 PM4 专属链接注册交易所,绑定 UID,机器人 30 秒自动开通身份组,指标交易量达标后开通。">
 <meta name="twitter:image" content="https://cpm4.com/og-cover.png">
 <!-- Geist 走 Google Fonts,大陆访问不到。改成非阻塞加载:拉不到就直接用系统字体,不会卡住渲染。
      上线时建议改成自托管字体文件,大陆用户也能拿到设计稿的字重 -->
@@ -247,6 +247,8 @@ footer a{color:var(--muted);margin-right:20px}
 @media(max-width:640px){.nav-in a.item{display:none}.nav-in{gap:0}.nav-in .btn{margin-left:auto}}
 @media(max-width:900px){.flow{grid-template-columns:1fr;gap:56px}.pv{padding:20px 20px 0;border-radius:20px}.pv-in{margin-bottom:20px;padding:16px}}
 @media(max-width:760px){.tiers{grid-template-columns:1fr}section.wrap{padding-top:120px}.hero{padding:110px 0 40px}}
+.mx-hint{display:none}
+@media(max-width:760px){.mx-hint{display:block;color:var(--dim);font-size:12.5px;margin:40px 0 -52px}.mx td.f,.mx tr:first-child th:first-child{position:sticky;left:0;z-index:1;background:linear-gradient(var(--card2),var(--card2)),var(--bg);width:132px;min-width:132px;max-width:132px;box-shadow:1px 0 0 var(--line)}}
 /* Discord registration entry: the normal homepage remains unchanged. */
 .join-dialog{box-sizing:border-box;width:min(640px,calc(100% - 32px));max-height:calc(100% - 32px);padding:28px;background:#141419;color:var(--ink);border:1px solid var(--line);border-radius:20px}
 .join-dialog::backdrop{background:rgb(0 0 0 / .6);backdrop-filter:blur(4px)}
@@ -301,13 +303,13 @@ footer a{color:var(--muted);margin-right:20px}
       <div class="it" data-step="3">
         <div class="dot">03</div>
         <h3>机器人自动开通</h3>
-        <p>自动核验后发 @实盘会员 身份组,TradingView 指标排队开通并私信通知。</p>
+        <p>自动核验后发 @实盘会员 身份组;TradingView 指标交易量达标后开通并私信通知。</p>
         <a class="go" href="#faq">看开通规则 <span class="ar">→</span></a>
       </div>
       <div class="it" data-step="4">
         <div class="dot">04</div>
         <h3>交易量达标自动升 VIP</h3>
-        <p>近一年交易量满 50 万 U 自动升 VIP,不用申请、不用等人工。</p>
+        <p>单家交易所近 30 天交易量满 50 万 U 自动升 VIP,不用申请、不用等人工。</p>
         <a class="go" href="#tier">看会员权益 <span class="ar">→</span></a>
       </div>
     </div>
@@ -351,7 +353,7 @@ footer a{color:var(--muted);margin-right:20px}
                   <div class="ef"><div class="k">UID</div><div class="v">1234****89</div></div>
                   <div class="ef"><div class="k">TradingView</div><div class="v">PM4User</div></div>
                 </div>
-                <div class="ep" style="margin-bottom:0">已经确认有非零交易量,指标已经进入开通队列。管理员完成开通后会私信告诉你。</div>
+                <div class="ep" style="margin-bottom:0">近 30 天交易量已达 1 万 USDT,指标已进入开通名单。管理员完成开通后会私信告诉你。</div>
               </div>
               <span class="dcbtn">我的权益</span>
             </div>
@@ -367,10 +369,10 @@ footer a{color:var(--muted);margin-right:20px}
                 <div class="et">升 VIP 了</div>
                 <div class="efs">
                   <div class="ef"><div class="k">身份组</div><div class="v"><span class="mention">@VIP</span> 已发放</div></div>
-                  <div class="ef"><div class="k">近一年交易量</div><div class="v">Bybit 62.3 万 / 50 万 USDT</div></div>
+                  <div class="ef"><div class="k">近 30 天交易量</div><div class="v">Bybit 62.3 万 / 50 万 USDT</div></div>
                 </div>
                 <div class="ep">会员·交易思路、复盘资料库、会员交流三个频道现在都能进了。</div>
-                <div class="efoot">近一年交易量保持在 50 万 USDT 以上就一直保留,我这边每天自动核对,不用管。</div>
+                <div class="efoot">近 30 天交易量保持在 50 万 USDT 以上就一直保留,我这边每天自动核对;掉到 50 万以下先提醒,7 天内回来没事。</div>
               </div>
               <span class="dcbtn">去会员·交易思路</span>
             </div>
@@ -410,14 +412,16 @@ footer a{color:var(--muted);margin-right:20px}
   <p class="sub">绑定后机器人按交易数据自动判定,达标自动升级。</p>
   <div class="tiers">
     <div class="card tier"><div class="name">实盘会员</div><div class="price">入门 · 免费</div>
-      <div class="k">怎么拿 · 二选一</div>
-      <div class="how">用返佣链接注册,<br>实名+入金 或 有交易</div>
-      <div class="d">满足其一即可,入金不限金额。绑定后机器人 30 秒自动核对、自动发。</div>
+      <div class="k">怎么拿</div>
+      <div class="how">用返佣链接注册<br>+ 实名 + 入金</div>
+      <div class="d">入金不限金额。绑定后机器人自动核对、自动发。</div>
+      <div class="d">指标权限:近 30 天交易量 ≥ 1 万 USDT,达标自动进开通名单。</div>
       <div class="foot">入口:进 Discord 点「绑定账号」</div></div>
     <div class="card tier hot"><div class="name">VIP</div><div class="price">达标或付费</div>
       <div class="k">怎么拿 · 二选一</div>
-      <div class="how">近一年交易量 50 万 USDT<br>或直接付费 499 U</div>
-      <div class="d">交易量达标自动升,不用申请;付费开通找客服。</div>
+      <div class="how">单家交易所近 30 天交易量 ≥ 50 万 USDT<br>或付费开通:已绑定交易所 888 U · 未绑定 2999 U</div>
+      <div class="d">交易量达标自动升,每天核对,不用申请;付费开通找客服。</div>
+      <div class="d">保级:近 30 天掉到 50 万以下先提醒,7 天内回来没事;再达标自动恢复。</div>
       <div class="foot">交易量到了自动升(每天核对) · 付费找 #客服与审核</div></div>
     <div class="card tier"><div class="name">SVIP</div><div class="price">付费专属</div>
       <div class="k">怎么拿</div>
@@ -425,28 +429,37 @@ footer a{color:var(--muted);margin-right:20px}
       <div class="d">和交易量、返佣无关,单独的付费档位。</div>
       <div class="foot">咨询:#客服与审核 开工单私聊</div></div>
   </div>
+  <p class="mx-hint">← 左右滑动查看各等级 →</p>
   <div class="mx"><table>
     <tr><th style="text-align:left">每个等级可以做什么</th>
         <th class="colhd"><b>免费</b><i>加入 Discord 即可</i></th>
-        <th class="colhd vipcol"><b>实盘会员 / VIP</b><i>绑定后自动判定</i></th>
+        <th class="colhd"><b>实盘会员</b><i>绑定后自动判定</i></th>
+        <th class="colhd vipcol"><b>VIP</b><i>达标或付费</i></th>
         <th class="colhd"><b>SVIP</b><i>4,999 USDT · 申请制</i></th></tr>
-    <tr class="grp"><td colspan="4">免费内容</td></tr>
+    <tr class="grp"><td colspan="5">免费内容</td></tr>
     <tr><td class="f"><b>Discord 社区与挑战实盘</b><span>公告、大厅与 US$10,000 挑战每笔开平仓节点</span></td>
-        <td class="y">✓ 免费开放</td><td class="y vipcol">✓ 免费开放</td><td class="y">✓ 免费开放</td></tr>
-    <tr><td class="f"><b>PM4 专属指标工具</b><span>实盘会员资格开通,使用说明以领取页为准</span></td>
-        <td class="n">— 需实盘会员</td><td class="y vipcol">✓ 自动开通</td><td class="y">✓ 自动开通</td></tr>
-    <tr class="grp"><td colspan="4">VIP · 达标或付费解锁</td></tr>
+        <td class="y">✓ 免费开放</td><td class="y">✓ 免费开放</td><td class="y vipcol">✓ 免费开放</td><td class="y">✓ 免费开放</td></tr>
+    <tr class="grp"><td colspan="5">实盘会员</td></tr>
+    <tr><td class="f"><b>PM4 专属指标工具</b><span>近 30 天交易量 ≥ 1 万 USDT,达标后开通</span></td>
+        <td class="n">— 需实盘会员</td><td class="y">✓ 达标后开通</td><td class="y vipcol">✓ 达标后开通</td><td class="y">✓ 直接开通</td></tr>
+    <tr class="grp"><td colspan="5">VIP · 达标或付费解锁</td></tr>
     <tr><td class="f"><b>会员·交易思路</b><span>会员频道内的市场分析、执行逻辑与风险边界</span></td>
-        <td class="n">— 不包含</td><td class="y vipcol">✓ VIP 专属</td><td class="y">✓ 全部 VIP 权益</td></tr>
+        <td class="n">— 不包含</td><td class="n">— 不包含</td><td class="y vipcol">✓ VIP 专属</td><td class="y">✓ 全部 VIP 权益</td></tr>
+    <tr><td class="f"><b>实时交易分析</b><span>会员频道内的实时行情与仓位思路</span></td>
+        <td class="n">— 不包含</td><td class="n">— 不包含</td><td class="y vipcol">✓</td><td class="y">✓</td></tr>
+    <tr><td class="f"><b>K 线教学</b><span>不定期</span></td>
+        <td class="n">— 不包含</td><td class="n">— 不包含</td><td class="y vipcol">✓ 不定期</td><td class="y">✓</td></tr>
     <tr><td class="f"><b>复盘资料库</b><span>交易复盘、规则模板与历史资料完整访问</span></td>
-        <td class="n">— 不包含</td><td class="y vipcol">✓ 完整访问</td><td class="y">✓ 全部 VIP 权益</td></tr>
-    <tr class="grp"><td colspan="4">SVIP · 付费申请制</td></tr>
-    <tr><td class="f"><b>K 线与价格行为系统课</b><span>有效期内系统学习 K 线、关键位置与价格行为</span></td>
-        <td class="n">— 不包含</td><td class="n vipcol">— 不包含</td><td class="y">✓ 有效期内</td></tr>
+        <td class="n">— 不包含</td><td class="n">— 不包含</td><td class="y vipcol">✓ 完整访问</td><td class="y">✓</td></tr>
+    <tr><td class="f"><b>会员交流</b><span>会员频道交流</span></td>
+        <td class="n">— 不包含</td><td class="n">— 不包含</td><td class="y vipcol">✓</td><td class="y">✓</td></tr>
+    <tr class="grp"><td colspan="5">SVIP · 付费申请制</td></tr>
+    <tr><td class="f"><b>K 线与价格行为系统课</b><span>定制,有效期内</span></td>
+        <td class="n">— 不包含</td><td class="n">— 不包含</td><td class="n vipcol">— 不包含</td><td class="y">✓ 有效期内</td></tr>
     <tr><td class="f"><b>一对一交流</b><span>围绕交易方法、策略理解与复盘问题预约交流</span></td>
-        <td class="n">— 不包含</td><td class="n vipcol">— 不包含</td><td class="y">◇ 预约制</td></tr>
+        <td class="n">— 不包含</td><td class="n">— 不包含</td><td class="n vipcol">— 不包含</td><td class="y">◇ 预约制</td></tr>
   </table></div>
-  <p style="color:var(--dim);font-size:12.5px;margin-top:14px">交易量以交易所后台统计为准 · VIP = 近一年交易量 50 万 USDT 自动升,或付费 499 U</p>
+  <p style="color:var(--dim);font-size:12.5px;margin-top:14px">交易量以交易所后台统计为准 · VIP = 单家交易所近 30 天交易量 ≥ 50 万 USDT 自动升,或付费 888 U(已绑定交易所)/ 2999 U(未绑定)</p>
 </section>
 
 
